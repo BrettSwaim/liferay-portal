@@ -112,6 +112,7 @@ import com.liferay.portal.security.auth.PrincipalException;
 import com.liferay.portal.security.permission.ActionKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.security.permission.ResourceActionsUtil;
 import com.liferay.portal.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.service.CompanyLocalServiceUtil;
@@ -2022,30 +2023,81 @@ public class PortalImpl implements Portal {
 			Map<String, Object> requestContext)
 		throws PortalException, SystemException {
 
-		Layout layout = null;
-		String queryString = StringPool.BLANK;
+        String queryString = StringPool.BLANK;
+        Layout layout = null;
 
-		if (Validator.isNull(friendlyURL)) {
-			List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(
-				groupId, privateLayout,
-				LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
+        if (Validator.isNull(friendlyURL)) {
+            HttpServletRequest request = (HttpServletRequest) requestContext.get("request");
+            Company company = PortalUtil.getCompany(request);
 
-			if (!layouts.isEmpty()) {
-				layout = layouts.get(0);
-			}
-			else {
-				throw new NoSuchLayoutException(
-					"{groupId=" + groupId + ",privateLayout=" + privateLayout +
-						"} does not have any layouts");
-			}
-		}
-		else {
-			Object[] friendlyURLMapper = getPortletFriendlyURLMapper(
-				groupId, privateLayout, friendlyURL, params, requestContext);
+            User user = null;
 
-			layout = (Layout)friendlyURLMapper[0];
-			queryString = (String)friendlyURLMapper[1];
-		}
+            try {
+                user = PortalUtil.getUser(request);
+            }
+            catch (NoSuchUserException nsue) {
+                if (_log.isWarnEnabled()) {
+                    _log.warn(nsue.getMessage());
+                }
+
+                return null;
+            }
+
+            if (user == null) {
+                user = company.getDefaultUser();
+            }
+
+            // Permission checker
+
+            try {
+                PermissionChecker permissionChecker =
+                    PermissionCheckerFactoryUtil.create(user, true);
+
+                PermissionThreadLocal.setPermissionChecker(permissionChecker);
+
+                List<Layout> layouts = LayoutLocalServiceUtil.getLayouts(
+                    groupId, privateLayout,
+                    LayoutConstants.DEFAULT_PARENT_LAYOUT_ID);
+
+                if (!layouts.isEmpty()) {
+                    List<Layout> accessibleLayouts = new ArrayList<Layout>();
+
+                    for (int i = 0; i < layouts.size(); i++) {
+                        Layout curLayout = layouts.get(i);
+
+                        if (!curLayout.isHidden() &&
+                            (LayoutPermissionUtil.contains(
+                                permissionChecker, curLayout, true, ActionKeys.VIEW))) {
+
+                            if (accessibleLayouts.isEmpty()) {
+                                layout = curLayout;
+                            }
+
+                            accessibleLayouts.add(curLayout);
+                        }
+                    }
+
+                    if (layout == null) {
+                        layout = layouts.get(0);
+                    }
+                }
+                else {
+                    throw new NoSuchLayoutException(
+                        "{groupId=" + groupId + ",privateLayout=" + privateLayout +
+                            "} does not have any layouts");
+                }
+            } catch (Exception e) {
+                _log.debug(e);
+            }
+        }
+        else {
+            Object[] friendlyURLMapper = getPortletFriendlyURLMapper(
+                groupId, privateLayout, friendlyURL, params, requestContext);
+
+            layout = (Layout)friendlyURLMapper[0];
+            queryString = (String)friendlyURLMapper[1];
+        }
+
 
 		String layoutActualURL = getLayoutActualURL(layout, mainPath);
 
