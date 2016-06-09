@@ -38,9 +38,9 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.adapter.ModelAdapterUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
-import com.liferay.portal.model.User;
 import com.liferay.portlet.asset.service.base.AssetLinkLocalServiceBaseImpl;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
@@ -216,25 +216,16 @@ public class AssetLinkLocalServiceImpl extends AssetLinkLocalServiceBaseImpl {
 	 */
 	@Override
 	public List<AssetLink> getDirectLinks(long entryId) {
+		return getDirectLinks(entryId, true);
+	}
+
+	@Override
+	public List<AssetLink> getDirectLinks(
+		long entryId, boolean excludeInvisibleLinks) {
+
 		List<AssetLink> assetLinks = assetLinkPersistence.findByE1(entryId);
 
-		if (!assetLinks.isEmpty()) {
-			List<AssetLink> filteredAssetLinks = new ArrayList<>(
-				assetLinks.size());
-
-			for (AssetLink assetLink : assetLinks) {
-				AssetEntry assetEntry = assetEntryPersistence.fetchByPrimaryKey(
-					assetLink.getEntryId2());
-
-				if ((assetEntry != null) && assetEntry.isVisible()) {
-					filteredAssetLinks.add(assetLink);
-				}
-			}
-
-			assetLinks = Collections.unmodifiableList(filteredAssetLinks);
-		}
-
-		return assetLinks;
+		return filterAssetLinks(assetLinks, excludeInvisibleLinks);
 	}
 
 	/**
@@ -252,26 +243,17 @@ public class AssetLinkLocalServiceImpl extends AssetLinkLocalServiceBaseImpl {
 	 */
 	@Override
 	public List<AssetLink> getDirectLinks(long entryId, int typeId) {
+		return getDirectLinks(entryId, typeId, true);
+	}
+
+	@Override
+	public List<AssetLink> getDirectLinks(
+		long entryId, int typeId, boolean excludeInvisibleLinks) {
+
 		List<AssetLink> assetLinks = assetLinkPersistence.findByE1_T(
 			entryId, typeId);
 
-		if (!assetLinks.isEmpty()) {
-			List<AssetLink> filteredAssetLinks = new ArrayList<>(
-				assetLinks.size());
-
-			for (AssetLink assetLink : assetLinks) {
-				AssetEntry assetEntry = assetEntryPersistence.fetchByPrimaryKey(
-					assetLink.getEntryId2());
-
-				if ((assetEntry != null) && assetEntry.isVisible()) {
-					filteredAssetLinks.add(assetLink);
-				}
-			}
-
-			assetLinks = Collections.unmodifiableList(filteredAssetLinks);
-		}
-
-		return assetLinks;
+		return filterAssetLinks(assetLinks, excludeInvisibleLinks);
 	}
 
 	@Override
@@ -496,6 +478,29 @@ public class AssetLinkLocalServiceImpl extends AssetLinkLocalServiceBaseImpl {
 				}
 			}
 		}
+	}
+
+	protected List<AssetLink> filterAssetLinks(
+		List<AssetLink> assetLinks, boolean excludeInvisibleLinks) {
+
+		if (assetLinks.isEmpty() || !excludeInvisibleLinks) {
+			return assetLinks;
+		}
+
+		List<AssetLink> filteredAssetLinks = new ArrayList<>(assetLinks.size());
+
+		for (AssetLink assetLink : assetLinks) {
+			AssetEntry assetEntry = assetEntryPersistence.fetchByPrimaryKey(
+				assetLink.getEntryId2());
+
+			if ((assetEntry != null) && assetEntry.isVisible()) {
+				filteredAssetLinks.add(assetLink);
+			}
+		}
+
+		assetLinks = Collections.unmodifiableList(filteredAssetLinks);
+
+		return assetLinks;
 	}
 
 	private static final String _DELETE_BY_ASSET_ENTRY_GROUP_ID =

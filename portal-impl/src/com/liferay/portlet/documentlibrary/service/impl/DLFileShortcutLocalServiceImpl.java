@@ -25,14 +25,14 @@ import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.SystemEventConstants;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.model.ResourceConstants;
-import com.liferay.portal.model.SystemEventConstants;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.ServiceContext;
 import com.liferay.portlet.documentlibrary.service.base.DLFileShortcutLocalServiceBaseImpl;
 
 import java.util.Date;
@@ -53,6 +53,7 @@ public class DLFileShortcutLocalServiceImpl
 		// File shortcut
 
 		User user = userPersistence.findByPrimaryKey(userId);
+
 		folderId = getFolderId(user.getCompanyId(), folderId);
 
 		validate(user, toFileEntryId);
@@ -342,9 +343,10 @@ public class DLFileShortcutLocalServiceImpl
 			fileShortcut.getModifiedDate(),
 			DLFileShortcutConstants.getClassName(),
 			fileShortcut.getFileShortcutId(), fileShortcut.getUuid(), 0,
-			assetCategoryIds, assetTagNames, false, null, null, null,
-			fileEntry.getMimeType(), fileEntry.getTitle(),
-			fileEntry.getDescription(), null, null, null, 0, 0, null);
+			assetCategoryIds, assetTagNames, true, false, null, null,
+			fileShortcut.getCreateDate(), null, fileEntry.getMimeType(),
+			fileEntry.getTitle(), fileEntry.getDescription(), null, null, null,
+			0, 0, null);
 	}
 
 	@Override

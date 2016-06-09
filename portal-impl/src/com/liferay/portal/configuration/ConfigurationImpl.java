@@ -22,13 +22,13 @@ import com.liferay.portal.configuration.easyconf.ClassLoaderComponentConfigurati
 import com.liferay.portal.kernel.configuration.Filter;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.CompanyConstants;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.PropertiesUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Company;
-import com.liferay.portal.model.CompanyConstants;
-import com.liferay.portal.service.CompanyLocalServiceUtil;
 
 import java.lang.reflect.Field;
 
@@ -51,10 +51,20 @@ import org.apache.commons.configuration.MapConfiguration;
 public class ConfigurationImpl
 	implements com.liferay.portal.kernel.configuration.Configuration {
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #ConfigurationImpl(ClassLoader, String, long, String)}
+	 */
+	@Deprecated
 	public ConfigurationImpl(ClassLoader classLoader, String name) {
 		this(classLoader, name, CompanyConstants.SYSTEM);
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, replaced by {@link
+	 *             #ConfigurationImpl(ClassLoader, String, long, String)}
+	 */
+	@Deprecated
 	public ConfigurationImpl(
 		ClassLoader classLoader, String name, long companyId) {
 
@@ -71,6 +81,15 @@ public class ConfigurationImpl
 				_log.error(e, e);
 			}
 		}
+
+		_componentConfiguration = new ClassLoaderComponentConfiguration(
+			classLoader, webId, name);
+
+		printSources(companyId, webId);
+	}
+
+	public ConfigurationImpl(
+		ClassLoader classLoader, String name, long companyId, String webId) {
 
 		_componentConfiguration = new ClassLoaderComponentConfiguration(
 			classLoader, webId, name);
@@ -442,6 +461,10 @@ public class ConfigurationImpl
 			}
 
 			_printedSources.add(source);
+
+			if (source.startsWith("bundleresource://")) {
+				continue;
+			}
 
 			String info = "Loading " + source;
 

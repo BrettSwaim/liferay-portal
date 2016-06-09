@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
@@ -191,7 +192,7 @@ public class JavadocFormatter {
 
 				for (String curLimit : limitArray) {
 					includes.add(
-						"**\\" + StringUtil.replace(curLimit, ".", "\\") +
+						"**\\" + StringUtil.replace(curLimit, '.', '\\') +
 							"\\**\\*.java");
 					includes.add("**\\" + curLimit + ".java");
 				}
@@ -228,7 +229,7 @@ public class JavadocFormatter {
 			_populateJavadocBuilder(fileNames);
 
 			for (String fileName : fileNames) {
-				fileName = StringUtil.replace(fileName, "\\", "/");
+				fileName = StringUtil.replace(fileName, '\\', '/');
 
 				try {
 					_format(fileName);
@@ -362,7 +363,8 @@ public class JavadocFormatter {
 			return null;
 		}
 
-		comment = ToolsUtil.stripFullyQualifiedClassNames(comment, _imports);
+		comment = ToolsUtil.stripFullyQualifiedClassNames(
+			comment, _imports, _packagePath);
 
 		if (!comment.contains("* @deprecated ") ||
 			_hasAnnotation(abstractBaseJavaEntity, "Deprecated")) {
@@ -383,7 +385,8 @@ public class JavadocFormatter {
 		for (DocletTag docletTag : docletTags) {
 			String value = docletTag.getValue();
 
-			value = ToolsUtil.stripFullyQualifiedClassNames(value, _imports);
+			value = ToolsUtil.stripFullyQualifiedClassNames(
+				value, _imports, _packagePath);
 
 			value = _trimMultilineText(value);
 
@@ -670,7 +673,8 @@ public class JavadocFormatter {
 			Dom4jDocUtil.add(paramElement, "required", true);
 		}
 
-		value = ToolsUtil.stripFullyQualifiedClassNames(value, _imports);
+		value = ToolsUtil.stripFullyQualifiedClassNames(
+			value, _imports, _packagePath);
 
 		value = _trimMultilineText(value);
 
@@ -720,7 +724,8 @@ public class JavadocFormatter {
 			Dom4jDocUtil.add(returnElement, "required", true);
 		}
 
-		comment = ToolsUtil.stripFullyQualifiedClassNames(comment, _imports);
+		comment = ToolsUtil.stripFullyQualifiedClassNames(
+			comment, _imports, _packagePath);
 
 		comment = _trimMultilineText(comment);
 
@@ -764,7 +769,8 @@ public class JavadocFormatter {
 			Dom4jDocUtil.add(throwsElement, "required", true);
 		}
 
-		value = ToolsUtil.stripFullyQualifiedClassNames(value, _imports);
+		value = ToolsUtil.stripFullyQualifiedClassNames(
+			value, _imports, _packagePath);
 
 		value = _trimMultilineText(value);
 
@@ -876,6 +882,7 @@ public class JavadocFormatter {
 		}
 
 		_imports = JavaImportsFormatter.getImports(originalContent);
+		_packagePath = ToolsUtil.getPackagePath(fileName);
 
 		JavaClass javaClass = _getJavaClass(
 			fileName, new UnsyncStringReader(originalContent));
@@ -922,7 +929,7 @@ public class JavadocFormatter {
 
 			// Escape dollar signs
 
-			trimmed = StringUtil.replace(trimmed, "$", "\\$");
+			trimmed = StringUtil.replace(trimmed, '$', "\\$");
 
 			matcher.appendReplacement(sb, trimmed);
 		}
@@ -969,8 +976,17 @@ public class JavadocFormatter {
 			int preTagIndex = cdata.indexOf("<pre>");
 			int tableTagIndex = cdata.indexOf("<table>");
 
-			boolean hasPreTag = (preTagIndex != -1) ? true : false;
-			boolean hasTableTag = (tableTagIndex != -1) ? true : false;
+			boolean hasPreTag = false;
+
+			if (preTagIndex != -1) {
+				hasPreTag = true;
+			}
+
+			boolean hasTableTag = false;
+
+			if (tableTagIndex != -1) {
+				hasTableTag = true;
+			}
 
 			if (!hasPreTag && !hasTableTag) {
 				sb.append(_formatCDATA(cdata));
@@ -978,8 +994,17 @@ public class JavadocFormatter {
 				break;
 			}
 
-			boolean startsWithPreTag = (preTagIndex == 0) ? true : false;
-			boolean startsWithTableTag = (tableTagIndex == 0) ? true : false;
+			boolean startsWithPreTag = false;
+
+			if (preTagIndex == 0) {
+				startsWithPreTag = true;
+			}
+
+			boolean startsWithTableTag = false;
+
+			if (tableTagIndex == 0) {
+				startsWithTableTag = true;
+			}
 
 			if (startsWithPreTag || startsWithTableTag) {
 				sb.append("\n");
@@ -1096,7 +1121,7 @@ public class JavadocFormatter {
 		String srcFile = fileName.substring(pos + 1, fileName.length());
 
 		return StringUtil.replace(
-			srcFile.substring(0, srcFile.length() - 5), "/", ".");
+			srcFile.substring(0, srcFile.length() - 5), '/', '.');
 	}
 
 	private String _getFieldKey(Element fieldElement) {
@@ -1167,7 +1192,7 @@ public class JavadocFormatter {
 
 		if (Validator.isNotNull(comment)) {
 			comment = ToolsUtil.stripFullyQualifiedClassNames(
-				comment, _imports);
+				comment, _imports, _packagePath);
 
 			sb.append(_wrapText(comment, indent + " * "));
 		}
@@ -1255,7 +1280,7 @@ public class JavadocFormatter {
 
 		String absolutePath = file.getAbsolutePath();
 
-		absolutePath = StringUtil.replace(absolutePath, "\\", "/");
+		absolutePath = StringUtil.replace(absolutePath, '\\', '/');
 		absolutePath = StringUtil.replace(absolutePath, "/./", "/");
 
 		int pos = absolutePath.indexOf("/portal-impl/src/");
@@ -1270,7 +1295,7 @@ public class JavadocFormatter {
 			pos = absolutePath.indexOf("/portal-kernel/src/");
 
 			if (pos == -1) {
-				pos = absolutePath.indexOf("/portal-service/src/");
+				pos = absolutePath.indexOf("/portal-kernel/src/");
 			}
 
 			if (pos == -1) {
@@ -1367,7 +1392,7 @@ public class JavadocFormatter {
 
 		if (Validator.isNotNull(comment)) {
 			comment = ToolsUtil.stripFullyQualifiedClassNames(
-				comment, _imports);
+				comment, _imports, _packagePath);
 
 			sb.append(_wrapText(comment, indent + " * "));
 		}
@@ -1426,7 +1451,7 @@ public class JavadocFormatter {
 
 		if (Validator.isNotNull(comment)) {
 			comment = ToolsUtil.stripFullyQualifiedClassNames(
-				comment, _imports);
+				comment, _imports, _packagePath);
 
 			sb.append(_wrapText(comment, indent + " * "));
 		}
@@ -2046,7 +2071,7 @@ public class JavadocFormatter {
 				Element javaClassRootElement =
 					javaClassDocument.getRootElement();
 
-				if (Validator.equals(
+				if (Objects.equals(
 						_formattedString(javadocElement),
 						_formattedString(javaClassRootElement))) {
 
@@ -2236,6 +2261,7 @@ public class JavadocFormatter {
 	private final double _lowestSupportedJavaVersion;
 	private final Set<String> _modifiedFileNames = new HashSet<>();
 	private final String _outputFilePrefix;
+	private String _packagePath;
 	private final Pattern _paragraphTagPattern = Pattern.compile(
 		"(^.*?(?=\n\n|$)+|(?<=<p>\n).*?(?=\n</p>))", Pattern.DOTALL);
 	private final boolean _updateJavadocs;

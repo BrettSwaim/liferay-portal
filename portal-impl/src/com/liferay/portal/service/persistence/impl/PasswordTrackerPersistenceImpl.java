@@ -16,7 +16,6 @@ package com.liferay.portal.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.exception.NoSuchPasswordTrackerException;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -27,21 +26,20 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.exception.NoSuchPasswordTrackerException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.PasswordTracker;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
+import com.liferay.portal.kernel.service.persistence.PasswordTrackerPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.MVCCModel;
-import com.liferay.portal.model.PasswordTracker;
 import com.liferay.portal.model.impl.PasswordTrackerImpl;
 import com.liferay.portal.model.impl.PasswordTrackerModelImpl;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
-import com.liferay.portal.service.persistence.PasswordTrackerPersistence;
 
 import java.io.Serializable;
 
@@ -62,7 +60,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see PasswordTrackerPersistence
- * @see com.liferay.portal.service.persistence.PasswordTrackerUtil
+ * @see com.liferay.portal.kernel.service.persistence.PasswordTrackerUtil
  * @generated
  */
 @ProviderType
@@ -727,8 +725,8 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 					primaryKey);
 
 			if (passwordTracker == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchPasswordTrackerException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -864,7 +862,7 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 	}
 
 	/**
-	 * Returns the password tracker with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the password tracker with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the password tracker
 	 * @return the password tracker
@@ -876,8 +874,8 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 		PasswordTracker passwordTracker = fetchByPrimaryKey(primaryKey);
 
 		if (passwordTracker == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchPasswordTrackerException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -908,12 +906,14 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 	 */
 	@Override
 	public PasswordTracker fetchByPrimaryKey(Serializable primaryKey) {
-		PasswordTracker passwordTracker = (PasswordTracker)entityCache.getResult(PasswordTrackerModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(PasswordTrackerModelImpl.ENTITY_CACHE_ENABLED,
 				PasswordTrackerImpl.class, primaryKey);
 
-		if (passwordTracker == _nullPasswordTracker) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		PasswordTracker passwordTracker = (PasswordTracker)serializable;
 
 		if (passwordTracker == null) {
 			Session session = null;
@@ -929,8 +929,7 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 				}
 				else {
 					entityCache.putResult(PasswordTrackerModelImpl.ENTITY_CACHE_ENABLED,
-						PasswordTrackerImpl.class, primaryKey,
-						_nullPasswordTracker);
+						PasswordTrackerImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -984,18 +983,20 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			PasswordTracker passwordTracker = (PasswordTracker)entityCache.getResult(PasswordTrackerModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(PasswordTrackerModelImpl.ENTITY_CACHE_ENABLED,
 					PasswordTrackerImpl.class, primaryKey);
 
-			if (passwordTracker == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, passwordTracker);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (PasswordTracker)serializable);
+				}
 			}
 		}
 
@@ -1037,7 +1038,7 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(PasswordTrackerModelImpl.ENTITY_CACHE_ENABLED,
-					PasswordTrackerImpl.class, primaryKey, _nullPasswordTracker);
+					PasswordTrackerImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -1280,35 +1281,4 @@ public class PasswordTrackerPersistenceImpl extends BasePersistenceImpl<Password
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"password"
 			});
-	private static final PasswordTracker _nullPasswordTracker = new PasswordTrackerImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<PasswordTracker> toCacheModel() {
-				return _nullPasswordTrackerCacheModel;
-			}
-		};
-
-	private static final CacheModel<PasswordTracker> _nullPasswordTrackerCacheModel =
-		new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<PasswordTracker>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public PasswordTracker toEntityModel() {
-			return _nullPasswordTracker;
-		}
-	}
 }

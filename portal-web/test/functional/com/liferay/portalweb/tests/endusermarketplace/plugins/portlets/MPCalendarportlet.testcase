@@ -1,4 +1,4 @@
-<definition component-name="marketplace-plugins-calendar-portlet">
+<definition component-name="portal-plugins-deployment">
 	<property name="testray.main.component.name" value="Plugin Installer" />
 
 	<set-up>
@@ -16,7 +16,7 @@
 	<command name="CalendarPortletSmoke" priority="4">
 		<var name="appName" value="Calendar" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Test Page" />
 		</execute>
 

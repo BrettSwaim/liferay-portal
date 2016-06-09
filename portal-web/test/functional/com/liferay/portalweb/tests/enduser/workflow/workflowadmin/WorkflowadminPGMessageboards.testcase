@@ -1,4 +1,5 @@
 <definition component-name="portal-workflow">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Workflow" />
 
 	<var name="pageName" value="Message Boards Page" />
@@ -25,7 +26,7 @@
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -43,9 +44,11 @@
 				<execute macro="PortalInstances#tearDownCP" />
 			</then>
 			<else>
-				<execute macro="MessageboardsThread#tearDownPG">
-					<var name="pageName" value="${pageName}" />
-				</execute>
+				<execute macro="MessageboardsCategory#tearDownCP" />
+
+				<execute macro="MessageboardsThread#tearDownCP" />
+
+				<execute macro="MessageboardsPortlet#tearDownConfigurationGeneralCP" />
 
 				<execute macro="Page#tearDownPG" />
 
@@ -60,7 +63,7 @@
 		<var name="threadBody" value="MB Thread Body" />
 		<var name="threadSubject" value="MB Thread Subject" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -69,7 +72,7 @@
 			<var name="threadSubject" value="${threadSubject}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -89,7 +92,7 @@
 			<var name="workflowTask" value="Review" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -110,14 +113,13 @@
 			<var name="workflowTask" value="Review" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
 		<execute macro="MessageboardsThread#gotoPG">
 			<var name="lastPostUserName" value="Test Test" />
 			<var name="postCount" value="1" />
-			<var name="startedByUserName" value="Test Test" />
 			<var name="threadBody" value="${threadBody}" />
 			<var name="threadSubject" value="${threadSubject}" />
 		</execute>
@@ -152,7 +154,7 @@
 		<var name="threadBody" value="MB Thread Body" />
 		<var name="threadSubject" value="MB Thread Subject" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -191,7 +193,7 @@
 			<var name="workflowAssetType" value="${workflowAssetType}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 

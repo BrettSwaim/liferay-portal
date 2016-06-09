@@ -16,9 +16,13 @@ package com.liferay.portal.servlet;
 
 import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cache.SingleVMPoolUtil;
+import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletApp;
+import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
 import com.liferay.portal.kernel.servlet.RequestDispatcherUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
@@ -38,9 +42,6 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.minifier.MinifierUtil;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.PortletApp;
-import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.servlet.filters.dynamiccss.DynamicCSSUtil;
 import com.liferay.portal.util.AggregateUtil;
 import com.liferay.portal.util.PrefsPropsUtil;
@@ -107,10 +108,11 @@ public class ComboServlet extends HttpServlet {
 		int index = modulePath.indexOf(CharPool.COLON);
 
 		if (index > 0) {
-			return modulePath.substring(index + 1);
+			return HttpUtil.removePathParameters(
+				modulePath.substring(index + 1));
 		}
 
-		return modulePath;
+		return HttpUtil.removePathParameters(modulePath);
 	}
 
 	protected void doService(
@@ -142,12 +144,23 @@ public class ComboServlet extends HttpServlet {
 				name = name.replaceFirst(contextPath, StringPool.BLANK);
 			}
 
+			String pathProxy = PortalUtil.getPathProxy();
+
+			if (name.startsWith(pathProxy)) {
+				name = name.replaceFirst(pathProxy, StringPool.BLANK);
+			}
+
 			modulePathsSet.add(name);
 		}
 
 		if (modulePathsSet.isEmpty()) {
-			throw new IllegalArgumentException(
-				"Query string translates to an empty module paths set");
+			PortalUtil.sendError(
+				HttpServletResponse.SC_NOT_FOUND,
+				new NoSuchLayoutException(
+					"Query string translates to an empty module paths set"),
+				request, response);
+
+			return;
 		}
 
 		String[] modulePaths = modulePathsSet.toArray(
@@ -155,7 +168,9 @@ public class ComboServlet extends HttpServlet {
 
 		String firstModulePath = modulePaths[0];
 
-		String extension = FileUtil.getExtension(firstModulePath);
+		String resourcePath = getResourcePath(firstModulePath);
+
+		String extension = FileUtil.getExtension(resourcePath);
 
 		String minifierType = ParamUtil.getString(request, "minifierType");
 
@@ -340,6 +355,9 @@ public class ComboServlet extends HttpServlet {
 				else if (minifierType.equals("js")) {
 					stringFileContent = MinifierUtil.minifyJavaScript(
 						resourcePath, stringFileContent);
+
+					stringFileContent = stringFileContent.concat(
+						StringPool.NEW_LINE);
 				}
 			}
 
@@ -394,6 +412,8 @@ public class ComboServlet extends HttpServlet {
 	protected boolean validateModuleExtension(String moduleName)
 		throws Exception {
 
+		moduleName = getResourcePath(moduleName);
+
 		int index = moduleName.indexOf(CharPool.QUESTION);
 
 		if (index != -1) {
@@ -437,7 +457,7 @@ public class ComboServlet extends HttpServlet {
 
 	private final Set<String> _protectedParameters = SetUtil.fromArray(
 		new String[] {
-			"b", "browserId", "minifierType", "languageId", "t", "themeId"
+			"b", "browserId", "minifierType", "languageId", "t", "themeId", "zx"
 		});
 
 	private static class FileContentBag implements Serializable {

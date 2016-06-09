@@ -22,16 +22,16 @@ import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSON;
+import com.liferay.portal.kernel.model.CacheModel;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.impl.BaseModelImpl;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.UserLocalServiceUtil;
 
 import com.liferay.shopping.model.ShoppingOrder;
 import com.liferay.shopping.model.ShoppingOrderModel;
@@ -899,6 +899,7 @@ public class ShoppingOrderModelImpl extends BaseModelImpl<ShoppingOrder>
 		return _requiresShipping;
 	}
 
+	@JSON
 	@Override
 	public boolean isRequiresShipping() {
 		return _requiresShipping;
@@ -915,6 +916,7 @@ public class ShoppingOrderModelImpl extends BaseModelImpl<ShoppingOrder>
 		return _insure;
 	}
 
+	@JSON
 	@Override
 	public boolean isInsure() {
 		return _insure;
@@ -1129,6 +1131,7 @@ public class ShoppingOrderModelImpl extends BaseModelImpl<ShoppingOrder>
 		return _shipToBilling;
 	}
 
+	@JSON
 	@Override
 	public boolean isShipToBilling() {
 		return _shipToBilling;
@@ -1502,6 +1505,7 @@ public class ShoppingOrderModelImpl extends BaseModelImpl<ShoppingOrder>
 		return _sendOrderEmail;
 	}
 
+	@JSON
 	@Override
 	public boolean isSendOrderEmail() {
 		return _sendOrderEmail;
@@ -1518,6 +1522,7 @@ public class ShoppingOrderModelImpl extends BaseModelImpl<ShoppingOrder>
 		return _sendShippingEmail;
 	}
 
+	@JSON
 	@Override
 	public boolean isSendShippingEmail() {
 		return _sendShippingEmail;

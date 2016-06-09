@@ -19,11 +19,11 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.expando.kernel.model.ExpandoBridge;
 
 import com.liferay.portal.kernel.bean.AutoEscape;
-import com.liferay.portal.model.BaseModel;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.ShardedModel;
-import com.liferay.portal.model.StagedAuditedModel;
-import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.CacheModel;
+import com.liferay.portal.kernel.model.ShardedModel;
+import com.liferay.portal.kernel.model.StagedAuditedModel;
+import com.liferay.portal.kernel.service.ServiceContext;
 
 import java.io.Serializable;
 
@@ -282,6 +282,27 @@ public interface AppModel extends BaseModel<App>, ShardedModel,
 	 */
 	public void setVersion(String version);
 
+	/**
+	 * Returns the required of this app.
+	 *
+	 * @return the required of this app
+	 */
+	public boolean getRequired();
+
+	/**
+	 * Returns <code>true</code> if this app is required.
+	 *
+	 * @return <code>true</code> if this app is required; <code>false</code> otherwise
+	 */
+	public boolean isRequired();
+
+	/**
+	 * Sets whether this app is required.
+	 *
+	 * @param required the required of this app
+	 */
+	public void setRequired(boolean required);
+
 	@Override
 	public boolean isNew();
 
@@ -319,19 +340,19 @@ public interface AppModel extends BaseModel<App>, ShardedModel,
 	public Object clone();
 
 	@Override
-	public int compareTo(com.liferay.marketplace.model.App app);
+	public int compareTo(App app);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<com.liferay.marketplace.model.App> toCacheModel();
+	public CacheModel<App> toCacheModel();
 
 	@Override
-	public com.liferay.marketplace.model.App toEscapedModel();
+	public App toEscapedModel();
 
 	@Override
-	public com.liferay.marketplace.model.App toUnescapedModel();
+	public App toUnescapedModel();
 
 	@Override
 	public String toString();

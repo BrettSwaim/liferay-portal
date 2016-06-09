@@ -18,15 +18,22 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.verify.VerifyProcess;
 import com.liferay.portal.verify.VerifyResourcePermissions;
+import com.liferay.shopping.service.ShoppingCartLocalService;
 import com.liferay.shopping.verify.model.ShoppingCategoryVerifiableModel;
 import com.liferay.shopping.verify.model.ShoppingItemVerifiableResourcedModel;
+import com.liferay.shopping.verify.model.ShoppingOrderVerifiableModel;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Peter Fellwock
  */
-@Component(service = ShoppingServiceVerifyProcess.class)
+@Component(
+	immediate = true,
+	property = {"verify.process.name=com.liferay.shopping.service"},
+	service = VerifyProcess.class
+)
 public class ShoppingServiceVerifyProcess extends VerifyProcess {
 
 	@Override
@@ -34,11 +41,17 @@ public class ShoppingServiceVerifyProcess extends VerifyProcess {
 		verifyResourcedModels();
 	}
 
+	@Reference(unbind = "-")
+	protected void setShoppingCartLocalService(
+		ShoppingCartLocalService shoppingCartLocalService) {
+	}
+
 	protected void verifyResourcedModels() throws Exception {
 		_verifyResourcePermissions.verify(
 			new ShoppingCategoryVerifiableModel());
 		_verifyResourcePermissions.verify(
 			new ShoppingItemVerifiableResourcedModel());
+		_verifyResourcePermissions.verify(new ShoppingOrderVerifiableModel());
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

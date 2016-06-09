@@ -1,14 +1,12 @@
 <definition>
 	<command name="addCategoryLogLevels">
-		<execute function="AssertClick" locator1="NavTab#LOG_LEVELS" value1="Log Levels" />
+		<execute function="AssertClick" locator1="NavBar#LOG_LEVELS" value1="Log Levels" />
 
-		<execute function="AssertClick" locator1="NavTab#ADD_CATEGORY" value1="Add Category" />
+		<execute function="AssertClick" locator1="NavBar#ADD_CATEGORY" value1="Add Category" />
 
 		<execute function="Type" locator1="ServerAdministrationLogLevels#ADD_CATEGORY_NAME_FIELD" value1="${catagoryName}" />
 		<execute function="Select" locator1="ServerAdministrationLogLevels#ADD_CATEGORY_PRIORITY_SELECT" value1="${categoryPriority}" />
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
-
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#SUCCESS" value1="Your request completed successfully." />
+		<execute macro="PortletEntry#save" />
 	</command>
 
 	<command name="configureExternalServices">
@@ -35,31 +33,35 @@
 				<condition function="IsElementNotPresent" locator1="ServerAdministrationExternalServices#XUGGLER_ENABLED_CHECKBOX" />
 			</and>
 			<then>
-				<execute function="Select" locator1="ServerAdministrationExternalServices#XUGGLER_JAR_FILE_SELECT" value1="${xugglerJarFile}" />
-				<execute function="AssertClick" locator1="ServerAdministrationExternalServices#XUGGLER_INSTALL_BUTTON" value1="Install" />
-				<execute function="AssertTextEquals" locator1="Message#INFO" value1="Xuggler has been installed. You need to reboot your server to apply changes." />
-			</then>
-		</if>
+				<execute macro="Panel#expandPanel">
+					<var name="panelHeading" value="Enabling Xuggler provides video conversion functionality." />
+				</execute>
 
-		<if>
-			<equals arg1="${installNativeLibraries}" arg2="true" />
-			<then>
-				<execute function="AssertTextEquals" locator1="Message#INFO" value1="Xuggler requires the installation of native libraries that are distributed under the GPL license. If you are able to find your environment specified below, the server can automatically download and install the libraries for you. You will subsequently be required to restart the server. If your environment is not listed below, you will need to compile and install the libraries manually. Read more."  />
+				<execute function="Select" locator1="ServerAdministrationExternalServices#XUGGLER_JAR_FILE_SELECT" value1="${xugglerJarFile}" />
+
 				<execute function="AssertClick" locator1="ServerAdministrationExternalServices#XUGGLER_INSTALL_BUTTON" value1="Install" />
+
+				<execute macro="Panel#expandPanel">
+					<var name="panelHeading" value="Enabling Xuggler provides video conversion functionality." />
+				</execute>
+
+				<execute function="AssertTextNotEquals" locator1="Message#INFO" value1="Xuggler requires the installation of native libraries that are distributed under the GPL license. If you are able to find your environment specified below, the server can automatically download and install the libraries for you. You will subsequently be required to restart the server. If your environment is not listed below, you will need to compile and install the libraries manually. Read more." />
+
 				<execute function="AssertTextEquals" locator1="Message#INFO" value1="Xuggler has been installed. You need to reboot your server to apply changes." />
+
+				<execute function="AssertElementNotPresent" locator1="ServerAdministrationExternalServices#XUGGLER_JAR_FILE_SELECT" />
 			</then>
 		</if>
 
 		<if>
 			<equals arg1="${enableXuggler}" arg2="true" />
 			<then>
-				<execute function="AssertTextEquals" locator1="Message#INFO" value1="Xuggler appears to be installed correctly. Enable to allow audio and video preview generation."  />
+				<execute function="AssertTextEquals" locator1="Message#INFO" value1="Xuggler appears to be installed correctly. Enable to allow audio and video preview generation." />
 				<execute function="Check" locator1="ServerAdministrationExternalServices#XUGGLER_ENABLED_CHECKBOX"  />
 			</then>
 		</if>
 
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#SUCCESS" value1="Your request completed successfully." />
+		<execute macro="PortletEntry#save" />
 	</command>
 
 	<command name="configureFileUploadOverallMaximumFileSize">
@@ -75,12 +77,32 @@
 		<execute function="Type" locator1="ServerAdministrationMail#INCOMING_POP_SERVER" value1="pop.gmail.com" />
 		<execute function="Type" locator1="ServerAdministrationMail#INCOMING_PORT" value1="995" />
 		<execute function="Check" locator1="ServerAdministrationMail#INCOMING_SECURE_NETWORK_CONNECTION_CHECKBOX" />
-		<execute function="Type" locator1="ServerAdministrationMail#INCOMING_USER_NAME" value1="${userName}" />
+
+		<if>
+			<equals arg1="${needsReply}" arg2="true" />
+			<then>
+				<execute function="Type" locator1="ServerAdministrationMail#INCOMING_USER_NAME" value1="recent:${userName}" />
+			</then>
+			<else>
+				<execute function="Type" locator1="ServerAdministrationMail#INCOMING_USER_NAME" value1="${userName}" />
+			</else>
+		</if>
+
 		<execute function="Type" locator1="ServerAdministrationMail#INCOMING_PASSWORD" value1="${userPassword}" />
 		<execute function="Type" locator1="ServerAdministrationMail#OUTGOING_SMTP_SERVER" value1="smtp.gmail.com" />
 		<execute function="Type" locator1="ServerAdministrationMail#OUTGOING_PORT" value1="465" />
 		<execute function="Check" locator1="ServerAdministrationMail#OUTGOING_SECURE_CONNECTION_CHECKBOX" />
-		<execute function="Type" locator1="ServerAdministrationMail#OUTGOING_USER_NAME" value1="${userName}" />
+
+		<if>
+			<equals arg1="${needsReply}" arg2="true" />
+			<then>
+				<execute function="Type" locator1="ServerAdministrationMail#OUTGOING_USER_NAME" value1="recent:${userName}" />
+			</then>
+			<else>
+				<execute function="Type" locator1="ServerAdministrationMail#OUTGOING_USER_NAME" value1="${userName}" />
+			</else>
+		</if>
+
 		<execute function="Type" locator1="ServerAdministrationMail#OUTGOING_PASSWORD" value1="${userPassword}" />
 		<execute function="AssertClick" locator1="CPServeradministrationMail#SAVE_BUTTON" value1="Save" />
 
@@ -88,12 +110,17 @@
 	</command>
 
 	<command name="executeServerResourcesActions">
+		<execute function="AssertClick" locator1="NavBar#RESOURCES" value1="Resources" />
+
+		<execute macro="Panel#expandPanel">
+			<var name="panelHeading" value="Clean Up Actions" />
+		</execute>
+
 		<var name="key_actionsDescription" value="${actionsDescription}" />
 
-		<execute function="AssertClick" locator1="NavBar#RESOURCES" value1="Resources" />
 		<execute function="AssertTextEquals#assertPartialText" locator1="ServerAdministrationResources#ACTIONS_TABLE_DESCRIPTION" value1="${actionsDescription}" />
 		<execute function="AssertClick" locator1="ServerAdministrationResources#ACTIONS_TABLE_EXECUTE" value1="Execute" />
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#SUCCESS" value1="Your request completed successfully." />
+		<execute macro="Alert#viewSuccessMessage" />
 	</command>
 
 	<command name="searchPortalPropertiesCP">

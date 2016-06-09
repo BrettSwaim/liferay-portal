@@ -1,4 +1,5 @@
 <definition component-name="portal-security">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Permissions" />
 
 	<set-up>
@@ -23,12 +24,14 @@
 		</if>
 	</tear-down>
 
-	<command name="ViewBlogsPortletAsGuestPG" priority="4">
+	<command name="ViewBlogsPortletAsGuestPG" priority="5">
+		<property name="portal.acceptance" value="true" />
+
 		<execute macro="Page#add">
 			<var name="pageName" value="Blogs Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Blogs Page" />
 		</execute>
 
@@ -36,7 +39,7 @@
 			<var name="portletName" value="Blogs" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Blogs Page" />
 		</execute>
 
@@ -44,7 +47,7 @@
 
 		<execute macro="User#logoutPG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Blogs Page" />
 		</execute>
 

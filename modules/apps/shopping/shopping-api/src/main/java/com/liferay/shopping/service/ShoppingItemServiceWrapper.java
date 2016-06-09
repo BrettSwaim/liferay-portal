@@ -16,7 +16,7 @@ package com.liferay.shopping.service;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.service.ServiceWrapper;
+import com.liferay.portal.kernel.service.ServiceWrapper;
 
 /**
  * Provides a wrapper for {@link ShoppingItemService}.
@@ -45,7 +45,7 @@ public class ShoppingItemServiceWrapper implements ShoppingItemService,
 		java.io.File largeFile,
 		java.util.List<com.liferay.shopping.model.ShoppingItemField> itemFields,
 		java.util.List<com.liferay.shopping.model.ShoppingItemPrice> itemPrices,
-		com.liferay.portal.service.ServiceContext serviceContext)
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _shoppingItemService.addItem(groupId, categoryId, sku, name,
 			description, properties, fieldsQuantities, requiresShipping,
@@ -55,9 +55,40 @@ public class ShoppingItemServiceWrapper implements ShoppingItemService,
 	}
 
 	@Override
-	public void deleteItem(long itemId)
+	public com.liferay.shopping.model.ShoppingItem getItem(long itemId)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		_shoppingItemService.deleteItem(itemId);
+		return _shoppingItemService.getItem(itemId);
+	}
+
+	@Override
+	public com.liferay.shopping.model.ShoppingItem updateItem(long itemId,
+		long groupId, long categoryId, java.lang.String sku,
+		java.lang.String name, java.lang.String description,
+		java.lang.String properties, java.lang.String fieldsQuantities,
+		boolean requiresShipping, int stockQuantity, boolean featured,
+		java.lang.Boolean sale, boolean smallImage,
+		java.lang.String smallImageURL, java.io.File smallFile,
+		boolean mediumImage, java.lang.String mediumImageURL,
+		java.io.File mediumFile, boolean largeImage,
+		java.lang.String largeImageURL, java.io.File largeFile,
+		java.util.List<com.liferay.shopping.model.ShoppingItemField> itemFields,
+		java.util.List<com.liferay.shopping.model.ShoppingItemPrice> itemPrices,
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _shoppingItemService.updateItem(itemId, groupId, categoryId,
+			sku, name, description, properties, fieldsQuantities,
+			requiresShipping, stockQuantity, featured, sale, smallImage,
+			smallImageURL, smallFile, mediumImage, mediumImageURL, mediumFile,
+			largeImage, largeImageURL, largeFile, itemFields, itemPrices,
+			serviceContext);
+	}
+
+	@Override
+	public com.liferay.shopping.model.ShoppingItem[] getItemsPrevAndNext(
+		long itemId,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.shopping.model.ShoppingItem> obc)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _shoppingItemService.getItemsPrevAndNext(itemId, obc);
 	}
 
 	@Override
@@ -67,9 +98,18 @@ public class ShoppingItemServiceWrapper implements ShoppingItemService,
 	}
 
 	@Override
-	public com.liferay.shopping.model.ShoppingItem getItem(long itemId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _shoppingItemService.getItem(itemId);
+	public int getItemsCount(long groupId, long categoryId) {
+		return _shoppingItemService.getItemsCount(groupId, categoryId);
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	@Override
+	public java.lang.String getOSGiServiceIdentifier() {
+		return _shoppingItemService.getOSGiServiceIdentifier();
 	}
 
 	@Override
@@ -87,49 +127,9 @@ public class ShoppingItemServiceWrapper implements ShoppingItemService,
 	}
 
 	@Override
-	public int getItemsCount(long groupId, long categoryId) {
-		return _shoppingItemService.getItemsCount(groupId, categoryId);
-	}
-
-	@Override
-	public com.liferay.shopping.model.ShoppingItem[] getItemsPrevAndNext(
-		long itemId,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.shopping.model.ShoppingItem> obc)
+	public void deleteItem(long itemId)
 		throws com.liferay.portal.kernel.exception.PortalException {
-		return _shoppingItemService.getItemsPrevAndNext(itemId, obc);
-	}
-
-	/**
-	* Returns the OSGi service identifier.
-	*
-	* @return the OSGi service identifier
-	*/
-	@Override
-	public java.lang.String getOSGiServiceIdentifier() {
-		return _shoppingItemService.getOSGiServiceIdentifier();
-	}
-
-	@Override
-	public com.liferay.shopping.model.ShoppingItem updateItem(long itemId,
-		long groupId, long categoryId, java.lang.String sku,
-		java.lang.String name, java.lang.String description,
-		java.lang.String properties, java.lang.String fieldsQuantities,
-		boolean requiresShipping, int stockQuantity, boolean featured,
-		java.lang.Boolean sale, boolean smallImage,
-		java.lang.String smallImageURL, java.io.File smallFile,
-		boolean mediumImage, java.lang.String mediumImageURL,
-		java.io.File mediumFile, boolean largeImage,
-		java.lang.String largeImageURL, java.io.File largeFile,
-		java.util.List<com.liferay.shopping.model.ShoppingItemField> itemFields,
-		java.util.List<com.liferay.shopping.model.ShoppingItemPrice> itemPrices,
-		com.liferay.portal.service.ServiceContext serviceContext)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _shoppingItemService.updateItem(itemId, groupId, categoryId,
-			sku, name, description, properties, fieldsQuantities,
-			requiresShipping, stockQuantity, featured, sale, smallImage,
-			smallImageURL, smallFile, mediumImage, mediumImageURL, mediumFile,
-			largeImage, largeImageURL, largeFile, itemFields, itemPrices,
-			serviceContext);
+		_shoppingItemService.deleteItem(itemId);
 	}
 
 	@Override

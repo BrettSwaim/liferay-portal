@@ -39,18 +39,18 @@
 	<td></td>
 </tr>
 <tr>
-	<td>DEFAULT_LANGUAGE_SELECT</td>
-	<td>//select[contains(@class,'default-locale')]</td>
+	<td>DEFAULT_LANGUAGE</td>
+	<td>//span[contains(@class,'translation')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>CURRENT_LOCALE</td>
-	<td>//span[@locale='${key_translationLocale}']</td>
+	<td>//span[contains(.,'${key_localizedLanguage}') and contains(@class,'translation')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>TITLE</td>
-	<td>//span[contains(@class,'translation-manager') and contains(.,'${key_localizedLanguage}')]</td>
+	<td>SELECTED_LOCALE</td>
+	<td>//span[contains(.,'${key_localizedLanguage}') and contains(@class,'-editing')]</td>
 	<td></td>
 </tr>
 <tr>

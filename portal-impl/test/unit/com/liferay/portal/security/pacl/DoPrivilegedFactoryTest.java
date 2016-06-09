@@ -14,8 +14,8 @@
 
 package com.liferay.portal.security.pacl;
 
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
-import com.liferay.portal.model.User;
 import com.liferay.portal.model.impl.UserImpl;
 import com.liferay.portal.security.lang.DoPrivilegedBean;
 import com.liferay.portal.security.lang.DoPrivilegedFactory;
@@ -60,7 +60,7 @@ public class DoPrivilegedFactoryTest {
 	public void testString() {
 		String string = DoPrivilegedFactory.wrap("Test");
 
-		Assert.assertEquals(string, "Test");
+		Assert.assertEquals("Test", string);
 		Assert.assertEquals(string.getClass(), String.class);
 	}
 

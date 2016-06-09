@@ -14,11 +14,15 @@
 
 package com.liferay.portal.setup;
 
+import com.liferay.portal.events.EventsProcessorUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.dao.jdbc.DataSourceFactoryUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -30,6 +34,7 @@ import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.util.PortalInstances;
 import com.liferay.portal.util.PropsValues;
 
 import java.io.IOException;
@@ -70,7 +75,11 @@ public class SetupWizardUtil {
 
 		boolean jndi = Validator.isNotNull(PropsValues.JDBC_DEFAULT_JNDI_NAME);
 
-		return hsqldb && !jndi;
+		if (hsqldb && !jndi) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public static void testDatabase(HttpServletRequest request)
@@ -142,6 +151,10 @@ public class SetupWizardUtil {
 
 		unicodeProperties.put(
 			PropsKeys.SETUP_WIZARD_ENABLED, String.valueOf(false));
+
+		_updateCompany(request);
+
+		_updateAdminUser(request, response, unicodeProperties);
 
 		HttpSession session = request.getSession();
 
@@ -251,6 +264,73 @@ public class SetupWizardUtil {
 			DataAccess.cleanUp(connection);
 			DataSourceFactoryUtil.destroyDataSource(dataSource);
 		}
+	}
+
+	private static void _updateAdminUser(
+			HttpServletRequest request, HttpServletResponse response,
+			UnicodeProperties unicodeProperties)
+		throws Exception {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		Company company = CompanyLocalServiceUtil.getCompanyById(
+			themeDisplay.getCompanyId());
+
+		String emailAddress = ParamUtil.getString(
+			request, "adminEmailAddress",
+			PropsValues.DEFAULT_ADMIN_EMAIL_ADDRESS_PREFIX + StringPool.AT +
+				company.getMx());
+
+		PropsValues.ADMIN_EMAIL_FROM_ADDRESS = emailAddress;
+
+		unicodeProperties.put(PropsKeys.ADMIN_EMAIL_FROM_ADDRESS, emailAddress);
+
+		String firstName = ParamUtil.getString(
+			request, "adminFirstName", PropsValues.DEFAULT_ADMIN_FIRST_NAME);
+		String lastName = ParamUtil.getString(
+			request, "adminLastName", PropsValues.DEFAULT_ADMIN_LAST_NAME);
+
+		User user = SetupWizardSampleDataUtil.updateAdminUser(
+			company, themeDisplay.getLocale(), themeDisplay.getLanguageId(),
+			emailAddress, firstName, lastName, true);
+
+		PropsValues.ADMIN_EMAIL_FROM_NAME = user.getFullName();
+
+		unicodeProperties.put(
+			PropsKeys.ADMIN_EMAIL_FROM_NAME, user.getFullName());
+
+		HttpSession session = request.getSession();
+
+		session.setAttribute(WebKeys.EMAIL_ADDRESS, emailAddress);
+		session.setAttribute(WebKeys.SETUP_WIZARD_PASSWORD_UPDATED, true);
+		session.setAttribute(WebKeys.USER, user);
+		session.setAttribute(WebKeys.USER_ID, user.getUserId());
+
+		EventsProcessorUtil.process(
+			PropsKeys.LOGIN_EVENTS_POST, PropsValues.LOGIN_EVENTS_POST, request,
+			response);
+	}
+
+	private static void _updateCompany(HttpServletRequest request)
+		throws Exception {
+
+		Company company = CompanyLocalServiceUtil.getCompanyById(
+			PortalInstances.getDefaultCompanyId());
+
+		String languageId = ParamUtil.getString(
+			request, "companyLocale", getDefaultLanguageId());
+
+		String companyName = ParamUtil.getString(
+			request, "companyName", PropsValues.COMPANY_DEFAULT_NAME);
+
+		SetupWizardSampleDataUtil.updateCompany(
+			company, companyName, languageId);
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		themeDisplay.setCompany(company);
 	}
 
 	private static boolean _writePropertiesFile(

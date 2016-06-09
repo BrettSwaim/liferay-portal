@@ -16,6 +16,7 @@ package com.liferay.shopping.util;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.module.configuration.ConfigurationProviderUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
@@ -35,7 +36,6 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.Company;
 import com.liferay.shopping.configuration.ShoppingGroupServiceOverriddenConfiguration;
 import com.liferay.shopping.constants.ShoppingConstants;
 import com.liferay.shopping.exception.NoSuchCartException;
@@ -139,7 +139,7 @@ public class ShoppingUtil {
 				ShoppingCategory category = item.getCategory();
 
 				shoppingGroupServiceOverriddenConfiguration =
-					getShoppingGroupServiceOverriddenConfiguration(
+					_getShoppingGroupServiceOverriddenConfiguration(
 						category.getGroupId());
 
 				break;
@@ -150,8 +150,8 @@ public class ShoppingUtil {
 		// alternative shipping and shipping price is greater than 0
 
 		if ((shoppingGroupServiceOverriddenConfiguration != null) &&
-			shoppingGroupServiceOverriddenConfiguration.useAlternativeShipping(
-				) &&
+			shoppingGroupServiceOverriddenConfiguration.
+				useAlternativeShipping() &&
 			(shipping > 0)) {
 
 			double altShippingDelta = 0.0;
@@ -340,7 +340,7 @@ public class ShoppingUtil {
 				ShoppingCategory category = item.getCategory();
 
 				shoppingGroupServiceOverriddenConfiguration =
-					getShoppingGroupServiceOverriddenConfiguration(
+					_getShoppingGroupServiceOverriddenConfiguration(
 						category.getGroupId());
 			}
 
@@ -419,7 +419,7 @@ public class ShoppingUtil {
 				ShoppingCategory category = item.getCategory();
 
 				shoppingGroupServiceOverriddenConfiguration =
-					getShoppingGroupServiceOverriddenConfiguration(
+					_getShoppingGroupServiceOverriddenConfiguration(
 						category.getGroupId());
 			}
 
@@ -510,38 +510,39 @@ public class ShoppingUtil {
 				ShoppingCategory category = item.getCategory();
 
 				shoppingGroupServiceOverriddenConfiguration =
-					getShoppingGroupServiceOverriddenConfiguration(
+					_getShoppingGroupServiceOverriddenConfiguration(
 						category.getGroupId());
 
 				break;
 			}
 		}
 
-		if ((shoppingGroupServiceOverriddenConfiguration != null) &&
-			shoppingGroupServiceOverriddenConfiguration.getTaxState(
-				).equals(stateId)) {
-
-			double subtotal = 0.0;
-
-			for (Map.Entry<ShoppingCartItem, Integer> entry :
-					items.entrySet()) {
-
-				ShoppingCartItem cartItem = entry.getKey();
-				Integer count = entry.getValue();
-
-				ShoppingItem item = cartItem.getItem();
-
-				if (item.isTaxable()) {
-					subtotal += calculatePrice(item, count.intValue());
-				}
-			}
-
-			tax =
-				shoppingGroupServiceOverriddenConfiguration.getTaxRate() *
-					subtotal;
+		if (shoppingGroupServiceOverriddenConfiguration == null) {
+			return tax;
 		}
 
-		return tax;
+		String taxState =
+			shoppingGroupServiceOverriddenConfiguration.getTaxState();
+
+		if (!taxState.equals(stateId)) {
+			return tax;
+		}
+
+		double subtotal = 0.0;
+
+		for (Map.Entry<ShoppingCartItem, Integer> entry : items.entrySet()) {
+			ShoppingCartItem cartItem = entry.getKey();
+			Integer count = entry.getValue();
+
+			ShoppingItem item = cartItem.getItem();
+
+			if (item.isTaxable()) {
+				subtotal += calculatePrice(item, count.intValue());
+			}
+		}
+
+		return shoppingGroupServiceOverriddenConfiguration.getTaxRate() *
+			subtotal;
 	}
 
 	public static double calculateTotal(
@@ -972,25 +973,37 @@ public class ShoppingUtil {
 		String currencyCode =
 			shoppingGroupServiceOverriddenConfiguration.getCurrencyId();
 
-		StringBundler sb = new StringBundler(45);
+		StringBundler sb = new StringBundler(29);
 
-		sb.append("https://www.paypal.com/cgi-bin/webscr?");
-		sb.append("cmd=_xclick&");
-		sb.append("business=").append(payPalEmailAddress).append("&");
-		sb.append("item_name=").append(order.getNumber()).append("&");
-		sb.append("item_number=").append(order.getNumber()).append("&");
-		sb.append("invoice=").append(order.getNumber()).append("&");
-		sb.append("amount=").append(amount).append("&");
-		sb.append("return=").append(returnURL).append("&");
-		sb.append("notify_url=").append(notifyURL).append("&");
-		sb.append("first_name=").append(firstName).append("&");
-		sb.append("last_name=").append(lastName).append("&");
-		sb.append("address1=").append(address1).append("&");
-		sb.append("city=").append(city).append("&");
-		sb.append("state=").append(state).append("&");
-		sb.append("zip=").append(zip).append("&");
-		sb.append("no_note=1&");
-		sb.append("currency_code=").append(currencyCode).append("");
+		sb.append("https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&");
+		sb.append("business=");
+		sb.append(payPalEmailAddress);
+		sb.append("&item_name=");
+		sb.append(order.getNumber());
+		sb.append("&item_number=");
+		sb.append(order.getNumber());
+		sb.append("&invoice=");
+		sb.append(order.getNumber());
+		sb.append("&amount=");
+		sb.append(amount);
+		sb.append("&return=");
+		sb.append(returnURL);
+		sb.append("&notify_url=");
+		sb.append(notifyURL);
+		sb.append("&first_name=");
+		sb.append(firstName);
+		sb.append("&last_name=");
+		sb.append(lastName);
+		sb.append("&address1=");
+		sb.append(address1);
+		sb.append("&city=");
+		sb.append(city);
+		sb.append("&state=");
+		sb.append(state);
+		sb.append("&zip=");
+		sb.append(zip);
+		sb.append("&no_note=1&currency_code=");
+		sb.append(currencyCode);
 
 		return sb.toString();
 	}
@@ -1156,7 +1169,7 @@ public class ShoppingUtil {
 	}
 
 	private static ShoppingGroupServiceOverriddenConfiguration
-			getShoppingGroupServiceOverriddenConfiguration(long groupId)
+			_getShoppingGroupServiceOverriddenConfiguration(long groupId)
 		throws ConfigurationException {
 
 		return ConfigurationProviderUtil.getConfiguration(

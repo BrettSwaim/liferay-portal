@@ -14,6 +14,8 @@
 
 package com.liferay.portal.resiliency.spi.agent;
 
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.resiliency.PortalResiliencyException;
 import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.servlet.MetaInfoCacheServletResponse;
@@ -26,8 +28,6 @@ import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.ThreadLocalDistributor;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.Layout;
-import com.liferay.portal.model.Portlet;
 import com.liferay.portal.model.impl.LayoutImpl;
 import com.liferay.portal.model.impl.PortletImpl;
 import com.liferay.portal.util.PortalImpl;
@@ -205,9 +205,8 @@ public class SPIAgentResponseTest {
 
 		// Portal resiliency action, byte model output, native buffer
 
-		byte[] byteArray = new byte[] {
-			(byte)0, (byte)1, (byte)2, (byte)3, (byte)4, (byte)5
-		};
+		byte[] byteArray =
+			new byte[] {(byte)0, (byte)1, (byte)2, (byte)3, (byte)4, (byte)5};
 
 		ByteBuffer byteBuffer = ByteBuffer.allocateDirect(byteArray.length);
 
@@ -448,13 +447,13 @@ public class SPIAgentResponseTest {
 			new StubHttpServletResponse() {
 
 				@Override
-				public boolean isCommitted() {
-					return false;
+				public void flushBuffer() throws IOException {
+					throw ioException;
 				}
 
 				@Override
-				public void flushBuffer() throws IOException {
-					throw ioException;
+				public boolean isCommitted() {
+					return false;
 				}
 
 				@Override

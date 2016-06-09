@@ -12,8 +12,6 @@
 	</command>
 
 	<command name="addField">
-		<execute macro="DynamicDataMapping#selectDynamicDataMappingFrame" />
-
 		<execute function="AssertClick#pauseAssertTextClickAt" locator1="DDMEditStructure#FIELDS_LINK" value1="Fields" />
 
 		<var name="key_field" value="${field}" />
@@ -35,8 +33,6 @@
 
 		<execute function="AssertTextEquals" locator1="DDMEditStructure#SETTINGS_NAME" value1="${fieldName}" />
 		<execute function="AssertClick#pauseAssertTextClickAt" locator1="DDMEditStructure#FIELDS_LINK" value1="Fields" />
-
-		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 
 	<command name="addFieldFormTemplateSpecific">
@@ -125,7 +121,7 @@
 	</command>
 
 	<command name="deleteField">
-		<execute function="SelectFrame" locator1="DDMSelectStructure#DDM_STRUCTURES_IFRAME" />
+		<execute macro="DynamicDataMapping#selectDynamicDataMappingFrame" />
 
 		<var name="key_fieldFieldLabel" value="${fieldFieldLabel}" />
 
@@ -333,8 +329,6 @@
 		</execute>
 
 		<execute function="AssertClick#pauseAssertTextClickAt" locator1="DDMEditStructure#FIELDS_LINK" value1="Fields" />
-
-		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 
 	<command name="editFieldPredefinedValue">
@@ -566,11 +560,12 @@
 	</command>
 
 	<command name="viewCanAddField">
-		<execute function="SelectFrame" locator1="DDMSelectStructure#DDM_STRUCTURES_IFRAME" />
+		<execute macro="DynamicDataMapping#selectDynamicDataMappingFrame" />
 
 		<var name="key_field" value="${field}" />
 
 		<execute function="AssertTextEquals" locator1="DDMEditStructure#FIELDS_FIELD" value1="${field}" />
+
 		<execute function="SelectFrame" value1="relative=top" />
 	</command>
 

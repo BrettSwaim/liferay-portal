@@ -20,7 +20,7 @@ import com.liferay.portal.kernel.theme.PortletDisplay;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.kernel.util.comparator.PortletConfigurationIconFactoryComparator;
+import com.liferay.portal.kernel.util.comparator.PortletConfigurationIconComparator;
 import com.liferay.taglib.ui.IconTag;
 
 import java.util.List;
@@ -35,17 +35,15 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class IconOptionsTag extends IconTag {
 
-	public List<PortletConfigurationIcon>
-		getPortletConfigurationIcons() {
-
+	public List<PortletConfigurationIcon> getPortletConfigurationIcons() {
 		if (_portletConfigurationIcons != null) {
 			return _portletConfigurationIcons;
 		}
 
 		_portletConfigurationIcons =
 			PortletConfigurationIconTracker.getPortletConfigurationIcons(
-				getPortletId(), getPortletRequest(), getPortletResponse(),
-				PortletConfigurationIconFactoryComparator.INSTANCE);
+				getPortletId(), getPortletRequest(),
+				PortletConfigurationIconComparator.INSTANCE);
 
 		return _portletConfigurationIcons;
 	}
@@ -68,7 +66,7 @@ public class IconOptionsTag extends IconTag {
 	protected void cleanUp() {
 		super.cleanUp();
 
-		_direction = "down";
+		_direction = "right";
 		_portletConfigurationIcons = null;
 		_showArrow = true;
 	}
@@ -101,15 +99,15 @@ public class IconOptionsTag extends IconTag {
 	protected void setAttributes(HttpServletRequest request) {
 		super.setAttributes(request);
 
-		request.setAttribute("liferay-ui:icon:direction", _direction);
-		request.setAttribute(
-			"liferay-ui:icon:showArrow", String.valueOf(_showArrow));
 		request.setAttribute(
 			"liferay-ui:icon-options:portletConfigurationIcons",
 			getPortletConfigurationIcons());
+		request.setAttribute("liferay-ui:icon:direction", _direction);
+		request.setAttribute(
+			"liferay-ui:icon:showArrow", String.valueOf(_showArrow));
 	}
 
-	private String _direction = "down";
+	private String _direction = "right";
 	private List<PortletConfigurationIcon> _portletConfigurationIcons;
 	private boolean _showArrow = true;
 

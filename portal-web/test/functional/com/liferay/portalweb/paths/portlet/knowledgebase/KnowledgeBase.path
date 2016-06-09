@@ -9,11 +9,6 @@
 </thead>
 <tbody>
 <tr>
-	<td>ADD_ARTICLE_VIA_TEMPLATE</td>
-	<td>//a[@role='menuitem' and contains(.,'${kbTemplateTitle}')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>MESSAGE_NO_ARTICLES_FOUND</td>
 	<td>//div[contains(@class,'alert') and contains(.,'No articles were found.')]</td>
 	<td></td>
@@ -73,7 +68,7 @@
 </tr>
 <tr>
 	<td>ARTICLE_TABLE_ARTICLE_AUTHOR_LINK</td>
-	<td>//tr[contains(.,'${key_kbArticleTitle}')]/td[4]/a</td>
+	<td>//tr[contains(.,'${key_kbArticleTitle}')]/td[4]//a</td>
 	<td></td>
 </tr>
 <tr>
@@ -83,7 +78,7 @@
 </tr>
 <tr>
 	<td>ARTICLE_TABLE_CREATE_DATE</td>
-	<td>//tr[contains(.,'${key_kbArticleTitle}')]/td[5]/span</td>
+	<td>//tr[contains(.,'${key_kbArticleTitle}')]/td[5]//span</td>
 	<td></td>
 </tr>
 <tr>
@@ -108,7 +103,7 @@
 </tr>
 <tr>
 	<td>ARTICLE_TABLE_ARTICLE_TITLE_LINK</td>
-	<td>//tr[contains(.,'${key_kbArticleTitle}')]/td[3]/a</td>
+	<td>//tr[contains(.,'${key_kbArticleTitle}')]/td[3]//a</td>
 	<td></td>
 </tr>
 <tr>
@@ -118,7 +113,7 @@
 </tr>
 <tr>
 	<td>ARTICLE_TABLE_SELECT_ALL_CHECKBOX</td>
-	<td>//input[@name='_1_WAR_knowledgebaseportlet_allRowIds']</td>
+	<td>//input[contains(@name, 'knowledge_base_web') and contains(@name, 'allRowIds')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -206,22 +201,22 @@
 </tr>
 <tr>
 	<td>FOLDER_TABLE_FOLDER_NAME</td>
-	<td>//tr[contains(.,'${kbFolderName}')]/td/a</td>
+	<td>//tr[contains(.,'${kbFolderName}')]/td//a</td>
 	<td></td>
 </tr>
 <tr>
 	<td>FOLDER_TABLE_FOLDER_AUTHOR</td>
-	<td>//tr[contains(.,'${kbFolderName}')]/td[2]/a[contains(.,'${key_userName}')]</td>
+	<td>//tr[contains(.,'${kbFolderName}')]/td[2]//a[contains(.,'${key_userName}')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>FOLDER_TABLE_FOLDER_CREATE_DATE</td>
-	<td>//tr[contains(.,'${kbFolderName}')]/td[3]/a</td>
+	<td>//tr[contains(.,'${kbFolderName}')]/td[3]//a</td>
 	<td></td>
 </tr>
 <tr>
 	<td>FOLDER_TABLE_FOLDER_MODIFIED_DATE</td>
-	<td>//tr[contains(.,'${kbFolderName}')]/td[4]/a</td>
+	<td>//tr[contains(.,'${kbFolderName}')]/td[4]//a</td>
 	<td></td>
 </tr>
 <tr>
@@ -340,17 +335,17 @@
 </tr>
 <tr>
 	<td>MOVE_NEW_PARENT_TITLE_FIELD</td>
-	<td>//div[contains(@id,'knowledgebaseportlet_newParent')]/input</td>
+	<td>//div[contains(@id, 'knowledge_base_web') and contains(@id, 'newParent')]/input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>MOVE_NEW_PARENT_PRIORITY_LABEL</td>
-	<td>//div[contains(@id,'knowledgebaseportlet_newParent')]//label[(@class='control-label') and contains(.,'Priority')]</td>
+	<td>//div[contains(@id, 'knowledge_base_web') and contains(@id, 'newParent')]//label[(@class='control-label') and contains(.,'Priority')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>MOVE_NEW_PARENT_PRIORITY_FIELD</td>
-	<td>//div[contains(@id,'knowledgebaseportlet_newParent')]/input[2]</td>
+	<td>//div[contains(@id, 'knowledge_base_web') and contains(@id, 'newParent')]/input[2]</td>
 	<td></td>
 </tr>
 <tr>

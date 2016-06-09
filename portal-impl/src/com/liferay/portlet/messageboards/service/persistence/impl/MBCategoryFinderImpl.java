@@ -29,7 +29,11 @@ import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.dao.orm.Type;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Subscription;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
@@ -37,10 +41,6 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.Subscription;
-import com.liferay.portal.service.GroupLocalServiceUtil;
-import com.liferay.portal.service.SubscriptionLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.impl.MBCategoryImpl;
 import com.liferay.util.dao.orm.CustomSQLUtil;
 
@@ -466,8 +466,8 @@ public class MBCategoryFinderImpl
 			}
 
 			sb.append(sql);
-			sb.append(") TEMP_TABLE ORDER BY modelCategory ASC, ");
-			sb.append("priority DESC, modelId ASC");
+			sb.append(") TEMP_TABLE ORDER BY modelCategory ASC, priority ");
+			sb.append("DESC, modelId ASC");
 
 			sql = sb.toString();
 

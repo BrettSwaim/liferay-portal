@@ -34,6 +34,10 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -43,11 +47,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.ServiceContextThreadLocal;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 
 import com.liferay.portlet.messageboards.model.impl.MBCategoryImpl;
 import com.liferay.portlet.messageboards.model.impl.MBCategoryModelImpl;
@@ -62,6 +61,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -207,7 +207,7 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (MBCategory mbCategory : list) {
-					if (!Validator.equals(uuid, mbCategory.getUuid())) {
+					if (!Objects.equals(uuid, mbCategory.getUuid())) {
 						list = null;
 
 						break;
@@ -680,8 +680,8 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchCategoryException(msg.toString());
@@ -725,7 +725,7 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 		if (result instanceof MBCategory) {
 			MBCategory mbCategory = (MBCategory)result;
 
-			if (!Validator.equals(uuid, mbCategory.getUuid()) ||
+			if (!Objects.equals(uuid, mbCategory.getUuid()) ||
 					(groupId != mbCategory.getGroupId())) {
 				result = null;
 			}
@@ -1018,7 +1018,7 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 
 			if ((list != null) && !list.isEmpty()) {
 				for (MBCategory mbCategory : list) {
-					if (!Validator.equals(uuid, mbCategory.getUuid()) ||
+					if (!Objects.equals(uuid, mbCategory.getUuid()) ||
 							(companyId != mbCategory.getCompanyId())) {
 						list = null;
 
@@ -9999,8 +9999,8 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 					primaryKey);
 
 			if (mbCategory == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchCategoryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -10321,7 +10321,7 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 	}
 
 	/**
-	 * Returns the message boards category with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the message boards category with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the message boards category
 	 * @return the message boards category
@@ -10333,8 +10333,8 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 		MBCategory mbCategory = fetchByPrimaryKey(primaryKey);
 
 		if (mbCategory == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchCategoryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -10365,12 +10365,14 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 	 */
 	@Override
 	public MBCategory fetchByPrimaryKey(Serializable primaryKey) {
-		MBCategory mbCategory = (MBCategory)entityCache.getResult(MBCategoryModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(MBCategoryModelImpl.ENTITY_CACHE_ENABLED,
 				MBCategoryImpl.class, primaryKey);
 
-		if (mbCategory == _nullMBCategory) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		MBCategory mbCategory = (MBCategory)serializable;
 
 		if (mbCategory == null) {
 			Session session = null;
@@ -10386,7 +10388,7 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 				}
 				else {
 					entityCache.putResult(MBCategoryModelImpl.ENTITY_CACHE_ENABLED,
-						MBCategoryImpl.class, primaryKey, _nullMBCategory);
+						MBCategoryImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -10440,18 +10442,20 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			MBCategory mbCategory = (MBCategory)entityCache.getResult(MBCategoryModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(MBCategoryModelImpl.ENTITY_CACHE_ENABLED,
 					MBCategoryImpl.class, primaryKey);
 
-			if (mbCategory == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, mbCategory);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (MBCategory)serializable);
+				}
 			}
 		}
 
@@ -10493,7 +10497,7 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(MBCategoryModelImpl.ENTITY_CACHE_ENABLED,
-					MBCategoryImpl.class, primaryKey, _nullMBCategory);
+					MBCategoryImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -10746,22 +10750,4 @@ public class MBCategoryPersistenceImpl extends BasePersistenceImpl<MBCategory>
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static final MBCategory _nullMBCategory = new MBCategoryImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<MBCategory> toCacheModel() {
-				return _nullMBCategoryCacheModel;
-			}
-		};
-
-	private static final CacheModel<MBCategory> _nullMBCategoryCacheModel = new CacheModel<MBCategory>() {
-			@Override
-			public MBCategory toEntityModel() {
-				return _nullMBCategory;
-			}
-		};
 }

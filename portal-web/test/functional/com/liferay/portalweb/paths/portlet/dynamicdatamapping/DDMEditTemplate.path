@@ -45,7 +45,12 @@
 </tr>
 <tr>
 	<td>DETAILS</td>
-	<td>//div[@id='templateDetailsSectionPanel']/div/div</td>
+	<td>//div[@id='templateDetailsSectionPanel']/div/div/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SAVE_BUTTON</td>
+	<td>//button[contains(.,'Save') and contains(@onclick,'save')]</td>
 	<td></td>
 </tr>
 <tr>

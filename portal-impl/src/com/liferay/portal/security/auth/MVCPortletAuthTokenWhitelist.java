@@ -15,6 +15,8 @@
 package com.liferay.portal.security.auth;
 
 import com.liferay.portal.kernel.concurrent.ConcurrentHashSet;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletConstants;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
@@ -28,8 +30,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.PortletConstants;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceReference;
@@ -37,6 +37,8 @@ import com.liferay.registry.ServiceTracker;
 import com.liferay.registry.ServiceTrackerCustomizer;
 import com.liferay.registry.util.StringPlus;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -271,6 +273,8 @@ public class MVCPortletAuthTokenWhitelist extends BaseAuthTokenWhitelist {
 
 		@Override
 		public Object addingService(ServiceReference<Object> serviceReference) {
+			Collection<String> whitelistValues = new ArrayList<>();
+
 			List<String> whitelistActions = StringPlus.asList(
 				serviceReference.getProperty("mvc.command.name"));
 
@@ -279,14 +283,14 @@ public class MVCPortletAuthTokenWhitelist extends BaseAuthTokenWhitelist {
 
 			for (String portletName : portletNames) {
 				for (String whitelistAction : whitelistActions) {
-					_whitelist.add(
+					whitelistValues.add(
 						getWhitelistValue(portletName, whitelistAction));
 				}
 			}
 
-			Registry registry = RegistryUtil.getRegistry();
+			_whitelist.addAll(whitelistValues);
 
-			return registry.getService(serviceReference);
+			return whitelistValues;
 		}
 
 		@Override
@@ -302,18 +306,9 @@ public class MVCPortletAuthTokenWhitelist extends BaseAuthTokenWhitelist {
 		public void removedService(
 			ServiceReference<Object> serviceReference, Object object) {
 
-			List<String> whitelistActions = StringPlus.asList(
-				serviceReference.getProperty("mvc.command.name"));
+			Collection<String> whitelistValues = (Collection<String>)object;
 
-			List<String> portletNames = StringPlus.asList(
-				serviceReference.getProperty("javax.portlet.name"));
-
-			for (String portletName : portletNames) {
-				for (String whitelistAction : whitelistActions) {
-					_whitelist.remove(
-						getWhitelistValue(portletName, whitelistAction));
-				}
-			}
+			_whitelist.removeAll(whitelistValues);
 		}
 
 		private final Set<String> _whitelist;

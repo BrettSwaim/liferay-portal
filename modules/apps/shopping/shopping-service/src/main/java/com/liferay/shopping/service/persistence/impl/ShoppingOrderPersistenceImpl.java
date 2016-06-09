@@ -27,18 +27,16 @@ import com.liferay.portal.kernel.dao.orm.Session;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.ServiceContextThreadLocal;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
 import com.liferay.portal.spring.extender.service.ServiceReference;
 
 import com.liferay.shopping.exception.NoSuchOrderException;
@@ -56,6 +54,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -989,8 +988,8 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchOrderException(msg.toString());
@@ -1031,7 +1030,7 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 		if (result instanceof ShoppingOrder) {
 			ShoppingOrder shoppingOrder = (ShoppingOrder)result;
 
-			if (!Validator.equals(number, shoppingOrder.getNumber())) {
+			if (!Objects.equals(number, shoppingOrder.getNumber())) {
 				result = null;
 			}
 		}
@@ -1222,8 +1221,8 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchOrderException(msg.toString());
@@ -1265,7 +1264,7 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 		if (result instanceof ShoppingOrder) {
 			ShoppingOrder shoppingOrder = (ShoppingOrder)result;
 
-			if (!Validator.equals(ppTxnId, shoppingOrder.getPpTxnId())) {
+			if (!Objects.equals(ppTxnId, shoppingOrder.getPpTxnId())) {
 				result = null;
 			}
 		}
@@ -1572,7 +1571,7 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 				for (ShoppingOrder shoppingOrder : list) {
 					if ((groupId != shoppingOrder.getGroupId()) ||
 							(userId != shoppingOrder.getUserId()) ||
-							!Validator.equals(ppPaymentStatus,
+							!Objects.equals(ppPaymentStatus,
 								shoppingOrder.getPpPaymentStatus())) {
 						list = null;
 
@@ -2722,8 +2721,8 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 					primaryKey);
 
 			if (shoppingOrder == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchOrderException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2953,7 +2952,7 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 	}
 
 	/**
-	 * Returns the shopping order with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the shopping order with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the shopping order
 	 * @return the shopping order
@@ -2965,8 +2964,8 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 		ShoppingOrder shoppingOrder = fetchByPrimaryKey(primaryKey);
 
 		if (shoppingOrder == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchOrderException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2997,12 +2996,14 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 	 */
 	@Override
 	public ShoppingOrder fetchByPrimaryKey(Serializable primaryKey) {
-		ShoppingOrder shoppingOrder = (ShoppingOrder)entityCache.getResult(ShoppingOrderModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(ShoppingOrderModelImpl.ENTITY_CACHE_ENABLED,
 				ShoppingOrderImpl.class, primaryKey);
 
-		if (shoppingOrder == _nullShoppingOrder) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		ShoppingOrder shoppingOrder = (ShoppingOrder)serializable;
 
 		if (shoppingOrder == null) {
 			Session session = null;
@@ -3018,7 +3019,7 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 				}
 				else {
 					entityCache.putResult(ShoppingOrderModelImpl.ENTITY_CACHE_ENABLED,
-						ShoppingOrderImpl.class, primaryKey, _nullShoppingOrder);
+						ShoppingOrderImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -3072,18 +3073,20 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			ShoppingOrder shoppingOrder = (ShoppingOrder)entityCache.getResult(ShoppingOrderModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(ShoppingOrderModelImpl.ENTITY_CACHE_ENABLED,
 					ShoppingOrderImpl.class, primaryKey);
 
-			if (shoppingOrder == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, shoppingOrder);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (ShoppingOrder)serializable);
+				}
 			}
 		}
 
@@ -3125,7 +3128,7 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(ShoppingOrderModelImpl.ENTITY_CACHE_ENABLED,
-					ShoppingOrderImpl.class, primaryKey, _nullShoppingOrder);
+					ShoppingOrderImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -3380,22 +3383,4 @@ public class ShoppingOrderPersistenceImpl extends BasePersistenceImpl<ShoppingOr
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"number"
 			});
-	private static final ShoppingOrder _nullShoppingOrder = new ShoppingOrderImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<ShoppingOrder> toCacheModel() {
-				return _nullShoppingOrderCacheModel;
-			}
-		};
-
-	private static final CacheModel<ShoppingOrder> _nullShoppingOrderCacheModel = new CacheModel<ShoppingOrder>() {
-			@Override
-			public ShoppingOrder toEntityModel() {
-				return _nullShoppingOrder;
-			}
-		};
 }

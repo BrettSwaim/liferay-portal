@@ -16,7 +16,6 @@ package com.liferay.portal.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.exception.NoSuchRecentLayoutRevisionException;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -27,20 +26,19 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.exception.NoSuchRecentLayoutRevisionException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.RecentLayoutRevision;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
+import com.liferay.portal.kernel.service.persistence.RecentLayoutRevisionPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.MVCCModel;
-import com.liferay.portal.model.RecentLayoutRevision;
 import com.liferay.portal.model.impl.RecentLayoutRevisionImpl;
 import com.liferay.portal.model.impl.RecentLayoutRevisionModelImpl;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
-import com.liferay.portal.service.persistence.RecentLayoutRevisionPersistence;
 
 import java.io.Serializable;
 
@@ -61,7 +59,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see RecentLayoutRevisionPersistence
- * @see com.liferay.portal.service.persistence.RecentLayoutRevisionUtil
+ * @see com.liferay.portal.kernel.service.persistence.RecentLayoutRevisionUtil
  * @generated
  */
 @ProviderType
@@ -1679,8 +1677,8 @@ public class RecentLayoutRevisionPersistenceImpl extends BasePersistenceImpl<Rec
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchRecentLayoutRevisionException(msg.toString());
@@ -2083,8 +2081,8 @@ public class RecentLayoutRevisionPersistenceImpl extends BasePersistenceImpl<Rec
 					primaryKey);
 
 			if (recentLayoutRevision == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchRecentLayoutRevisionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2266,7 +2264,7 @@ public class RecentLayoutRevisionPersistenceImpl extends BasePersistenceImpl<Rec
 	}
 
 	/**
-	 * Returns the recent layout revision with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the recent layout revision with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the recent layout revision
 	 * @return the recent layout revision
@@ -2278,8 +2276,8 @@ public class RecentLayoutRevisionPersistenceImpl extends BasePersistenceImpl<Rec
 		RecentLayoutRevision recentLayoutRevision = fetchByPrimaryKey(primaryKey);
 
 		if (recentLayoutRevision == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchRecentLayoutRevisionException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2310,12 +2308,14 @@ public class RecentLayoutRevisionPersistenceImpl extends BasePersistenceImpl<Rec
 	 */
 	@Override
 	public RecentLayoutRevision fetchByPrimaryKey(Serializable primaryKey) {
-		RecentLayoutRevision recentLayoutRevision = (RecentLayoutRevision)entityCache.getResult(RecentLayoutRevisionModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(RecentLayoutRevisionModelImpl.ENTITY_CACHE_ENABLED,
 				RecentLayoutRevisionImpl.class, primaryKey);
 
-		if (recentLayoutRevision == _nullRecentLayoutRevision) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		RecentLayoutRevision recentLayoutRevision = (RecentLayoutRevision)serializable;
 
 		if (recentLayoutRevision == null) {
 			Session session = null;
@@ -2331,8 +2331,7 @@ public class RecentLayoutRevisionPersistenceImpl extends BasePersistenceImpl<Rec
 				}
 				else {
 					entityCache.putResult(RecentLayoutRevisionModelImpl.ENTITY_CACHE_ENABLED,
-						RecentLayoutRevisionImpl.class, primaryKey,
-						_nullRecentLayoutRevision);
+						RecentLayoutRevisionImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2386,18 +2385,20 @@ public class RecentLayoutRevisionPersistenceImpl extends BasePersistenceImpl<Rec
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			RecentLayoutRevision recentLayoutRevision = (RecentLayoutRevision)entityCache.getResult(RecentLayoutRevisionModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(RecentLayoutRevisionModelImpl.ENTITY_CACHE_ENABLED,
 					RecentLayoutRevisionImpl.class, primaryKey);
 
-			if (recentLayoutRevision == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, recentLayoutRevision);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (RecentLayoutRevision)serializable);
+				}
 			}
 		}
 
@@ -2440,8 +2441,7 @@ public class RecentLayoutRevisionPersistenceImpl extends BasePersistenceImpl<Rec
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(RecentLayoutRevisionModelImpl.ENTITY_CACHE_ENABLED,
-					RecentLayoutRevisionImpl.class, primaryKey,
-					_nullRecentLayoutRevision);
+					RecentLayoutRevisionImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -2676,35 +2676,4 @@ public class RecentLayoutRevisionPersistenceImpl extends BasePersistenceImpl<Rec
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No RecentLayoutRevision exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No RecentLayoutRevision exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(RecentLayoutRevisionPersistenceImpl.class);
-	private static final RecentLayoutRevision _nullRecentLayoutRevision = new RecentLayoutRevisionImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<RecentLayoutRevision> toCacheModel() {
-				return _nullRecentLayoutRevisionCacheModel;
-			}
-		};
-
-	private static final CacheModel<RecentLayoutRevision> _nullRecentLayoutRevisionCacheModel =
-		new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<RecentLayoutRevision>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public RecentLayoutRevision toEntityModel() {
-			return _nullRecentLayoutRevision;
-		}
-	}
 }

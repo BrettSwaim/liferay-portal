@@ -1,5 +1,6 @@
 <definition component-name="portal-collaboration">
-	<property name="portlet.plugins.includes" value="notifications-portlet" />
+	<property name="portal.release" value="true" />
+	<property name="custom.properties" value="default.layout.template.id=1_column" />
 	<property name="testray.main.component.name" value="Notifications" />
 
 	<var name="pageName" value="Bookmarks Page" />
@@ -14,7 +15,7 @@
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -74,7 +75,7 @@
 	</tear-down>
 
 	<command name="ViewWebsiteNotificationForNewBookmarkInFolder" priority="4">
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -83,7 +84,7 @@
 			<var name="folderName" value="Bookmarks Folder Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -103,7 +104,7 @@
 			<var name="userEmailAddress" value="userea@liferay.com" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -113,7 +114,7 @@
 
 		<execute macro="Bookmark#addPG">
 			<var name="bookmarkName" value="Bookmark Name" />
-			<var name="bookmarkURL" value="http://www.liferay.com" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Notifications#viewBadgeCount">
@@ -127,7 +128,7 @@
 			<var name="userEmailAddress" value="test@liferay.com" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -153,7 +154,7 @@
 
 		<execute macro="Bookmark#viewEntry">
 			<var name="bookmarkName" value="Bookmark Name" />
-			<var name="bookmarkURL" value="http://www.liferay.com" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Notifications#viewBadgeCount">
@@ -162,7 +163,7 @@
 	</command>
 
 	<command name="ViewWebsiteNotificationForUpdatedBookmarkInFolder" priority="4">
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -176,7 +177,7 @@
 			<var name="folderName" value="Bookmarks Folder Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -186,7 +187,7 @@
 
 		<execute macro="Bookmark#addPG">
 			<var name="bookmarkName" value="Bookmark Name" />
-			<var name="bookmarkURL" value="http://www.liferay.com" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Notifications#viewBadgeCount">
@@ -200,7 +201,7 @@
 			<var name="userEmailAddress" value="userea@liferay.com" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -211,8 +212,8 @@
 		<execute macro="Bookmark#editPG">
 			<var name="bookmarkName" value="Bookmark Name" />
 			<var name="bookmarkNameEdit" value="Bookmark Name Edit" />
-			<var name="bookmarkURL" value="http://www.liferay.com" />
-			<var name="bookmarkURLEdit" value="http://www.liferay.com" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
+			<var name="bookmarkURLEdit" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Notifications#viewBadgeCount">
@@ -226,7 +227,7 @@
 			<var name="userEmailAddress" value="test@liferay.com" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 		</execute>
 
@@ -252,7 +253,7 @@
 
 		<execute macro="Bookmark#viewEntry">
 			<var name="bookmarkName" value="Bookmark Name Edit" />
-			<var name="bookmarkURL" value="http://www.liferay.com" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Notifications#viewBadgeCount">

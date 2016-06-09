@@ -16,7 +16,6 @@ package com.liferay.portal.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.exception.NoSuchRecentLayoutBranchException;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -27,20 +26,19 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.exception.NoSuchRecentLayoutBranchException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.RecentLayoutBranch;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
+import com.liferay.portal.kernel.service.persistence.RecentLayoutBranchPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.MVCCModel;
-import com.liferay.portal.model.RecentLayoutBranch;
 import com.liferay.portal.model.impl.RecentLayoutBranchImpl;
 import com.liferay.portal.model.impl.RecentLayoutBranchModelImpl;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
-import com.liferay.portal.service.persistence.RecentLayoutBranchPersistence;
 
 import java.io.Serializable;
 
@@ -61,7 +59,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see RecentLayoutBranchPersistence
- * @see com.liferay.portal.service.persistence.RecentLayoutBranchUtil
+ * @see com.liferay.portal.kernel.service.persistence.RecentLayoutBranchUtil
  * @generated
  */
 @ProviderType
@@ -1669,8 +1667,8 @@ public class RecentLayoutBranchPersistenceImpl extends BasePersistenceImpl<Recen
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchRecentLayoutBranchException(msg.toString());
@@ -2071,8 +2069,8 @@ public class RecentLayoutBranchPersistenceImpl extends BasePersistenceImpl<Recen
 					primaryKey);
 
 			if (recentLayoutBranch == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchRecentLayoutBranchException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2253,7 +2251,7 @@ public class RecentLayoutBranchPersistenceImpl extends BasePersistenceImpl<Recen
 	}
 
 	/**
-	 * Returns the recent layout branch with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the recent layout branch with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the recent layout branch
 	 * @return the recent layout branch
@@ -2265,8 +2263,8 @@ public class RecentLayoutBranchPersistenceImpl extends BasePersistenceImpl<Recen
 		RecentLayoutBranch recentLayoutBranch = fetchByPrimaryKey(primaryKey);
 
 		if (recentLayoutBranch == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchRecentLayoutBranchException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2297,12 +2295,14 @@ public class RecentLayoutBranchPersistenceImpl extends BasePersistenceImpl<Recen
 	 */
 	@Override
 	public RecentLayoutBranch fetchByPrimaryKey(Serializable primaryKey) {
-		RecentLayoutBranch recentLayoutBranch = (RecentLayoutBranch)entityCache.getResult(RecentLayoutBranchModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(RecentLayoutBranchModelImpl.ENTITY_CACHE_ENABLED,
 				RecentLayoutBranchImpl.class, primaryKey);
 
-		if (recentLayoutBranch == _nullRecentLayoutBranch) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		RecentLayoutBranch recentLayoutBranch = (RecentLayoutBranch)serializable;
 
 		if (recentLayoutBranch == null) {
 			Session session = null;
@@ -2318,8 +2318,7 @@ public class RecentLayoutBranchPersistenceImpl extends BasePersistenceImpl<Recen
 				}
 				else {
 					entityCache.putResult(RecentLayoutBranchModelImpl.ENTITY_CACHE_ENABLED,
-						RecentLayoutBranchImpl.class, primaryKey,
-						_nullRecentLayoutBranch);
+						RecentLayoutBranchImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2373,18 +2372,20 @@ public class RecentLayoutBranchPersistenceImpl extends BasePersistenceImpl<Recen
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			RecentLayoutBranch recentLayoutBranch = (RecentLayoutBranch)entityCache.getResult(RecentLayoutBranchModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(RecentLayoutBranchModelImpl.ENTITY_CACHE_ENABLED,
 					RecentLayoutBranchImpl.class, primaryKey);
 
-			if (recentLayoutBranch == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, recentLayoutBranch);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (RecentLayoutBranch)serializable);
+				}
 			}
 		}
 
@@ -2427,8 +2428,7 @@ public class RecentLayoutBranchPersistenceImpl extends BasePersistenceImpl<Recen
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(RecentLayoutBranchModelImpl.ENTITY_CACHE_ENABLED,
-					RecentLayoutBranchImpl.class, primaryKey,
-					_nullRecentLayoutBranch);
+					RecentLayoutBranchImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -2663,35 +2663,4 @@ public class RecentLayoutBranchPersistenceImpl extends BasePersistenceImpl<Recen
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No RecentLayoutBranch exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No RecentLayoutBranch exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(RecentLayoutBranchPersistenceImpl.class);
-	private static final RecentLayoutBranch _nullRecentLayoutBranch = new RecentLayoutBranchImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<RecentLayoutBranch> toCacheModel() {
-				return _nullRecentLayoutBranchCacheModel;
-			}
-		};
-
-	private static final CacheModel<RecentLayoutBranch> _nullRecentLayoutBranchCacheModel =
-		new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<RecentLayoutBranch>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public RecentLayoutBranch toEntityModel() {
-			return _nullRecentLayoutBranch;
-		}
-	}
 }

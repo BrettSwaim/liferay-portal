@@ -14,7 +14,7 @@
 
 package com.liferay.portal.security.pwd;
 
-import com.liferay.portal.exception.PwdEncryptorException;
+import com.liferay.portal.kernel.exception.PwdEncryptorException;
 import com.liferay.portal.kernel.security.pwd.PasswordEncryptor;
 import com.liferay.portal.kernel.security.pwd.PasswordEncryptorUtil;
 import com.liferay.portal.kernel.util.CharPool;
@@ -107,12 +107,11 @@ public class LegacyAlgorithmAwarePasswordEncryptorTest {
 		testEncryptDisabled(PasswordEncryptorUtil.TYPE_BCRYPT + "/12");
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void testEncryptCrypt() throws Exception {
-		testEncrypt(PasswordEncryptorUtil.TYPE_CRYPT, "SNbUMVY9kKQpY");
+		testEncrypt(PasswordEncryptorUtil.TYPE_UFC_CRYPT, "SNbUMVY9kKQpY");
 
-		testEncryptDisabled(PasswordEncryptorUtil.TYPE_CRYPT);
+		testEncryptDisabled(PasswordEncryptorUtil.TYPE_UFC_CRYPT);
 	}
 
 	@Test

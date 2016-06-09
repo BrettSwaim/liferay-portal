@@ -15,12 +15,13 @@
 package com.liferay.portal.upgrade.v7_0_0;
 
 import com.liferay.asset.kernel.model.AssetCategoryConstants;
-import com.liferay.portal.kernel.dao.jdbc.DataAccess;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -30,7 +31,6 @@ import com.liferay.portlet.asset.util.AssetVocabularySettingsHelper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import java.util.Arrays;
 
@@ -41,140 +41,113 @@ public class UpgradeAsset extends UpgradeProcess {
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		try {
-			runSQL("alter_column_type AssetEntry description TEXT null");
-			runSQL("alter_column_type AssetEntry summary TEXT null");
-		}
-		catch (SQLException sqle) {
-			upgradeTable(
-				AssetEntryTable.TABLE_NAME, AssetEntryTable.TABLE_COLUMNS,
-				AssetEntryTable.TABLE_SQL_CREATE,
-				AssetEntryTable.TABLE_SQL_ADD_INDEXES);
-		}
+		alter(
+			AssetEntryTable.class,
+			new AlterColumnType("description", "TEXT null"),
+			new AlterColumnType("summary", "TEXT null"));
 
 		updateAssetEntries();
 		updateAssetVocabularies();
 	}
 
 	protected long getDDMStructureId(String structureKey) throws Exception {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		try {
-			ps = connection.prepareStatement(
-				"select structureId from DDMStructure where structureKey = ?");
+		try (PreparedStatement ps = connection.prepareStatement(
+				"select structureId from DDMStructure where structureKey = " +
+					"?")) {
 
 			ps.setString(1, structureKey);
 
-			rs = ps.executeQuery();
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					return rs.getLong("structureId");
+				}
 
-			if (rs.next()) {
-				return rs.getLong("structureId");
+				return 0;
 			}
-
-			return 0;
-		}
-		finally {
-			DataAccess.cleanUp(ps, rs);
 		}
 	}
 
 	protected void updateAssetEntries() throws Exception {
-		long classNameId = PortalUtil.getClassNameId(
-			"com.liferay.portlet.journal.model.JournalArticle");
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			long classNameId = PortalUtil.getClassNameId(
+				"com.liferay.portlet.journal.model.JournalArticle");
 
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+			StringBundler sb = new StringBundler(10);
 
-		try {
-			connection = DataAccess.getUpgradeOptimizedConnection();
-
-			ps = connection.prepareStatement(
-				"select resourcePrimKey, structureId from JournalArticle " +
-					"where structureId != ''");
-
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				long resourcePrimKey = rs.getLong("resourcePrimKey");
-				String structureId = rs.getString("structureId");
-
-				long ddmStructureId = getDDMStructureId(structureId);
-
-				runSQL(
-					"update AssetEntry set classTypeId = " + ddmStructureId +
-						" where classNameId = " + classNameId +
-							" and classPK = " + resourcePrimKey);
-			}
-		}
-		finally {
-			DataAccess.cleanUp(ps, rs);
-		}
-
-		try {
-			StringBundler sb = new StringBundler(9);
-
-			sb.append("select JournalArticle.resourcePrimKey from (select ");
-			sb.append("JournalArticle.resourcePrimkey as primKey, ");
+			sb.append("select JournalArticle.resourcePrimKey as ");
+			sb.append("resourcePrimKey from (select ");
+			sb.append("JournalArticle.resourcePrimKey as primKey, ");
 			sb.append("max(JournalArticle.version) as maxVersion from ");
 			sb.append("JournalArticle group by ");
-			sb.append("JournalArticle.resourcePrimkey) temp_table inner join ");
-			sb.append("JournalArticle on (JournalArticle.indexable = ");
-			sb.append("[$FALSE$]) and (JournalArticle.status = 0) and ");
-			sb.append("(JournalArticle.resourcePrimkey = temp_table.primKey) ");
+			sb.append("JournalArticle.resourcePrimKey) temp_table inner join ");
+			sb.append("JournalArticle on (JournalArticle.indexable = ?) and ");
+			sb.append("(JournalArticle.status = 0) and ");
+			sb.append("(JournalArticle.resourcePrimKey = temp_table.primKey) ");
 			sb.append("and (JournalArticle.version = temp_table.maxVersion)");
 
-			ps = connection.prepareStatement(sb.toString());
+			try (PreparedStatement ps1 = connection.prepareStatement(
+					sb.toString())) {
 
-			rs = ps.executeQuery();
+				ps1.setBoolean(1, false);
 
-			while (rs.next()) {
-				long classPK = rs.getLong("resourcePrimKey");
+				try (PreparedStatement ps2 =
+						AutoBatchPreparedStatementUtil.concurrentAutoBatch(
+							connection,
+							"update AssetEntry set listable = ? where " +
+								"classNameId = ? and classPK = ?");
+					ResultSet rs = ps1.executeQuery()) {
 
-				runSQL(
-					"update AssetEntry set listable = [$FALSE$] where " +
-						"classNameId = " + classNameId + " and classPK = " +
-							classPK);
+					while (rs.next()) {
+						long classPK = rs.getLong("resourcePrimKey");
+
+						ps2.setBoolean(1, false);
+						ps2.setLong(2, classNameId);
+						ps2.setLong(3, classPK);
+
+						ps2.addBatch();
+					}
+
+					ps2.executeBatch();
+				}
 			}
-		}
-		finally {
-			DataAccess.cleanUp(ps, rs);
 		}
 	}
 
 	protected void updateAssetVocabularies() throws Exception {
-		PreparedStatement statement = null;
-		ResultSet result = null;
-
-		try {
-			statement = connection.prepareStatement(
+		try (LoggingTimer loggingTimer = new LoggingTimer();
+			PreparedStatement ps1 = connection.prepareStatement(
 				"select vocabularyId, settings_ from AssetVocabulary");
+			PreparedStatement ps2 =
+				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
+					connection,
+					"update AssetVocabulary set settings_ = ? where " +
+						"vocabularyId = ?");
+			ResultSet rs = ps1.executeQuery()) {
 
-			result = statement.executeQuery();
+			while (rs.next()) {
+				long vocabularyId = rs.getLong("vocabularyId");
+				String settings = rs.getString("settings_");
 
-			while (result.next()) {
-				long vocabularyId = result.getLong("vocabularyId");
-				String settings = result.getString("settings_");
+				ps2.setString(1, upgradeVocabularySettings(settings));
+				ps2.setLong(2, vocabularyId);
 
-				updateAssetVocabulary(
-					vocabularyId, upgradeVocabularySettings(settings));
+				ps2.addBatch();
 			}
-		}
-		finally {
-			DataAccess.cleanUp(statement, result);
+
+			ps2.executeBatch();
 		}
 	}
 
+	/**
+	 * @deprecated As of 7.0.0, with no direct replacement
+	 */
+	@Deprecated
 	protected void updateAssetVocabulary(long vocabularyId, String settings)
 		throws Exception {
 
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		try {
-			ps = connection.prepareStatement(
+		try (PreparedStatement ps = connection.prepareStatement(
 				"update AssetVocabulary set settings_ = ? where vocabularyId " +
-					"= ?");
+					"= ?")) {
 
 			ps.setString(1, settings);
 			ps.setLong(2, vocabularyId);
@@ -185,9 +158,6 @@ public class UpgradeAsset extends UpgradeProcess {
 			if (_log.isWarnEnabled()) {
 				_log.warn("Unable to update vocabulary " + vocabularyId, e);
 			}
-		}
-		finally {
-			DataAccess.cleanUp(ps, rs);
 		}
 	}
 

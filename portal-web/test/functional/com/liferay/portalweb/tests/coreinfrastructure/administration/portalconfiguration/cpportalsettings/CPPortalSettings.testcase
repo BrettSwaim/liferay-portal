@@ -1,4 +1,5 @@
 <definition component-name="portal-user-management-and-portal-configuration">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Portal Settings" />
 
 	<set-up>
@@ -35,7 +36,7 @@
 		</if>
 	</tear-down>
 
-	<command name="EditDefaultUserAssociationsOrganizationSites" priority="4">
+	<command name="EditDefaultUserAssociationsOrganizationSites" priority="5">
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
@@ -243,7 +244,9 @@
 		</execute>
 	</command>
 
-	<command name="EnterReservedEmailAddress" priority="4">
+	<command name="EnterReservedEmailAddress" priority="5">
+		<property name="portal.acceptance" value="true" />
+
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Instance Settings" />
 		</execute>
@@ -264,7 +267,9 @@
 		</execute>
 	</command>
 
-	<command name="EnterReservedScreenName" priority="4">
+	<command name="EnterReservedScreenName" priority="5">
+		<property name="portal.acceptance" value="true" />
+
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Instance Settings" />
 		</execute>
@@ -368,7 +373,6 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="AP Test Page" />
 			<var name="siteName" value="Site Name" />
 		</execute>
@@ -386,7 +390,6 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="WC Test Page" />
 			<var name="siteName" value="Child SiteName" />
 		</execute>
@@ -517,7 +520,6 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="AP Test Page" />
 			<var name="siteName" value="Site Name" />
 		</execute>
@@ -563,7 +565,7 @@
 			<var name="portletName" value="Asset Publisher" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="AP Test Page" />
 		</execute>
 
@@ -576,7 +578,7 @@
 			<var name="liferaySiteType" value="Current Site" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="AP Test Page" />
 		</execute>
 
@@ -585,7 +587,7 @@
 			<var name="siteScopeType" value="Site" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="AP Test Page" />
 		</execute>
 

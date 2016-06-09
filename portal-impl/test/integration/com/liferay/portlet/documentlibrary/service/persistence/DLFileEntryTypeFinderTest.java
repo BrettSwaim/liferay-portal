@@ -20,9 +20,13 @@ import com.liferay.document.library.kernel.service.DLFileEntryTypeLocalServiceUt
 import com.liferay.document.library.kernel.service.persistence.DLFileEntryTypeFinderUtil;
 import com.liferay.dynamic.data.mapping.kernel.DDMStructure;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.RoleConstants;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionCheckerFactoryUtil;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
@@ -31,10 +35,6 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.RoleConstants;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portlet.dynamicdatamapping.util.test.DDMStructureTestUtil;
 
@@ -123,8 +123,7 @@ public class DLFileEntryTypeFinderTest {
 				initialFileEntryTypesCount + 1,
 				DLFileEntryTypeFinderUtil.filterCountByKeywords(
 					_group.getCompanyId(), new long[] {_group.getGroupId()},
-					_DL_FILE_ENTRY_TYPE_NAME, true)
-			);
+					_DL_FILE_ENTRY_TYPE_NAME, true));
 		}
 		finally {
 			PermissionThreadLocal.setPermissionChecker(
@@ -165,8 +164,7 @@ public class DLFileEntryTypeFinderTest {
 				initialFileEntryTypesCount,
 				DLFileEntryTypeFinderUtil.filterCountByKeywords(
 					_group.getCompanyId(), new long[] {_group.getGroupId()},
-					_DL_FILE_ENTRY_TYPE_NAME, true)
-			);
+					_DL_FILE_ENTRY_TYPE_NAME, true));
 		}
 		finally {
 			PermissionThreadLocal.setPermissionChecker(
@@ -191,8 +189,7 @@ public class DLFileEntryTypeFinderTest {
 			initialFileEntryTypesCount + 1,
 			DLFileEntryTypeFinderUtil.filterCountByKeywords(
 				_group.getCompanyId(), new long[] {_group.getGroupId()},
-				StringPool.BLANK, true)
-		);
+				StringPool.BLANK, true));
 	}
 
 	@Test
@@ -214,8 +211,7 @@ public class DLFileEntryTypeFinderTest {
 			initialFileEntryTypesCount + 1,
 			DLFileEntryTypeFinderUtil.filterCountByKeywords(
 				_group.getCompanyId(), new long[] {_group.getGroupId()},
-				StringPool.BLANK, false)
-		);
+				StringPool.BLANK, false));
 	}
 
 	@Test

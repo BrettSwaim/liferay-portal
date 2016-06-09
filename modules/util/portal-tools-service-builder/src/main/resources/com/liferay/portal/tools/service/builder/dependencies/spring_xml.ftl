@@ -13,33 +13,33 @@
 
 	<#if entity.hasColumns()>
 		<#if (entity.dataSource != "liferayDataSource") || (entity.sessionFactory != "liferaySessionFactory")>
-			<bean id="${apiPackagePath}.service.persistence.${entity.name}Persistence" class="${entity.getPersistenceClass()}" parent="basePersistence">
+			<bean class="${entity.getPersistenceClass()}" id="${apiPackagePath}.service.persistence.${entity.name}Persistence" parent="basePersistence">
 				<#if entity.dataSource != "liferayDataSource">
 					<property name="dataSource" ref="${entity.getDataSource()}" />
 				</#if>
 
-				<#if entity.sessionFactory != "liferaySessionFactory" >
+				<#if entity.sessionFactory != "liferaySessionFactory">
 					<property name="sessionFactory" ref="${entity.getSessionFactory()}" />
 				</#if>
 			</bean>
 		<#else>
-			<bean id="${apiPackagePath}.service.persistence.${entity.name}Persistence" class="${entity.getPersistenceClass()}" parent="basePersistence" />
+			<bean class="${entity.getPersistenceClass()}" id="${apiPackagePath}.service.persistence.${entity.name}Persistence" parent="basePersistence" />
 		</#if>
 	</#if>
 
 	<#if entity.hasFinderClass()>
 		<#if (entity.dataSource != "liferayDataSource") || (entity.sessionFactory != "liferaySessionFactory")>
-			<bean id="${apiPackagePath}.service.persistence.${entity.name}Finder" class="${entity.finderClass}" parent="basePersistence">
+			<bean class="${entity.finderClass}" id="${apiPackagePath}.service.persistence.${entity.name}Finder" parent="basePersistence">
 				<#if entity.dataSource != "liferayDataSource">
 					<property name="dataSource" ref="${entity.getDataSource()}" />
 				</#if>
 
-				<#if entity.sessionFactory != "liferaySessionFactory" >
+				<#if entity.sessionFactory != "liferaySessionFactory">
 					<property name="sessionFactory" ref="${entity.getSessionFactory()}" />
 				</#if>
 			</bean>
 		<#else>
-			<bean id="${apiPackagePath}.service.persistence.${entity.name}Finder" class="${entity.finderClass}" parent="basePersistence" />
+			<bean class="${entity.finderClass}" id="${apiPackagePath}.service.persistence.${entity.name}Finder" parent="basePersistence" />
 		</#if>
 	</#if>
 </#list>

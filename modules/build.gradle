@@ -1,4 +1,5 @@
 import com.liferay.gradle.util.FileUtil
+import com.liferay.gradle.util.GradleUtil
 
 buildscript {
 	apply from: rootProject.file("build-buildscript.gradle"), to: buildscript
@@ -9,17 +10,38 @@ buildDir = new File(rootDir.parentFile, "build")
 gradle.beforeProject {
 	Project project ->
 
-	if (!project.parent) {
+	if (!project.parent || project.childProjects) {
 		return
 	}
 
 	configure(project) {
-		if (project.path.startsWith(":themes:")) {
-			apply from: rootProject.file("build-theme.gradle")
+		apply plugin: "com.liferay.defaults.plugin"
+
+		pluginManager.withPlugin("com.liferay.ant.plugin") {
+			task buildLang(dependsOn: "build-lang")
+
+			if (FileUtil.exists(project, "docroot/WEB-INF/service.xml")) {
+				task buildService(dependsOn: "build-service")
+				task buildWSDD(dependsOn: "build-wsdd")
+			}
+
+			deploy {
+				dependsOn ":apps:foundation:frontend-css:frontend-css-common:buildCssCommon"
+			}
 		}
-		else if (FileUtil.exists(project, "bnd.bnd") && FileUtil.exists(project, "build.gradle")) {
-			apply from: rootProject.file("build-module.gradle")
+
+		pluginManager.withPlugin("com.liferay.osgi.plugin") {
 			apply plugin: "pmd"
+
+			afterEvaluate {
+				bundle.jarBuilderFactory.contextClassLoader = buildscript.classLoader
+
+				File forcedDeployDir = GradleUtil.getProperty(project, "forced.deploy.dir", (File)null)
+
+				if (forcedDeployDir) {
+					liferay.deployDir = forcedDeployDir
+				}
+			}
 
 			configurations {
 				xmltask
@@ -75,6 +97,10 @@ gradle.beforeProject {
 			}
 
 			if (System.getenv("JENKINS_HOME")) {
+				buildCSS {
+					jvmArgs "-Xss4m"
+				}
+
 				startTestableTomcat {
 					deleteLiferayHome = false
 				}
@@ -82,9 +108,11 @@ gradle.beforeProject {
 		}
 
 		if (System.getenv("JENKINS_HOME")) {
-			pluginManager.withPlugin("com.liferay.cache") {
-				cache {
-					forcedCache = true
+			pluginManager.withPlugin("com.liferay.node") {
+				downloadNode {
+					doFirst {
+						throw new GradleException("Unable to use Node.js on CI, please configure com.liferay.cache or update the cache")
+					}
 				}
 			}
 		}
@@ -102,12 +130,12 @@ gradle.taskGraph.useFilter {
 		}
 	}
 	else if (task.name == "test") {
-		if (!_hasTestClasses(task.project, "src/test/java") && !_hasTestClasses(task.project, "test/unit")) {
+		if (!_hasTestClasses(task.project, "src/test/java")) {
 			return false
 		}
 	}
 	else if (task.name == "testIntegration") {
-		if (!_hasTestClasses(task.project, "src/testIntegration/java") && !_hasTestClasses(task.project, "test/integration")) {
+		if (!_hasTestClasses(task.project, "src/testIntegration/java")) {
 			return false
 		}
 	}

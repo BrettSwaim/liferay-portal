@@ -16,10 +16,6 @@ package com.liferay.portal.events;
 
 import com.liferay.portal.fabric.server.FabricServerUtil;
 import com.liferay.portal.jericho.CachedLoggerProvider;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskManager;
-import com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil;
-import com.liferay.portal.kernel.cluster.ClusterExecutor;
-import com.liferay.portal.kernel.cluster.ClusterMasterExecutor;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.db.DBType;
@@ -29,6 +25,7 @@ import com.liferay.portal.kernel.executor.PortalExecutorManager;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.MessageBus;
+import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.nio.intraband.Intraband;
 import com.liferay.portal.kernel.nio.intraband.SystemDataType;
 import com.liferay.portal.kernel.nio.intraband.mailbox.MailboxDatagramReceiveHandler;
@@ -42,7 +39,12 @@ import com.liferay.portal.kernel.resiliency.spi.agent.annotation.DistributedRegi
 import com.liferay.portal.kernel.resiliency.spi.agent.annotation.MatchType;
 import com.liferay.portal.kernel.search.IndexerRegistry;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
+import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
+import com.liferay.portal.kernel.util.BasePortalLifecycle;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.PortalLifecycle;
+import com.liferay.portal.kernel.util.PortalLifecycleUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -54,13 +56,20 @@ import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.messageboards.util.MBMessageIndexer;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
+import com.liferay.registry.ServiceRegistration;
 import com.liferay.registry.dependency.ServiceDependencyListener;
 import com.liferay.registry.dependency.ServiceDependencyManager;
 import com.liferay.taglib.servlet.JspFactorySwapper;
 
+import java.io.InputStream;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.portlet.MimeResponse;
 import javax.portlet.PortletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.struts.tiles.taglib.ComponentConstants;
 
 /**
@@ -87,7 +96,17 @@ public class StartupAction extends SimpleAction {
 
 		// Print release information
 
-		System.out.println("Starting " + ReleaseInfo.getReleaseInfo());
+		Class<?> clazz = getClass();
+
+		ClassLoader classLoader = clazz.getClassLoader();
+
+		try (InputStream inputStream = classLoader.getResourceAsStream(
+				"com/liferay/portal/events/dependencies/startup.txt")) {
+
+			System.out.println(IOUtils.toString(inputStream));
+		}
+
+		System.out.println("Starting " + ReleaseInfo.getReleaseInfo() + "\n");
 
 		// Installed patches
 
@@ -162,13 +181,58 @@ public class StartupAction extends SimpleAction {
 			System.exit(1);
 		}
 
-		// Upgrade
+		// Check required build number
 
 		if (_log.isDebugEnabled()) {
-			_log.debug("Upgrade database");
+			_log.debug("Check required build number");
 		}
 
-		DBUpgrader.upgrade();
+		DBUpgrader.checkRequiredBuildNumber(ReleaseInfo.getParentBuildNumber());
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		Map<String, Object> properties = new HashMap<>();
+
+		properties.put("module.service.lifecycle", "database.initialized");
+		properties.put("service.vendor", ReleaseInfo.getVendor());
+		properties.put("service.version", ReleaseInfo.getVersion());
+
+		final ServiceRegistration<ModuleServiceLifecycle>
+			moduleServiceLifecycleServiceRegistration =
+				registry.registerService(
+					ModuleServiceLifecycle.class,
+					new ModuleServiceLifecycle() {}, properties);
+
+		PortalLifecycleUtil.register(
+			new BasePortalLifecycle() {
+
+				@Override
+				protected void doPortalDestroy() {
+					moduleServiceLifecycleServiceRegistration.unregister();
+				}
+
+				@Override
+				protected void doPortalInit() {
+				}
+
+			},
+			PortalLifecycle.METHOD_DESTROY);
+
+		// Check class names
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("Check class names");
+		}
+
+		ClassNameLocalServiceUtil.checkClassNames();
+
+		// Check resource actions
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("Check resource actions");
+		}
+
+		ResourceActionLocalServiceUtil.checkResourceActions();
 
 		// Verify
 
@@ -177,37 +241,6 @@ public class StartupAction extends SimpleAction {
 		}
 
 		DBUpgrader.verify();
-
-		// Cluster master token listener
-
-		final Registry registry = RegistryUtil.getRegistry();
-
-		ServiceDependencyManager clusterMasterExecutorServiceDependencyManager =
-			new ServiceDependencyManager();
-
-		clusterMasterExecutorServiceDependencyManager.
-			addServiceDependencyListener(
-				new ServiceDependencyListener() {
-
-					@Override
-					public void dependenciesFulfilled() {
-						ClusterMasterExecutor clusterMasterExecutor =
-							registry.getService(ClusterMasterExecutor.class);
-
-						if (!clusterMasterExecutor.isEnabled()) {
-							BackgroundTaskManagerUtil.cleanUpBackgroundTasks();
-						}
-					}
-
-					@Override
-					public void destroy() {
-					}
-
-				});
-
-		clusterMasterExecutorServiceDependencyManager.registerDependencies(
-			BackgroundTaskManager.class, ClusterExecutor.class,
-			ClusterMasterExecutor.class);
 
 		// Liferay JspFactory
 

@@ -20,12 +20,12 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
+import com.liferay.portal.kernel.service.BaseService;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
-import com.liferay.portal.service.BaseService;
-import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.shopping.model.ShoppingCoupon;
 
@@ -65,12 +65,18 @@ public interface ShoppingCouponService extends BaseService {
 		java.lang.String discountType, ServiceContext serviceContext)
 		throws PortalException;
 
-	public void deleteCoupon(long groupId, long couponId)
-		throws PortalException;
-
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ShoppingCoupon getCoupon(long groupId, long couponId)
 		throws PortalException;
+
+	public ShoppingCoupon updateCoupon(long couponId, java.lang.String name,
+		java.lang.String description, int startDateMonth, int startDateDay,
+		int startDateYear, int startDateHour, int startDateMinute,
+		int endDateMonth, int endDateDay, int endDateYear, int endDateHour,
+		int endDateMinute, boolean neverExpire, boolean active,
+		java.lang.String limitCategories, java.lang.String limitSkus,
+		double minOrder, double discount, java.lang.String discountType,
+		ServiceContext serviceContext) throws PortalException;
 
 	/**
 	* Returns the OSGi service identifier.
@@ -84,12 +90,6 @@ public interface ShoppingCouponService extends BaseService {
 		java.lang.String code, boolean active, java.lang.String discountType,
 		boolean andOperator, int start, int end) throws PortalException;
 
-	public ShoppingCoupon updateCoupon(long couponId, java.lang.String name,
-		java.lang.String description, int startDateMonth, int startDateDay,
-		int startDateYear, int startDateHour, int startDateMinute,
-		int endDateMonth, int endDateDay, int endDateYear, int endDateHour,
-		int endDateMinute, boolean neverExpire, boolean active,
-		java.lang.String limitCategories, java.lang.String limitSkus,
-		double minOrder, double discount, java.lang.String discountType,
-		ServiceContext serviceContext) throws PortalException;
+	public void deleteCoupon(long groupId, long couponId)
+		throws PortalException;
 }

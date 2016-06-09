@@ -15,13 +15,11 @@
 package com.liferay.amazon.rankings.web.upgrade;
 
 import com.liferay.amazon.rankings.web.constants.AmazonRankingsPortletKeys;
-import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
+import com.liferay.portal.kernel.upgrade.BaseUpgradePortletId;
 import com.liferay.portal.kernel.upgrade.DummyUpgradeStep;
 import com.liferay.portal.upgrade.registry.UpgradeStepRegistrator;
-import com.liferay.portal.upgrade.util.UpgradePortletId;
 
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Raymond Augé
@@ -38,7 +36,7 @@ public class AmazonRankingsWebUpgrade implements UpgradeStepRegistrator {
 
 		registry.register(
 			"com.liferay.amazon.rankings.web", "0.0.1", "1.0.0",
-			new UpgradePortletId() {
+			new BaseUpgradePortletId() {
 
 				@Override
 				protected String[][] getRenamePortletIdsArray() {
@@ -50,11 +48,6 @@ public class AmazonRankingsWebUpgrade implements UpgradeStepRegistrator {
 				}
 
 			});
-	}
-
-	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
-	protected void setModuleServiceLifecycle(
-		ModuleServiceLifecycle moduleServiceLifecycle) {
 	}
 
 }

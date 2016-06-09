@@ -16,7 +16,6 @@ package com.liferay.portal.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.exception.NoSuchRepositoryEntryException;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -27,8 +26,15 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.exception.NoSuchRepositoryEntryException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.RepositoryEntry;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
+import com.liferay.portal.kernel.service.persistence.RepositoryEntryPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -36,16 +42,8 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.MVCCModel;
-import com.liferay.portal.model.RepositoryEntry;
 import com.liferay.portal.model.impl.RepositoryEntryImpl;
 import com.liferay.portal.model.impl.RepositoryEntryModelImpl;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.ServiceContextThreadLocal;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
-import com.liferay.portal.service.persistence.RepositoryEntryPersistence;
 
 import java.io.Serializable;
 
@@ -56,6 +54,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -67,7 +66,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see RepositoryEntryPersistence
- * @see com.liferay.portal.service.persistence.RepositoryEntryUtil
+ * @see com.liferay.portal.kernel.service.persistence.RepositoryEntryUtil
  * @generated
  */
 @ProviderType
@@ -203,7 +202,7 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 
 			if ((list != null) && !list.isEmpty()) {
 				for (RepositoryEntry repositoryEntry : list) {
-					if (!Validator.equals(uuid, repositoryEntry.getUuid())) {
+					if (!Objects.equals(uuid, repositoryEntry.getUuid())) {
 						list = null;
 
 						break;
@@ -679,8 +678,8 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchRepositoryEntryException(msg.toString());
@@ -724,7 +723,7 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 		if (result instanceof RepositoryEntry) {
 			RepositoryEntry repositoryEntry = (RepositoryEntry)result;
 
-			if (!Validator.equals(uuid, repositoryEntry.getUuid()) ||
+			if (!Objects.equals(uuid, repositoryEntry.getUuid()) ||
 					(groupId != repositoryEntry.getGroupId())) {
 				result = null;
 			}
@@ -1018,7 +1017,7 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 
 			if ((list != null) && !list.isEmpty()) {
 				for (RepositoryEntry repositoryEntry : list) {
-					if (!Validator.equals(uuid, repositoryEntry.getUuid()) ||
+					if (!Objects.equals(uuid, repositoryEntry.getUuid()) ||
 							(companyId != repositoryEntry.getCompanyId())) {
 						list = null;
 
@@ -2037,8 +2036,8 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchRepositoryEntryException(msg.toString());
@@ -2083,7 +2082,7 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 			RepositoryEntry repositoryEntry = (RepositoryEntry)result;
 
 			if ((repositoryId != repositoryEntry.getRepositoryId()) ||
-					!Validator.equals(mappedId, repositoryEntry.getMappedId())) {
+					!Objects.equals(mappedId, repositoryEntry.getMappedId())) {
 				result = null;
 			}
 		}
@@ -2496,8 +2495,8 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 					primaryKey);
 
 			if (repositoryEntry == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchRepositoryEntryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2710,7 +2709,7 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 	}
 
 	/**
-	 * Returns the repository entry with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the repository entry with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the repository entry
 	 * @return the repository entry
@@ -2722,8 +2721,8 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 		RepositoryEntry repositoryEntry = fetchByPrimaryKey(primaryKey);
 
 		if (repositoryEntry == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchRepositoryEntryException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2754,12 +2753,14 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 	 */
 	@Override
 	public RepositoryEntry fetchByPrimaryKey(Serializable primaryKey) {
-		RepositoryEntry repositoryEntry = (RepositoryEntry)entityCache.getResult(RepositoryEntryModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(RepositoryEntryModelImpl.ENTITY_CACHE_ENABLED,
 				RepositoryEntryImpl.class, primaryKey);
 
-		if (repositoryEntry == _nullRepositoryEntry) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		RepositoryEntry repositoryEntry = (RepositoryEntry)serializable;
 
 		if (repositoryEntry == null) {
 			Session session = null;
@@ -2775,8 +2776,7 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 				}
 				else {
 					entityCache.putResult(RepositoryEntryModelImpl.ENTITY_CACHE_ENABLED,
-						RepositoryEntryImpl.class, primaryKey,
-						_nullRepositoryEntry);
+						RepositoryEntryImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2830,18 +2830,20 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			RepositoryEntry repositoryEntry = (RepositoryEntry)entityCache.getResult(RepositoryEntryModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(RepositoryEntryModelImpl.ENTITY_CACHE_ENABLED,
 					RepositoryEntryImpl.class, primaryKey);
 
-			if (repositoryEntry == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, repositoryEntry);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (RepositoryEntry)serializable);
+				}
 			}
 		}
 
@@ -2883,7 +2885,7 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(RepositoryEntryModelImpl.ENTITY_CACHE_ENABLED,
-					RepositoryEntryImpl.class, primaryKey, _nullRepositoryEntry);
+					RepositoryEntryImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -3126,35 +3128,4 @@ public class RepositoryEntryPersistenceImpl extends BasePersistenceImpl<Reposito
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid"
 			});
-	private static final RepositoryEntry _nullRepositoryEntry = new RepositoryEntryImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<RepositoryEntry> toCacheModel() {
-				return _nullRepositoryEntryCacheModel;
-			}
-		};
-
-	private static final CacheModel<RepositoryEntry> _nullRepositoryEntryCacheModel =
-		new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<RepositoryEntry>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public RepositoryEntry toEntityModel() {
-			return _nullRepositoryEntry;
-		}
-	}
 }

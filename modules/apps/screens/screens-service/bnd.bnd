@@ -1,11 +1,6 @@
-Bundle-Name: Liferay Screens
+Bundle-Name: Liferay Screens Service
 Bundle-SymbolicName: com.liferay.screens.service
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.6
 Liferay-Releng-Module-Group-Description:
 Liferay-Releng-Module-Group-Title:
 Liferay-Service: true
-Require-Capability:\
-	liferay.extender;\
-	filter:="(&(liferay.extender=spring.extender)(version>=1.0)(!(version>=2.0)))"
-Spring-Context: META-INF/spring
--liferay-spring-dependency: com.liferay.portal.spring.extender.service.ServiceReference

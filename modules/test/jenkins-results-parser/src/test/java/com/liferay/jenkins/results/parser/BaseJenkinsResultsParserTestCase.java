@@ -42,7 +42,10 @@ public abstract class BaseJenkinsResultsParserTestCase {
 
 		String expectedMessage = read(expectedMessageFile);
 
-		String actualMessage = getMessage(toURLString(caseDir));
+		String actualMessage = fixMessage(
+			getMessage(
+				"${dependencies.url}/" + getSimpleClassName() + "/" +
+					caseDir.getName() + "/"));
 
 		boolean value = expectedMessage.equals(actualMessage);
 
@@ -136,6 +139,22 @@ public abstract class BaseJenkinsResultsParserTestCase {
 				JenkinsResultsParserUtil.getLocalURL(urlString)));
 	}
 
+	protected String fixMessage(String message) {
+		if (message.contains(JenkinsResultsParserUtil.DEPENDENCIES_URL_FILE)) {
+			message = message.replace(
+				JenkinsResultsParserUtil.DEPENDENCIES_URL_FILE,
+				"${dependencies.url}");
+		}
+
+		if (message.contains(JenkinsResultsParserUtil.DEPENDENCIES_URL_HTTP)) {
+			message = message.replace(
+				JenkinsResultsParserUtil.DEPENDENCIES_URL_HTTP,
+				"${dependencies.url}");
+		}
+
+		return message.replaceAll("[^\\S\\r\\n]+\n", "\n");
+	}
+
 	protected String formatXML(String xml)
 		throws DocumentException, IOException {
 
@@ -145,7 +164,19 @@ public abstract class BaseJenkinsResultsParserTestCase {
 			xml = xml.replace(_XML_REPLACEMENTS[i][0], _XML_REPLACEMENTS[i][1]);
 		}
 
-		Document document = saxReader.read(new StringReader(xml));
+		Document document = null;
+
+		try {
+			document = saxReader.read(new StringReader(xml));
+		}
+		catch (DocumentException de) {
+			DocumentException newDE = new DocumentException(
+				de.getMessage() + "\n" + xml);
+
+			newDE.setStackTrace(de.getStackTrace());
+
+			throw newDE;
+		}
 
 		String formattedXML = JenkinsResultsParserUtil.format(
 			document.getRootElement());
@@ -189,12 +220,23 @@ public abstract class BaseJenkinsResultsParserTestCase {
 
 		String urlString = url.toString();
 
-		return urlString.replace(System.getProperty("user.dir"), "${user.dir}");
+		String path = dependenciesDir.getPath();
+
+		int x =
+			path.indexOf("src/test/resources/dependencies/") +
+				"src/test/resources/dependencies/".length();
+
+		path = path.substring(x);
+
+		return urlString.replace(
+			"file:" + dependenciesDir.getAbsolutePath(),
+			"${dependencies.url}/" + path);
 	}
 
 	protected void writeExpectedMessage(File sampleDir) throws Exception {
 		File expectedMessageFile = new File(sampleDir, "expected_message.html");
-		String expectedMessage = getMessage(toURLString(sampleDir));
+
+		String expectedMessage = fixMessage(getMessage(toURLString(sampleDir)));
 
 		JenkinsResultsParserUtil.write(expectedMessageFile, expectedMessage);
 	}

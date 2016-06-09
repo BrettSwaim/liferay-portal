@@ -14,19 +14,25 @@
 
 package com.liferay.portal.verify;
 
-import com.liferay.portal.exception.LayoutFriendlyURLException;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.Projection;
+import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.Property;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
+import com.liferay.portal.kernel.exception.LayoutFriendlyURLException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutFriendlyURL;
+import com.liferay.portal.kernel.service.LayoutFriendlyURLLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Layout;
-import com.liferay.portal.model.LayoutFriendlyURL;
-import com.liferay.portal.service.LayoutFriendlyURLLocalServiceUtil;
-import com.liferay.portal.service.LayoutLocalServiceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,16 +44,22 @@ import java.util.List;
  */
 public class VerifyLayout extends VerifyProcess {
 
-	protected void deleteOrphanedLayouts() throws Exception {
-		runSQL(
-			"delete from Layout where layoutPrototypeUuid != '' and " +
-				"layoutPrototypeUuid not in (select uuid_ from " +
-					"LayoutPrototype)");
+	protected void deleteLinkedOrphanedLayouts() throws Exception {
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			StringBundler sb = new StringBundler(3);
+
+			sb.append("delete from Layout where layoutPrototypeUuid != '' ");
+			sb.append("and layoutPrototypeUuid not in (select uuid_ from ");
+			sb.append("LayoutPrototype) and layoutPrototypeLinkEnabled = TRUE");
+
+			runSQL(sb.toString());
+		}
 	}
 
 	@Override
 	protected void doVerify() throws Exception {
-		deleteOrphanedLayouts();
+		deleteLinkedOrphanedLayouts();
+		updateUnlinkedOrphanedLayouts();
 		verifyFriendlyURL();
 		verifyLayoutIdFriendlyURL();
 		verifyLayoutPrototypeLinkEnabled();
@@ -86,36 +98,94 @@ public class VerifyLayout extends VerifyProcess {
 		return layouts;
 	}
 
+	protected void updateUnlinkedOrphanedLayouts() throws Exception {
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			StringBundler sb = new StringBundler(4);
+
+			sb.append("update Layout set layoutPrototypeUuid = null where ");
+			sb.append("layoutPrototypeUuid != '' and layoutPrototypeUuid not ");
+			sb.append("in (select uuid_ from LayoutPrototype) and ");
+			sb.append("layoutPrototypeLinkEnabled = FALSE");
+
+			runSQL(sb.toString());
+		}
+	}
+
 	protected void verifyFriendlyURL() throws Exception {
-		List<Layout> layouts =
-			LayoutLocalServiceUtil.getNullFriendlyURLLayouts();
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			List<Layout> layouts =
+				LayoutLocalServiceUtil.getNullFriendlyURLLayouts();
 
-		for (Layout layout : layouts) {
-			List<LayoutFriendlyURL> layoutFriendlyURLs =
-				LayoutFriendlyURLLocalServiceUtil.getLayoutFriendlyURLs(
-					layout.getPlid());
+			for (Layout layout : layouts) {
+				List<LayoutFriendlyURL> layoutFriendlyURLs =
+					LayoutFriendlyURLLocalServiceUtil.getLayoutFriendlyURLs(
+						layout.getPlid());
 
-			for (LayoutFriendlyURL layoutFriendlyURL : layoutFriendlyURLs) {
-				String friendlyURL = StringPool.SLASH + layout.getLayoutId();
+				for (LayoutFriendlyURL layoutFriendlyURL : layoutFriendlyURLs) {
+					String friendlyURL =
+						StringPool.SLASH + layout.getLayoutId();
 
-				LayoutLocalServiceUtil.updateFriendlyURL(
-					layout.getUserId(), layout.getPlid(), friendlyURL,
-					layoutFriendlyURL.getLanguageId());
+					LayoutLocalServiceUtil.updateFriendlyURL(
+						layout.getUserId(), layout.getPlid(), friendlyURL,
+						layoutFriendlyURL.getLanguageId());
+				}
 			}
+
+			ActionableDynamicQuery actionableDynamicQuery =
+				LayoutFriendlyURLLocalServiceUtil.getActionableDynamicQuery();
+
+			actionableDynamicQuery.setAddCriteriaMethod(
+				new ActionableDynamicQuery.AddCriteriaMethod() {
+
+					@Override
+					public void addCriteria(DynamicQuery dynamicQuery) {
+						DynamicQuery layoutDynamicQuery =
+							LayoutLocalServiceUtil.dynamicQuery();
+
+						Projection projection = ProjectionFactoryUtil.property(
+							"plid");
+
+						layoutDynamicQuery.setProjection(projection);
+
+						Property plidProperty = PropertyFactoryUtil.forName(
+							"plid");
+
+						dynamicQuery.add(
+							plidProperty.notIn(layoutDynamicQuery));
+					}
+
+				});
+			actionableDynamicQuery.setPerformActionMethod(
+				new ActionableDynamicQuery.
+					PerformActionMethod<LayoutFriendlyURL>() {
+
+					@Override
+					public void performAction(
+						LayoutFriendlyURL layoutFriendlyURL) {
+
+						LayoutFriendlyURLLocalServiceUtil.
+							deleteLayoutFriendlyURL(layoutFriendlyURL);
+					}
+
+				});
+
+			actionableDynamicQuery.performActions();
 		}
 	}
 
 	protected void verifyLayoutIdFriendlyURL() throws Exception {
-		while (true) {
-			List<Layout> layouts = getInvalidLayoutIdFriendlyURLLayouts();
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			while (true) {
+				List<Layout> layouts = getInvalidLayoutIdFriendlyURLLayouts();
 
-			if (layouts.isEmpty()) {
-				break;
-			}
+				if (layouts.isEmpty()) {
+					break;
+				}
 
-			for (Layout layout : layouts) {
-				if (verifyLayoutIdFriendlyURL(layout)) {
-					continue;
+				for (Layout layout : layouts) {
+					if (verifyLayoutIdFriendlyURL(layout)) {
+						continue;
+					}
 				}
 			}
 		}
@@ -139,7 +209,7 @@ public class VerifyLayout extends VerifyProcess {
 
 		for (LayoutFriendlyURL layoutFriendlyURL : layoutFriendlyURLs) {
 			if (!oldFriendlyURL.equals(layoutFriendlyURL.getFriendlyURL())) {
-				return true;
+				continue;
 			}
 
 			try {
@@ -151,7 +221,7 @@ public class VerifyLayout extends VerifyProcess {
 				int type = lfurle.getType();
 
 				if (type == LayoutFriendlyURLException.DUPLICATE) {
-					return true;
+					continue;
 				}
 				else {
 					throw lfurle;
@@ -189,19 +259,23 @@ public class VerifyLayout extends VerifyProcess {
 	}
 
 	protected void verifyLayoutPrototypeLinkEnabled() throws Exception {
-		runSQL(
-			"update Layout set layoutPrototypeLinkEnabled = [$FALSE$] where " +
-				"type_ = 'link_to_layout' and layoutPrototypeLinkEnabled = " +
-					"[$TRUE$]");
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			runSQL(
+				"update Layout set layoutPrototypeLinkEnabled = [$FALSE$] " +
+					"where type_ = 'link_to_layout' and " +
+						"layoutPrototypeLinkEnabled = [$TRUE$]");
+		}
 	}
 
 	protected void verifyUuid() throws Exception {
-		verifyUuid("AssetEntry");
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			verifyUuid("AssetEntry");
 
-		runSQL(
-			"update Layout set uuid_ = sourcePrototypeLayoutUuid where " +
-				"sourcePrototypeLayoutUuid != '' and uuid_ != " +
-					"sourcePrototypeLayoutUuid");
+			runSQL(
+				"update Layout set uuid_ = sourcePrototypeLayoutUuid where " +
+					"sourcePrototypeLayoutUuid != '' and uuid_ != " +
+						"sourcePrototypeLayoutUuid");
+		}
 	}
 
 	protected void verifyUuid(String tableName) throws Exception {
@@ -210,8 +284,8 @@ public class VerifyLayout extends VerifyProcess {
 		sb.append("update ");
 		sb.append(tableName);
 		sb.append(" set layoutUuid = (select distinct ");
-		sb.append("sourcePrototypeLayoutUuid from Layout where ");
-		sb.append("Layout.uuid_ = ");
+		sb.append("sourcePrototypeLayoutUuid from Layout where Layout.uuid_ ");
+		sb.append("= ");
 		sb.append(tableName);
 		sb.append(".layoutUuid) where exists (select 1 from Layout where ");
 		sb.append("Layout.uuid_ = ");

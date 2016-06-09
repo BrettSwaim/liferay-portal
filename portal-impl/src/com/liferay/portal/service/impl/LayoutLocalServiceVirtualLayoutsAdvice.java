@@ -21,21 +21,21 @@ import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutConstants;
+import com.liferay.portal.kernel.model.LayoutSet;
+import com.liferay.portal.kernel.model.UserGroup;
 import com.liferay.portal.kernel.model.impl.VirtualLayout;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutSetLocalServiceUtil;
+import com.liferay.portal.kernel.service.UserGroupLocalServiceUtil;
 import com.liferay.portal.kernel.util.AutoResetThreadLocal;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowThreadLocal;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.GroupConstants;
-import com.liferay.portal.model.Layout;
-import com.liferay.portal.model.LayoutConstants;
-import com.liferay.portal.model.LayoutSet;
-import com.liferay.portal.model.UserGroup;
-import com.liferay.portal.service.GroupLocalServiceUtil;
-import com.liferay.portal.service.LayoutLocalServiceUtil;
-import com.liferay.portal.service.LayoutSetLocalServiceUtil;
-import com.liferay.portal.service.UserGroupLocalServiceUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.sites.kernel.util.SitesUtil;
 
@@ -71,8 +71,6 @@ public class LayoutLocalServiceVirtualLayoutsAdvice
 
 		Object[] arguments = methodInvocation.getArguments();
 
-		boolean workflowEnabled = WorkflowThreadLocal.isEnabled();
-
 		if (methodName.equals("getLayout") &&
 			(Arrays.equals(parameterTypes, _TYPES_L) ||
 			 Arrays.equals(parameterTypes, _TYPES_L_B_L))) {
@@ -90,6 +88,8 @@ public class LayoutLocalServiceVirtualLayoutsAdvice
 
 				return layout;
 			}
+
+			boolean workflowEnabled = WorkflowThreadLocal.isEnabled();
 
 			LayoutSet layoutSet = layout.getLayoutSet();
 
@@ -131,7 +131,7 @@ public class LayoutLocalServiceVirtualLayoutsAdvice
 
 				mergeLayoutSetPrototypeLayouts(
 					method, arguments, group, layoutSet, privateLayout,
-					workflowEnabled);
+					WorkflowThreadLocal.isEnabled());
 
 				List<Layout> layouts = (List<Layout>)methodInvocation.proceed();
 

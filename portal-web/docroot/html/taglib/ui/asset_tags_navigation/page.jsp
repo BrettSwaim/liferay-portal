@@ -53,7 +53,7 @@ else {
 }
 
 if (Validator.isNotNull(tag)) {
-	PortalUtil.addPortletBreadcrumbEntry(request, tag, currentURL);
+	PortalUtil.addPortletBreadcrumbEntry(request, tag, currentURL, null, false);
 }
 %>
 
@@ -78,7 +78,7 @@ private String _buildTagsNavigation(long scopeGroupId, long siteGroupId, String 
 
 	sb.append("<ul class=\"tag-items ");
 
-	if (showAssetCount && displayStyle.equals("cloud")) {
+	if (displayStyle.equals("cloud")) {
 		sb.append("tag-cloud");
 	}
 	else {

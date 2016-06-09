@@ -14,10 +14,10 @@
 
 package com.liferay.portal.upgrade.util;
 
-import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
@@ -27,13 +27,15 @@ import java.io.InputStream;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import java.util.List;
 
 /**
- * @author Shuyang Zhou
+ * @author     Shuyang Zhou
+ * @deprecated As of 7.0.0, replaced by {@link
+ *             com.liferay.portal.kernel.upgrade.UpgradeMVCCVersion}
  */
+@Deprecated
 public class UpgradeMVCCVersion extends UpgradeProcess {
 
 	public void upgradeMVCCVersion(
@@ -48,21 +50,19 @@ public class UpgradeMVCCVersion extends UpgradeProcess {
 
 		tableName = normalizeName(tableName, databaseMetaData);
 
-		ResultSet tableResultSet = databaseMetaData.getTables(
-			null, null, tableName, null);
+		try (ResultSet tableResultSet = databaseMetaData.getTables(
+				null, null, tableName, null)) {
 
-		try {
 			if (!tableResultSet.next()) {
 				_log.error("Table " + tableName + " does not exist");
 
 				return;
 			}
 
-			ResultSet columnResultSet = databaseMetaData.getColumns(
-				null, null, tableName,
-				normalizeName("mvccVersion", databaseMetaData));
+			try (ResultSet columnResultSet = databaseMetaData.getColumns(
+					null, null, tableName,
+					normalizeName("mvccVersion", databaseMetaData))) {
 
-			try {
 				if (columnResultSet.next()) {
 					return;
 				}
@@ -76,34 +76,13 @@ public class UpgradeMVCCVersion extends UpgradeProcess {
 						"Added column mvccVersion to table " + tableName);
 				}
 			}
-			finally {
-				DataAccess.cleanUp(columnResultSet);
-			}
-		}
-		finally {
-			DataAccess.cleanUp(tableResultSet);
 		}
 	}
 
 	@Override
 	protected void doUpgrade() throws Exception {
-		DatabaseMetaData databaseMetaData = connection.getMetaData();
-
-		List<Element> classElements = getClassElements();
-
-		for (Element classElement : classElements) {
-			if (classElement.element("version") == null) {
-				continue;
-			}
-
-			upgradeMVCCVersion(databaseMetaData, classElement);
-		}
-
-		String[] moduleTableNames = getModuleTableNames();
-
-		for (String moduleTableName : moduleTableNames) {
-			upgradeMVCCVersion(databaseMetaData, moduleTableName);
-		}
+		upgradeClassElementMVCCVersions();
+		upgradeModuleTableMVCCVersions();
 	}
 
 	protected List<Element> getClassElements() throws Exception {
@@ -129,19 +108,32 @@ public class UpgradeMVCCVersion extends UpgradeProcess {
 		return new String[] {"BackgroundTask", "Lock_"};
 	}
 
-	protected String normalizeName(
-			String name, DatabaseMetaData databaseMetaData)
-		throws SQLException {
+	protected void upgradeClassElementMVCCVersions() throws Exception {
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			DatabaseMetaData databaseMetaData = connection.getMetaData();
 
-		if (databaseMetaData.storesLowerCaseIdentifiers()) {
-			return StringUtil.toLowerCase(name);
+			List<Element> classElements = getClassElements();
+
+			for (Element classElement : classElements) {
+				if (classElement.element("version") == null) {
+					continue;
+				}
+
+				upgradeMVCCVersion(databaseMetaData, classElement);
+			}
 		}
+	}
 
-		if (databaseMetaData.storesUpperCaseIdentifiers()) {
-			return StringUtil.toUpperCase(name);
+	protected void upgradeModuleTableMVCCVersions() throws Exception {
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			DatabaseMetaData databaseMetaData = connection.getMetaData();
+
+			String[] moduleTableNames = getModuleTableNames();
+
+			for (String moduleTableName : moduleTableNames) {
+				upgradeMVCCVersion(databaseMetaData, moduleTableName);
+			}
 		}
-
-		return name;
 	}
 
 	protected void upgradeMVCCVersion(

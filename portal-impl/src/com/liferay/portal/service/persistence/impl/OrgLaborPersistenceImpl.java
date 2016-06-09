@@ -16,7 +16,6 @@ package com.liferay.portal.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.exception.NoSuchOrgLaborException;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -27,20 +26,19 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.exception.NoSuchOrgLaborException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.OrgLabor;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
+import com.liferay.portal.kernel.service.persistence.OrgLaborPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.MVCCModel;
-import com.liferay.portal.model.OrgLabor;
 import com.liferay.portal.model.impl.OrgLaborImpl;
 import com.liferay.portal.model.impl.OrgLaborModelImpl;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
-import com.liferay.portal.service.persistence.OrgLaborPersistence;
 
 import java.io.Serializable;
 
@@ -61,7 +59,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see OrgLaborPersistence
- * @see com.liferay.portal.service.persistence.OrgLaborUtil
+ * @see com.liferay.portal.kernel.service.persistence.OrgLaborUtil
  * @generated
  */
 @ProviderType
@@ -726,8 +724,8 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 					primaryKey);
 
 			if (orgLabor == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchOrgLaborException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -877,7 +875,7 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 	}
 
 	/**
-	 * Returns the org labor with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the org labor with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the org labor
 	 * @return the org labor
@@ -889,8 +887,8 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 		OrgLabor orgLabor = fetchByPrimaryKey(primaryKey);
 
 		if (orgLabor == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchOrgLaborException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -921,12 +919,14 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 	 */
 	@Override
 	public OrgLabor fetchByPrimaryKey(Serializable primaryKey) {
-		OrgLabor orgLabor = (OrgLabor)entityCache.getResult(OrgLaborModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(OrgLaborModelImpl.ENTITY_CACHE_ENABLED,
 				OrgLaborImpl.class, primaryKey);
 
-		if (orgLabor == _nullOrgLabor) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		OrgLabor orgLabor = (OrgLabor)serializable;
 
 		if (orgLabor == null) {
 			Session session = null;
@@ -941,7 +941,7 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 				}
 				else {
 					entityCache.putResult(OrgLaborModelImpl.ENTITY_CACHE_ENABLED,
-						OrgLaborImpl.class, primaryKey, _nullOrgLabor);
+						OrgLaborImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -995,18 +995,20 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			OrgLabor orgLabor = (OrgLabor)entityCache.getResult(OrgLaborModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(OrgLaborModelImpl.ENTITY_CACHE_ENABLED,
 					OrgLaborImpl.class, primaryKey);
 
-			if (orgLabor == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, orgLabor);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (OrgLabor)serializable);
+				}
 			}
 		}
 
@@ -1048,7 +1050,7 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(OrgLaborModelImpl.ENTITY_CACHE_ENABLED,
-					OrgLaborImpl.class, primaryKey, _nullOrgLabor);
+					OrgLaborImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -1282,34 +1284,4 @@ public class OrgLaborPersistenceImpl extends BasePersistenceImpl<OrgLabor>
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No OrgLabor exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No OrgLabor exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(OrgLaborPersistenceImpl.class);
-	private static final OrgLabor _nullOrgLabor = new OrgLaborImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<OrgLabor> toCacheModel() {
-				return _nullOrgLaborCacheModel;
-			}
-		};
-
-	private static final CacheModel<OrgLabor> _nullOrgLaborCacheModel = new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<OrgLabor>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public OrgLabor toEntityModel() {
-			return _nullOrgLabor;
-		}
-	}
 }

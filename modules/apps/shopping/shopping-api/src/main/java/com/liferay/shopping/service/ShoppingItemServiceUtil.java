@@ -53,7 +53,7 @@ public class ShoppingItemServiceUtil {
 		java.lang.String largeImageURL, java.io.File largeFile,
 		java.util.List<com.liferay.shopping.model.ShoppingItemField> itemFields,
 		java.util.List<com.liferay.shopping.model.ShoppingItemPrice> itemPrices,
-		com.liferay.portal.service.ServiceContext serviceContext)
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
 				   .addItem(groupId, categoryId, sku, name, description,
@@ -63,50 +63,9 @@ public class ShoppingItemServiceUtil {
 			itemFields, itemPrices, serviceContext);
 	}
 
-	public static void deleteItem(long itemId)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		getService().deleteItem(itemId);
-	}
-
-	public static int getCategoriesItemsCount(long groupId,
-		java.util.List<java.lang.Long> categoryIds) {
-		return getService().getCategoriesItemsCount(groupId, categoryIds);
-	}
-
 	public static com.liferay.shopping.model.ShoppingItem getItem(long itemId)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService().getItem(itemId);
-	}
-
-	public static java.util.List<com.liferay.shopping.model.ShoppingItem> getItems(
-		long groupId, long categoryId) {
-		return getService().getItems(groupId, categoryId);
-	}
-
-	public static java.util.List<com.liferay.shopping.model.ShoppingItem> getItems(
-		long groupId, long categoryId, int start, int end,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.shopping.model.ShoppingItem> obc) {
-		return getService().getItems(groupId, categoryId, start, end, obc);
-	}
-
-	public static int getItemsCount(long groupId, long categoryId) {
-		return getService().getItemsCount(groupId, categoryId);
-	}
-
-	public static com.liferay.shopping.model.ShoppingItem[] getItemsPrevAndNext(
-		long itemId,
-		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.shopping.model.ShoppingItem> obc)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return getService().getItemsPrevAndNext(itemId, obc);
-	}
-
-	/**
-	* Returns the OSGi service identifier.
-	*
-	* @return the OSGi service identifier
-	*/
-	public static java.lang.String getOSGiServiceIdentifier() {
-		return getService().getOSGiServiceIdentifier();
 	}
 
 	public static com.liferay.shopping.model.ShoppingItem updateItem(
@@ -121,7 +80,7 @@ public class ShoppingItemServiceUtil {
 		java.lang.String largeImageURL, java.io.File largeFile,
 		java.util.List<com.liferay.shopping.model.ShoppingItemField> itemFields,
 		java.util.List<com.liferay.shopping.model.ShoppingItemPrice> itemPrices,
-		com.liferay.portal.service.ServiceContext serviceContext)
+		com.liferay.portal.kernel.service.ServiceContext serviceContext)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return getService()
 				   .updateItem(itemId, groupId, categoryId, sku, name,
@@ -129,6 +88,47 @@ public class ShoppingItemServiceUtil {
 			stockQuantity, featured, sale, smallImage, smallImageURL,
 			smallFile, mediumImage, mediumImageURL, mediumFile, largeImage,
 			largeImageURL, largeFile, itemFields, itemPrices, serviceContext);
+	}
+
+	public static com.liferay.shopping.model.ShoppingItem[] getItemsPrevAndNext(
+		long itemId,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.shopping.model.ShoppingItem> obc)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return getService().getItemsPrevAndNext(itemId, obc);
+	}
+
+	public static int getCategoriesItemsCount(long groupId,
+		java.util.List<java.lang.Long> categoryIds) {
+		return getService().getCategoriesItemsCount(groupId, categoryIds);
+	}
+
+	public static int getItemsCount(long groupId, long categoryId) {
+		return getService().getItemsCount(groupId, categoryId);
+	}
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	public static java.lang.String getOSGiServiceIdentifier() {
+		return getService().getOSGiServiceIdentifier();
+	}
+
+	public static java.util.List<com.liferay.shopping.model.ShoppingItem> getItems(
+		long groupId, long categoryId) {
+		return getService().getItems(groupId, categoryId);
+	}
+
+	public static java.util.List<com.liferay.shopping.model.ShoppingItem> getItems(
+		long groupId, long categoryId, int start, int end,
+		com.liferay.portal.kernel.util.OrderByComparator<com.liferay.shopping.model.ShoppingItem> obc) {
+		return getService().getItems(groupId, categoryId, start, end, obc);
+	}
+
+	public static void deleteItem(long itemId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		getService().deleteItem(itemId);
 	}
 
 	public static ShoppingItemService getService() {

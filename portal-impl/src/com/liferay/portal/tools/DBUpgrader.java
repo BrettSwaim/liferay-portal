@@ -21,17 +21,19 @@ import com.liferay.portal.kernel.cache.MultiVMPoolUtil;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Release;
+import com.liferay.portal.kernel.model.ReleaseConstants;
 import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
+import com.liferay.portal.kernel.process.ClassPathUtil;
+import com.liferay.portal.kernel.service.ClassNameLocalServiceUtil;
+import com.liferay.portal.kernel.service.ReleaseLocalServiceUtil;
+import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Time;
-import com.liferay.portal.model.Release;
-import com.liferay.portal.model.ReleaseConstants;
-import com.liferay.portal.service.ClassNameLocalServiceUtil;
-import com.liferay.portal.service.ReleaseLocalServiceUtil;
-import com.liferay.portal.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.transaction.TransactionsUtil;
 import com.liferay.portal.util.InitUtil;
 import com.liferay.portal.util.PropsValues;
@@ -56,36 +58,60 @@ import org.apache.commons.lang.time.StopWatch;
  */
 public class DBUpgrader {
 
+	public static void checkRequiredBuildNumber(int requiredBuildNumber)
+		throws PortalException {
+
+		int buildNumber = ReleaseLocalServiceUtil.getBuildNumberOrCreate();
+
+		if (buildNumber > ReleaseInfo.getParentBuildNumber()) {
+			StringBundler sb = new StringBundler(6);
+
+			sb.append("Attempting to deploy an older Liferay Portal version. ");
+			sb.append("Current build number is ");
+			sb.append(buildNumber);
+			sb.append(" and attempting to deploy number ");
+			sb.append(ReleaseInfo.getParentBuildNumber());
+			sb.append(".");
+
+			throw new IllegalStateException(sb.toString());
+		}
+		else if (buildNumber < requiredBuildNumber) {
+			String msg =
+				"You must first upgrade to Liferay Portal " +
+					requiredBuildNumber;
+
+			System.out.println(msg);
+
+			throw new RuntimeException(msg);
+		}
+	}
+
 	public static void main(String[] args) {
 		try {
 			StopWatch stopWatch = new StopWatch();
 
 			stopWatch.start();
 
-			InitUtil.initWithSpring(true);
+			ClassPathUtil.initializeClassPaths(null);
+
+			InitUtil.initWithSpring(true, false);
 
 			upgrade();
 			verify();
 
-			Registry registry = RegistryUtil.getRegistry();
+			_registerModuleServiceLifecycle("database.initialized");
 
-			Map<String, Object> properties = new HashMap<>();
+			InitUtil.registerContext();
 
-			properties.put("module.service.lifecycle", "portal.initialized");
-			properties.put("service.vendor", ReleaseInfo.getVendor());
-			properties.put("service.version", ReleaseInfo.getVersion());
-
-			registry.registerService(
-				ModuleServiceLifecycle.class, new ModuleServiceLifecycle() {},
-				properties);
+			_registerModuleServiceLifecycle("portal.initialized");
 
 			System.out.println(
 				"\nCompleted Liferay core upgrade and verify processes in " +
 					(stopWatch.getTime() / Time.SECOND) + " seconds");
 
 			System.out.println(
-				"Running modules upgrades. Connect to your Gogo Shell to " +
-					"check the status.");
+				"Running modules upgrades. Connect to Gogo shell to check " +
+					"the status.");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -104,31 +130,13 @@ public class DBUpgrader {
 
 		CacheRegistryUtil.setActive(false);
 
-		// Check release
+		// Check required build number
 
-		int buildNumber = ReleaseLocalServiceUtil.getBuildNumberOrCreate();
-
-		if (buildNumber > ReleaseInfo.getParentBuildNumber()) {
-			StringBundler sb = new StringBundler(6);
-
-			sb.append("Attempting to deploy an older Liferay Portal version. ");
-			sb.append("Current build version is ");
-			sb.append(buildNumber);
-			sb.append(" and attempting to deploy version ");
-			sb.append(ReleaseInfo.getParentBuildNumber());
-			sb.append(".");
-
-			throw new IllegalStateException(sb.toString());
-		}
-		else if (buildNumber < ReleaseInfo.RELEASE_5_2_3_BUILD_NUMBER) {
-			String msg = "You must first upgrade to Liferay Portal 5.2.3";
-
-			System.out.println(msg);
-
-			throw new RuntimeException(msg);
-		}
+		checkRequiredBuildNumber(ReleaseInfo.RELEASE_5_2_3_BUILD_NUMBER);
 
 		// Upgrade
+
+		int buildNumber = ReleaseLocalServiceUtil.getBuildNumberOrCreate();
 
 		if (_log.isDebugEnabled()) {
 			_log.debug("Update build " + buildNumber);
@@ -270,8 +278,9 @@ public class DBUpgrader {
 		}
 
 		release = ReleaseLocalServiceUtil.updateRelease(
-			release.getReleaseId(), ReleaseInfo.getParentBuildNumber(),
-			ReleaseInfo.getBuildDate(), verified);
+			release.getReleaseId(), ReleaseInfo.getVersion(),
+			ReleaseInfo.getParentBuildNumber(), ReleaseInfo.getBuildDate(),
+			verified);
 
 		// Enable database caching after verify
 
@@ -304,8 +313,8 @@ public class DBUpgrader {
 
 		sb.append("Permission conversion to algorithm 6 has not been ");
 		sb.append("completed. Please complete the conversion prior to ");
-		sb.append("starting the portal. The conversion process is ");
-		sb.append("available in portal versions starting with ");
+		sb.append("starting the portal. The conversion process is available ");
+		sb.append("in portal versions starting with ");
 		sb.append(ReleaseInfo.RELEASE_5_2_3_BUILD_NUMBER);
 		sb.append(" and prior to ");
 		sb.append(ReleaseInfo.RELEASE_6_2_0_BUILD_NUMBER);
@@ -321,12 +330,12 @@ public class DBUpgrader {
 
 		StringBundler sb = new StringBundler(6);
 
-		sb.append("The database contains changes from a previous ");
-		sb.append("upgrade attempt that failed. Please restore the old ");
-		sb.append("database and file system and retry the upgrade. A ");
-		sb.append("patch may be required if the upgrade failed due to a");
-		sb.append(" bug or an unforeseen data permutation that resulted ");
-		sb.append("from a corrupt database.");
+		sb.append("The database contains changes from a previous upgrade ");
+		sb.append("attempt that failed. Please restore the old database and ");
+		sb.append("file system and retry the upgrade. A patch may be ");
+		sb.append("required if the upgrade failed due to a bug or an ");
+		sb.append("unforeseen data permutation that resulted from a corrupt ");
+		sb.append("database.");
 
 		throw new IllegalStateException(sb.toString());
 	}
@@ -385,6 +394,22 @@ public class DBUpgrader {
 		finally {
 			DataAccess.cleanUp(con, ps, rs);
 		}
+	}
+
+	private static void _registerModuleServiceLifecycle(
+		String moduleServiceLifecycle) {
+
+		Registry registry = RegistryUtil.getRegistry();
+
+		Map<String, Object> properties = new HashMap<>();
+
+		properties.put("module.service.lifecycle", moduleServiceLifecycle);
+		properties.put("service.vendor", ReleaseInfo.getVendor());
+		properties.put("service.version", ReleaseInfo.getVersion());
+
+		registry.registerService(
+			ModuleServiceLifecycle.class, new ModuleServiceLifecycle() {},
+			properties);
 	}
 
 	private static void _updateCompanyKey() throws Exception {

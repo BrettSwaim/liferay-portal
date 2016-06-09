@@ -16,14 +16,14 @@ package com.liferay.portlet;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletApp;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.CustomUserAttributes;
 import com.liferay.portal.kernel.portlet.UserAttributes;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.InstanceFactory;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.PortletApp;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.UserLocalServiceUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -99,6 +99,10 @@ public class UserInfoFactory {
 				UserAttributes.LIFERAY_USER_ID,
 				userAttributes.getValue(UserAttributes.LIFERAY_USER_ID));
 
+			userInfo.put(
+				UserAttributes.USER_NAME_FULL,
+				userAttributes.getValue(UserAttributes.USER_NAME_FULL));
+
 			// Portlet user attributes
 
 			for (String userAttributeName : portletApp.getUserAttributes()) {
@@ -154,7 +158,7 @@ public class UserInfoFactory {
 					}
 				}
 				else {
-					customUserAttributes = newInstance(
+					customUserAttributes = _newInstance(
 						customUserAttributesClassName);
 				}
 
@@ -177,7 +181,7 @@ public class UserInfoFactory {
 		return userInfo;
 	}
 
-	private static CustomUserAttributes newInstance(String className) {
+	private static CustomUserAttributes _newInstance(String className) {
 		try {
 			return (CustomUserAttributes)InstanceFactory.newInstance(className);
 		}

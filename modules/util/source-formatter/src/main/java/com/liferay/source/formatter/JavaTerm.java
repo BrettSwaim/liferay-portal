@@ -17,6 +17,7 @@ package com.liferay.source.formatter;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +95,7 @@ public class JavaTerm {
 
 	public List<String> getParameterNames() {
 		if (_parameterNames == null) {
-			readParameterNamesAndTypes();
+			_readReturnTypeAndParameters();
 		}
 
 		return _parameterNames;
@@ -102,10 +103,18 @@ public class JavaTerm {
 
 	public List<String> getParameterTypes() {
 		if (_parameterTypes == null) {
-			readParameterNamesAndTypes();
+			_readReturnTypeAndParameters();
 		}
 
 		return _parameterTypes;
+	}
+
+	public String getReturnType() {
+		if (_returnType == null) {
+			_readReturnTypeAndParameters();
+		}
+
+		return _returnType;
 	}
 
 	public int getType() {
@@ -125,15 +134,11 @@ public class JavaTerm {
 	}
 
 	public boolean hasReturnType() {
-		if (!isMethod()) {
-			return false;
+		if (Validator.isNotNull(getReturnType())) {
+			return true;
 		}
 
-		int i = _content.indexOf(_name);
-
-		String methodSignature = StringUtil.trim(_content.substring(0, i));
-
-		return !methodSignature.endsWith(" void");
+		return false;
 	}
 
 	public boolean isClass() {
@@ -263,9 +268,10 @@ public class JavaTerm {
 		_type = type;
 	}
 
-	protected void readParameterNamesAndTypes() {
+	private void _readReturnTypeAndParameters() {
 		_parameterNames = new ArrayList<>();
 		_parameterTypes = new ArrayList<>();
+		_returnType = StringPool.BLANK;
 
 		if (!isConstructor() && !isMethod()) {
 			return;
@@ -287,9 +293,38 @@ public class JavaTerm {
 			return;
 		}
 
-		x = _content.indexOf(CharPool.OPEN_PARENTHESIS, x);
+		int y = _content.indexOf(CharPool.OPEN_PARENTHESIS, x);
 
-		int y = x;
+		if (isMethod()) {
+			String linePart = _content.substring(x, y);
+
+			linePart = StringUtil.removeChar(linePart, CharPool.TAB);
+			linePart = StringUtil.replace(
+				linePart, StringPool.PERIOD + StringPool.NEW_LINE,
+				StringPool.PERIOD);
+			linePart = StringUtil.replace(
+				linePart, CharPool.NEW_LINE, StringPool.SPACE);
+
+			int z = linePart.lastIndexOf(CharPool.SPACE);
+
+			linePart = linePart.substring(0, z);
+
+			while (true) {
+				z = linePart.lastIndexOf(CharPool.SPACE, z - 1);
+
+				_returnType = linePart.substring(z + 1);
+
+				if (_javaSourceProcessor.getLevel(_returnType, "<", ">") == 0) {
+					break;
+				}
+			}
+
+			if (_returnType.equals("void")) {
+				_returnType = StringPool.BLANK;
+			}
+		}
+
+		x = y;
 
 		String parameters = StringPool.BLANK;
 
@@ -302,25 +337,23 @@ public class JavaTerm {
 
 			parameters = _content.substring(x + 1, y);
 
-			int closeParenthesesCount = StringUtil.count(
-				parameters, StringPool.CLOSE_PARENTHESIS);
-			int openParenthesesCount = StringUtil.count(
-				parameters, StringPool.OPEN_PARENTHESIS);
-
-			if (closeParenthesesCount == openParenthesesCount) {
+			if (_javaSourceProcessor.getLevel(parameters) == 0) {
 				break;
 			}
 		}
 
+		parameters = StringUtil.removeChar(parameters, CharPool.TAB);
 		parameters = StringUtil.replace(
-			parameters, new String[] {StringPool.TAB, StringPool.NEW_LINE},
-			new String[] {StringPool.BLANK, StringPool.SPACE});
+			parameters, StringPool.PERIOD + StringPool.NEW_LINE,
+			StringPool.PERIOD);
+		parameters = StringUtil.replace(
+			parameters, CharPool.NEW_LINE, StringPool.SPACE);
 
 		for (x = 0;;) {
 			parameters = StringUtil.trim(parameters);
 
 			if (parameters.startsWith(StringPool.AT)) {
-				parameters = stripAnnotation(parameters);
+				parameters = _stripAnnotation(parameters);
 			}
 
 			if (parameters.startsWith("final ")) {
@@ -335,12 +368,7 @@ public class JavaTerm {
 
 			String parameterType = parameters.substring(0, x);
 
-			int greaterThanCount = StringUtil.count(
-				parameterType, StringPool.GREATER_THAN);
-			int lessThanCount = StringUtil.count(
-				parameterType, StringPool.LESS_THAN);
-
-			if (greaterThanCount != lessThanCount) {
+			if (_javaSourceProcessor.getLevel(parameterType, "<", ">") != 0) {
 				continue;
 			}
 
@@ -362,7 +390,7 @@ public class JavaTerm {
 		}
 	}
 
-	protected String stripAnnotation(String parameters) {
+	private String _stripAnnotation(String parameters) {
 		int pos = -1;
 
 		while (true) {
@@ -374,29 +402,23 @@ public class JavaTerm {
 
 			String annotation = parameters.substring(0, pos);
 
-			int closeParenthesesCount = StringUtil.count(
-				annotation, StringPool.CLOSE_PARENTHESIS);
-			int greaterThanCount = StringUtil.count(
-				annotation, StringPool.GREATER_THAN);
-			int lessThanCount = StringUtil.count(
-				annotation, StringPool.LESS_THAN);
-			int openParenthesesCount = StringUtil.count(
-				annotation, StringPool.OPEN_PARENTHESIS);
-
-			if ((closeParenthesesCount == openParenthesesCount) &&
-				(greaterThanCount == lessThanCount)) {
+			if ((_javaSourceProcessor.getLevel(annotation) == 0) &&
+				(_javaSourceProcessor.getLevel(annotation, "<", ">") == 0)) {
 
 				return parameters.substring(pos + 1);
 			}
 		}
 	}
 
-	private String _content;
-	private String _indent;
-	private int _lineCount;
-	private String _name;
+	private final String _content;
+	private final String _indent;
+	private final JavaSourceProcessor _javaSourceProcessor =
+		new JavaSourceProcessor();
+	private final int _lineCount;
+	private final String _name;
 	private List<String> _parameterNames;
 	private List<String> _parameterTypes;
+	private String _returnType;
 	private int _type;
 
 }

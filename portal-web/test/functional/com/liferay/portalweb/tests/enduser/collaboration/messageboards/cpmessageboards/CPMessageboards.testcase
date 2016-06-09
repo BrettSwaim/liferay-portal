@@ -1,4 +1,5 @@
 <definition component-name="portal-collaboration">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Message Boards" />
 
 	<set-up>
@@ -101,6 +102,32 @@
 			<var name="threadBody" value="${threadBody}" />
 			<var name="threadSubject" value="${threadSubject}" />
 		</execute>
+	</command>
+
+	<command name="DeleteMBCategories" priority="4">
+		<var name="categoryNameList" value="MB Category1 Name,MB Category2 Name,MB Category3 Name" />
+
+		<execute macro="Navigator#openURL" />
+
+		<for list="${categoryNameList}" param="categoryName" >
+			<execute macro="ProductMenu#gotoSitesContent">
+				<var name="portlet" value="Message Boards" />
+			</execute>
+
+			<execute macro="MessageboardsCategory#addCP">
+				<var name="categoryName" value="${categoryName}" />
+			</execute>
+		</for>
+
+		<execute macro="MessageboardsCategory#tearDownCP">
+			<var name="assetType" value="3 items" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Message Boards" />
+		</execute>
+
+		<execute function="AssertTextEquals#assertText" locator1="Message#EMPTY_INFO" value1="There are no threads nor categories." />
 	</command>
 
 	<command name="EditMBThreadBody" priority="5">
@@ -267,10 +294,6 @@
 		</execute>
 
 		<execute macro="MessageboardsThread#viewAnonymousPostingCheckboxCP" />
-
-		<execute macro="Portlet#gotoPortletOptions">
-			<var name="portletOption" value="Configuration" />
-		</execute>
 
 		<execute macro="MessageboardsPortlet#configureAnonymousPostingCP">
 			<var name="anonymousPostingEnabled" value="false" />

@@ -19,11 +19,11 @@ import aQute.bnd.annotation.ProviderType;
 import com.liferay.expando.kernel.model.ExpandoBridge;
 
 import com.liferay.portal.kernel.bean.AutoEscape;
-import com.liferay.portal.model.BaseModel;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.GroupedModel;
-import com.liferay.portal.model.ShardedModel;
-import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.CacheModel;
+import com.liferay.portal.kernel.model.GroupedModel;
+import com.liferay.portal.kernel.model.ShardedModel;
+import com.liferay.portal.kernel.service.ServiceContext;
 
 import java.io.Serializable;
 
@@ -294,19 +294,19 @@ public interface ShoppingCartModel extends BaseModel<ShoppingCart>, GroupedModel
 	public Object clone();
 
 	@Override
-	public int compareTo(com.liferay.shopping.model.ShoppingCart shoppingCart);
+	public int compareTo(ShoppingCart shoppingCart);
 
 	@Override
 	public int hashCode();
 
 	@Override
-	public CacheModel<com.liferay.shopping.model.ShoppingCart> toCacheModel();
+	public CacheModel<ShoppingCart> toCacheModel();
 
 	@Override
-	public com.liferay.shopping.model.ShoppingCart toEscapedModel();
+	public ShoppingCart toEscapedModel();
 
 	@Override
-	public com.liferay.shopping.model.ShoppingCart toUnescapedModel();
+	public ShoppingCart toUnescapedModel();
 
 	@Override
 	public String toString();

@@ -18,6 +18,7 @@ import com.liferay.portal.kernel.io.unsync.UnsyncBufferedReader;
 import com.liferay.portal.kernel.io.unsync.UnsyncStringReader;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.NaturalOrderStringComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -37,6 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 
@@ -49,15 +53,17 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 	public String[] getIncludes() {
 		if (portalSource) {
 			return new String[] {
-				"**/Language.properties", "**/portal.properties",
+				"**/Language.properties",
+				"**/liferay-plugin-package.properties", "**/portal.properties",
 				"**/portal-ext.properties", "**/portal-legacy-*.properties",
 				"**/portlet.properties", "**/source-formatter.properties"
 			};
 		}
 
 		return new String[] {
-			"**/portal.properties", "**/portal-ext.properties",
-			"**/portlet.properties", "**/source-formatter.properties"
+			"**/liferay-plugin-package.properties", "**/portal.properties",
+			"**/portal-ext.properties", "**/portlet.properties",
+			"**/source-formatter.properties"
 		};
 	}
 
@@ -120,6 +126,41 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 		}
 	}
 
+	protected void checkMaxLineLength(
+		String line, String fileName, int lineCount) {
+
+		String trimmedLine = StringUtil.trimLeading(line);
+
+		if (!trimmedLine.startsWith("# ")) {
+			return;
+		}
+
+		int lineLength = getLineLength(line);
+
+		if (lineLength <= _maxLineLength) {
+			return;
+		}
+
+		int x = line.indexOf("# ");
+		int y = line.lastIndexOf(StringPool.SPACE, _maxLineLength);
+
+		if ((x + 1) == y) {
+			return;
+		}
+
+		int z = line.indexOf(StringPool.SPACE, _maxLineLength + 1);
+
+		if (z == -1) {
+			z = lineLength;
+		}
+
+		if ((z - y + x + 2) <= _maxLineLength) {
+			processErrorMessage(
+				fileName,
+				"> " + _maxLineLength + ": " + fileName + " " + lineCount);
+		}
+	}
+
 	@Override
 	protected String doFormat(
 			File file, String fileName, String absolutePath, String content)
@@ -132,6 +173,9 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 
 			checkLanguageProperties(fileName);
 		}
+		else if (fileName.endsWith("liferay-plugin-package.properties")) {
+			newContent = formatPluginPackageProperties(absolutePath, content);
+		}
 		else if (fileName.endsWith("portlet.properties")) {
 			newContent = formatPortletProperties(fileName, content);
 		}
@@ -142,12 +186,42 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 			formatPortalProperties(fileName, content);
 		}
 
-		return formatProperties(newContent);
+		return formatProperties(fileName, newContent);
 	}
 
 	@Override
 	protected List<String> doGetFileNames() throws Exception {
 		return getFileNames(new String[0], getIncludes());
+	}
+
+	protected String fixIncorrectLicenses(String absolutePath, String content) {
+		if (!absolutePath.contains("/modules/apps/") &&
+			!absolutePath.contains("/modules/private/apps/")) {
+
+			return content;
+		}
+
+		Matcher matcher = _licensesPattern.matcher(content);
+
+		if (!matcher.find()) {
+			return content;
+		}
+
+		String licenses = matcher.group(1);
+
+		String expectedLicenses = "LGPL";
+
+		if (absolutePath.contains("/modules/private/apps/")) {
+			expectedLicenses = "DXP";
+		}
+
+		if (licenses.equals(expectedLicenses)) {
+			return content;
+		}
+
+		return StringUtil.replace(
+			content, "licenses=" + licenses, "licenses=" + expectedLicenses,
+			matcher.start());
 	}
 
 	protected void formatDuplicateLanguageKeys() throws Exception {
@@ -214,6 +288,26 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 			coreLanguagePropertiesFile,
 			"portal-impl/src/content/Language.properties",
 			coreLanguagePropertiesContent, newCoreLanguagePropertiesContent);
+	}
+
+	protected String formatPluginPackageProperties(
+		String absolutePath, String content) {
+
+		content = StringUtil.replace(content, "\n\n", "\n");
+
+		content = StringUtil.replace(
+			content, StringPool.TAB, StringPool.FOUR_SPACES);
+
+		Matcher matcher = _singleValueOnMultipleLinesPattern.matcher(content);
+
+		if (matcher.find()) {
+			content = StringUtil.replaceFirst(
+				content, matcher.group(1), StringPool.BLANK, matcher.start());
+		}
+
+		content = sortDefinitions(content, new NaturalOrderStringComparator());
+
+		return fixIncorrectLicenses(absolutePath, content);
 	}
 
 	protected void formatPortalProperties(String fileName, String content)
@@ -322,16 +416,24 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 		return content;
 	}
 
-	protected String formatProperties(String content) throws Exception {
+	protected String formatProperties(String fileName, String content)
+		throws Exception {
+
 		StringBundler sb = new StringBundler();
 
 		try (UnsyncBufferedReader unsyncBufferedReader =
 				new UnsyncBufferedReader(new UnsyncStringReader(content))) {
 
+			int lineCount = 0;
+
 			String line = null;
 
 			while ((line = unsyncBufferedReader.readLine()) != null) {
+				lineCount++;
+
 				line = trimLine(line, true);
+
+				checkMaxLineLength(line, fileName, lineCount);
 
 				if (line.startsWith(StringPool.TAB)) {
 					line = line.replace(StringPool.TAB, StringPool.FOUR_SPACES);
@@ -365,6 +467,17 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 
 		if (pos != -1) {
 			path = fileName.substring(0, pos + 1);
+		}
+
+		boolean hasPrivateAppsDir = false;
+
+		if (portalSource) {
+			File privateAppsDir = getFile(
+				"modules/private/apps", PORTAL_MAX_DIR_LEVEL);
+
+			if (privateAppsDir != null) {
+				hasPrivateAppsDir = true;
+			}
 		}
 
 		Properties properties = new Properties();
@@ -403,6 +516,12 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 
 				if (pos != -1) {
 					propertyFileName = propertyFileName.substring(0, pos);
+				}
+
+				if (portalSource && !hasPrivateAppsDir &&
+					propertyFileName.contains("/private/apps/")) {
+
+					continue;
 				}
 
 				File file = new File(path + propertyFileName);
@@ -449,12 +568,15 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 			return _portalPortalPropertiesContent;
 		}
 
+		String portalPortalPropertiesContent = null;
+
 		if (portalSource) {
 			File file = getFile(
-				"portal-impl/src/portal.properties",
-				BaseSourceProcessor.PORTAL_MAX_DIR_LEVEL);
+				"portal-impl/src/portal.properties", PORTAL_MAX_DIR_LEVEL);
 
-			_portalPortalPropertiesContent = FileUtil.read(file);
+			portalPortalPropertiesContent = FileUtil.read(file);
+
+			_portalPortalPropertiesContent = portalPortalPropertiesContent;
 
 			return _portalPortalPropertiesContent;
 		}
@@ -465,11 +587,13 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 		URL url = classLoader.getResource("portal.properties");
 
 		if (url != null) {
-			_portalPortalPropertiesContent = IOUtils.toString(url);
+			portalPortalPropertiesContent = IOUtils.toString(url);
 		}
 		else {
-			_portalPortalPropertiesContent = StringPool.BLANK;
+			portalPortalPropertiesContent = StringPool.BLANK;
 		}
+
+		_portalPortalPropertiesContent = portalPortalPropertiesContent;
 
 		return _portalPortalPropertiesContent;
 	}
@@ -487,7 +611,7 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 			Properties properties = new Properties();
 
 			fileName = StringUtil.replace(
-				fileName, StringPool.BACK_SLASH, StringPool.SLASH);
+				fileName, CharPool.BACK_SLASH, CharPool.SLASH);
 
 			InputStream inputStream = new FileInputStream(fileName);
 
@@ -500,6 +624,11 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 	@Override
 	protected void postFormat() throws Exception {
 		formatDuplicateLanguageKeys();
+	}
+
+	@Override
+	protected void preFormat() throws Exception {
+		_maxLineLength = sourceFormatterArgs.getMaxLineLength();
 	}
 
 	protected void removeDuplicateKeys(String fileName, Set<String> lines)
@@ -530,9 +659,14 @@ public class PropertiesSourceProcessor extends BaseSourceProcessor {
 		processFormattedFile(file, fileName, content, newContent);
 	}
 
-	private Map<String, Set<String>> _duplicateLanguageKeyLinesMap =
-		new HashMap<>();
+	private final Map<String, Set<String>> _duplicateLanguageKeyLinesMap =
+		new ConcurrentHashMap<>();
 	private Map<String, Properties> _languagePropertiesMap;
+	private final Pattern _licensesPattern = Pattern.compile(
+		"\nlicenses=(\\w+)\n");
+	private int _maxLineLength;
 	private String _portalPortalPropertiesContent;
+	private final Pattern _singleValueOnMultipleLinesPattern = Pattern.compile(
+		"\n.*=(\\\\\n *).*(\n[^ ]|\\Z)");
 
 }

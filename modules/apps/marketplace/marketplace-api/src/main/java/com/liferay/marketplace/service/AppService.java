@@ -22,10 +22,10 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
+import com.liferay.portal.kernel.service.BaseService;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Transactional;
-import com.liferay.portal.service.BaseService;
 
 import java.io.File;
 
@@ -55,6 +55,8 @@ public interface AppService extends BaseService {
 	 */
 	public App deleteApp(long appId) throws PortalException;
 
+	public App updateApp(File file) throws PortalException;
+
 	/**
 	* Returns the OSGi service identifier.
 	*
@@ -65,6 +67,4 @@ public interface AppService extends BaseService {
 	public void installApp(long remoteAppId) throws PortalException;
 
 	public void uninstallApp(long remoteAppId) throws PortalException;
-
-	public App updateApp(File file) throws PortalException;
 }

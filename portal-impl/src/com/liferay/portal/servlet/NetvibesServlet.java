@@ -14,9 +14,11 @@
 
 package com.liferay.portal.servlet;
 
-import com.liferay.portal.exception.NoSuchLayoutException;
+import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.PortalWebResourceConstants;
 import com.liferay.portal.kernel.servlet.PortalWebResourcesUtil;
 import com.liferay.portal.kernel.servlet.ServletResponseUtil;
@@ -28,8 +30,6 @@ import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.util.PropsValues;
 
 import java.io.IOException;
@@ -123,8 +123,8 @@ public class NetvibesServlet extends HttpServlet {
 		sb.append("<head>");
 		sb.append("<link href=\"");
 		sb.append(_NETVIBES_CSS);
-		sb.append("\" rel=\"stylesheet\" ");
-		sb.append("type=\"text/css\" />");
+		sb.append("\" rel=\"stylesheet\" type=\"text/css\" ");
+		sb.append("/>");
 		sb.append("<script src=\"");
 		sb.append(_NETVIBES_JS);
 		sb.append("\" ");
@@ -134,8 +134,8 @@ public class NetvibesServlet extends HttpServlet {
 		sb.append("</title>");
 		sb.append("<link href=\"");
 		sb.append(iconURL);
-		sb.append("\" rel=\"icon\" ");
-		sb.append("type=\"image/png\" />");
+		sb.append("\" rel=\"icon\" type=\"image/png\" ");
+		sb.append("/>");
 		sb.append("</head>");
 		sb.append("<body>");
 		sb.append("<script src=\"");

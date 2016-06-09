@@ -174,6 +174,7 @@ public final class XMLLoggerHandler {
 		List<Element> childElements = element.elements();
 
 		if ((!childElements.isEmpty() && !_isExecutingFunction(element) &&
+			 !_isExecutingGroovyScript(element) &&
 			 !_isExecutingMethod(element)) ||
 			_isExecutingMacro(element) || _isExecutingTestCase(element)) {
 
@@ -181,8 +182,10 @@ public final class XMLLoggerHandler {
 		}
 
 		if (!childElements.isEmpty() &&
-			(_isExecutingFunction(element) || _isExecutingMacro(element) ||
-			 _isExecutingTestCase(element) || _isExecutingMethod(element))) {
+			(_isExecutingFunction(element) ||
+			 _isExecutingGroovyScript(element) ||
+			 _isExecutingMacro(element) || _isExecutingTestCase(element) ||
+			 _isExecutingMethod(element))) {
 
 			sb.append(_getBtnItemText("btn-var"));
 		}
@@ -261,6 +264,12 @@ public final class XMLLoggerHandler {
 					if (childElement.attributeValue("function") != null) {
 						loggerElement.addChildLoggerElement(
 							_getFunctionExecuteLoggerElement(childElement));
+					}
+					else if (childElement.attributeValue("groovy-script") !=
+								null) {
+
+						loggerElement.addChildLoggerElement(
+							_getGroovyScriptLoggerElement(childElement));
 					}
 					else if (childElement.attributeValue("macro") != null) {
 						loggerElement.addChildLoggerElement(
@@ -395,6 +404,12 @@ public final class XMLLoggerHandler {
 		return _getLineGroupLoggerElement("function", element);
 	}
 
+	private static LoggerElement _getGroovyScriptLoggerElement(
+		Element element) {
+
+		return _getLineGroupLoggerElement("groovy-script", element);
+	}
+
 	private static LoggerElement _getIfChildContainerLoggerElement(
 			Element element)
 		throws Exception {
@@ -454,9 +469,9 @@ public final class XMLLoggerHandler {
 
 		if (element.attributeValue("macro") != null) {
 			lineContainerLoggerElement.setAttribute(
-				"onmouseover", "macroHover(this, true)");
-			lineContainerLoggerElement.setAttribute(
 				"onmouseout", "macroHover(this, false)");
+			lineContainerLoggerElement.setAttribute(
+				"onmouseover", "macroHover(this, true)");
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -730,6 +745,14 @@ public final class XMLLoggerHandler {
 		return false;
 	}
 
+	private static boolean _isExecutingGroovyScript(Element element) {
+		if (element.attributeValue("groovy-script") != null) {
+			return true;
+		}
+
+		return false;
+	}
+
 	private static boolean _isExecutingMacro(Element element) {
 		if ((element.attributeValue("macro") != null) ||
 			(element.attributeValue("macro-desktop") != null) ||
@@ -761,6 +784,6 @@ public final class XMLLoggerHandler {
 	private static int _btnLinkVarId;
 	private static final Map<String, LoggerElement> _loggerElements =
 		new HashMap<>();
-	private static LoggerElement _xmlLogLoggerElement = null;
+	private static LoggerElement _xmlLogLoggerElement;
 
 }

@@ -19,20 +19,20 @@ import com.liferay.portal.kernel.cache.MultiVMPoolUtil;
 import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.cache.index.IndexEncoder;
 import com.liferay.portal.kernel.cache.index.PortalCacheIndexer;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.security.permission.ResourceBlockIdsBag;
 import com.liferay.portal.kernel.security.permission.UserBag;
 import com.liferay.portal.kernel.util.HashUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.ResourceConstants;
-import com.liferay.portal.model.Role;
 import com.liferay.portal.util.PropsValues;
 
 import java.io.Serializable;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * @author Charles May
@@ -357,10 +357,10 @@ public class PermissionCacheUtil {
 			PermissionKey permissionKey = (PermissionKey)obj;
 
 			if ((permissionKey._groupId == _groupId) &&
-				Validator.equals(permissionKey._name, _name) &&
-				Validator.equals(permissionKey._primKey, _primKey) &&
+				Objects.equals(permissionKey._name, _name) &&
+				Objects.equals(permissionKey._primKey, _primKey) &&
 				Arrays.equals(permissionKey._roleIds, _roleIds) &&
-				Validator.equals(permissionKey._actionId, _actionId)) {
+				Objects.equals(permissionKey._actionId, _actionId)) {
 
 				return true;
 			}
@@ -440,7 +440,7 @@ public class PermissionCacheUtil {
 			if ((resourceBlockIdsKey._companyId == _companyId) &&
 				(resourceBlockIdsKey._groupId == _groupId) &&
 				(resourceBlockIdsKey._userId == _userId) &&
-				Validator.equals(resourceBlockIdsKey._name, _name)) {
+				Objects.equals(resourceBlockIdsKey._name, _name)) {
 
 				return true;
 			}
@@ -559,12 +559,12 @@ public class PermissionCacheUtil {
 
 		@Override
 		public boolean equals(Object obj) {
-			UserPrimaryKeyRoleKey UserPrimaryKeyRoleKey =
+			UserPrimaryKeyRoleKey userPrimaryKeyRoleKey =
 				(UserPrimaryKeyRoleKey)obj;
 
-			if ((UserPrimaryKeyRoleKey._userId == _userId) &&
-				(UserPrimaryKeyRoleKey._primaryKey == _primaryKey) &&
-				Validator.equals(UserPrimaryKeyRoleKey._name, _name)) {
+			if ((userPrimaryKeyRoleKey._userId == _userId) &&
+				(userPrimaryKeyRoleKey._primaryKey == _primaryKey) &&
+				Objects.equals(userPrimaryKeyRoleKey._name, _name)) {
 
 				return true;
 			}

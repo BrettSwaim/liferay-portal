@@ -1604,8 +1604,7 @@ create table UserGroup (
 	parentUserGroupId LONG,
 	name VARCHAR(75) null,
 	description STRING null,
-	addedByLDAPImport BOOLEAN,
-	lastPublishDate DATE null
+	addedByLDAPImport BOOLEAN
 );
 
 create table UserGroupGroupRole (
@@ -1649,7 +1648,7 @@ create table UserNotificationEvent (
 	userNotificationEventId LONG not null primary key,
 	companyId LONG,
 	userId LONG,
-	type_ VARCHAR(75) null,
+	type_ VARCHAR(200) null,
 	timestamp LONG,
 	deliveryType INTEGER,
 	deliverBy LONG,

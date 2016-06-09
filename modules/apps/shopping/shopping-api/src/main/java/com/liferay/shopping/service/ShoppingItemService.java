@@ -20,13 +20,13 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.jsonwebservice.JSONWebService;
 import com.liferay.portal.kernel.security.access.control.AccessControlled;
+import com.liferay.portal.kernel.service.BaseService;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.transaction.Isolation;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.service.BaseService;
-import com.liferay.portal.service.ServiceContext;
 
 import com.liferay.shopping.model.ShoppingItem;
 import com.liferay.shopping.model.ShoppingItemField;
@@ -71,35 +71,8 @@ public interface ShoppingItemService extends BaseService {
 		List<ShoppingItemField> itemFields, List<ShoppingItemPrice> itemPrices,
 		ServiceContext serviceContext) throws PortalException;
 
-	public void deleteItem(long itemId) throws PortalException;
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public int getCategoriesItemsCount(long groupId,
-		List<java.lang.Long> categoryIds);
-
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ShoppingItem getItem(long itemId) throws PortalException;
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<ShoppingItem> getItems(long groupId, long categoryId);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public List<ShoppingItem> getItems(long groupId, long categoryId,
-		int start, int end, OrderByComparator<ShoppingItem> obc);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public int getItemsCount(long groupId, long categoryId);
-
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-	public ShoppingItem[] getItemsPrevAndNext(long itemId,
-		OrderByComparator<ShoppingItem> obc) throws PortalException;
-
-	/**
-	* Returns the OSGi service identifier.
-	*
-	* @return the OSGi service identifier
-	*/
-	public java.lang.String getOSGiServiceIdentifier();
 
 	public ShoppingItem updateItem(long itemId, long groupId, long categoryId,
 		java.lang.String sku, java.lang.String name,
@@ -111,4 +84,31 @@ public interface ShoppingItemService extends BaseService {
 		boolean largeImage, java.lang.String largeImageURL, File largeFile,
 		List<ShoppingItemField> itemFields, List<ShoppingItemPrice> itemPrices,
 		ServiceContext serviceContext) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public ShoppingItem[] getItemsPrevAndNext(long itemId,
+		OrderByComparator<ShoppingItem> obc) throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getCategoriesItemsCount(long groupId,
+		List<java.lang.Long> categoryIds);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public int getItemsCount(long groupId, long categoryId);
+
+	/**
+	* Returns the OSGi service identifier.
+	*
+	* @return the OSGi service identifier
+	*/
+	public java.lang.String getOSGiServiceIdentifier();
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<ShoppingItem> getItems(long groupId, long categoryId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<ShoppingItem> getItems(long groupId, long categoryId,
+		int start, int end, OrderByComparator<ShoppingItem> obc);
+
+	public void deleteItem(long itemId) throws PortalException;
 }

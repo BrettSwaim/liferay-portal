@@ -1,4 +1,6 @@
 <definition component-name="portal-collaboration">
+	<property name="portal.release" value="true" />
+	<property name="custom.properties" value="default.layout.template.id=1_column" />
 	<property name="testray.main.component.name" value="Mentions" />
 
 	<set-up>
@@ -14,7 +16,7 @@
 			<var name="portletName" value="Wiki" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Wiki Page" />
 		</execute>
 
@@ -57,6 +59,10 @@
 			<var name="userPassword" property-value="email.password.1" />
 		</execute>
 
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Wiki Page" />
+		</execute>
+
 		<execute macro="ProductMenu#gotoControlPanelConfiguration">
 			<var name="portlet" value="Virtual Instances" />
 		</execute>
@@ -66,7 +72,7 @@
 			<var name="virtualHost" value="localhost" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Wiki Page" />
 		</execute>
 	</set-up>
@@ -112,11 +118,11 @@
 			<var name="wikiPageContent" value="Wiki Page Content" />
 		</execute>
 
-		<execute macro="WikiEntry#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="Navigator#openURL" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Wiki Page" />
 		</execute>
 

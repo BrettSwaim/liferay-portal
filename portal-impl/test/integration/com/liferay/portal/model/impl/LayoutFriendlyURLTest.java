@@ -14,8 +14,12 @@
 
 package com.liferay.portal.model.impl;
 
-import com.liferay.portal.exception.LayoutFriendlyURLException;
-import com.liferay.portal.exception.LayoutFriendlyURLsException;
+import com.liferay.portal.kernel.exception.LayoutFriendlyURLException;
+import com.liferay.portal.kernel.exception.LayoutFriendlyURLsException;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.LayoutConstants;
+import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
@@ -25,10 +29,6 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.LayoutConstants;
-import com.liferay.portal.service.LayoutLocalServiceUtil;
-import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.ArrayList;
@@ -154,7 +154,7 @@ public class LayoutFriendlyURLTest {
 				(LayoutFriendlyURLException)layoutFriendlyURLExceptions.get(0);
 
 			Assert.assertEquals(
-				layoutFriendlyURLException.getKeywordConflict(), "tags");
+				"tags", layoutFriendlyURLException.getKeywordConflict());
 		}
 
 		friendlyURLMap = new HashMap<>();
@@ -179,7 +179,7 @@ public class LayoutFriendlyURLTest {
 				(LayoutFriendlyURLException)layoutFriendlyURLExceptions.get(0);
 
 			Assert.assertEquals(
-				layoutFriendlyURLException.getKeywordConflict(), "tags");
+				"tags", layoutFriendlyURLException.getKeywordConflict());
 		}
 
 		friendlyURLMap = new HashMap<>();
@@ -204,7 +204,7 @@ public class LayoutFriendlyURLTest {
 				(LayoutFriendlyURLException)layoutFriendlyURLExceptions.get(0);
 
 			Assert.assertEquals(
-				layoutFriendlyURLException.getKeywordConflict(), "tags");
+				"tags", layoutFriendlyURLException.getKeywordConflict());
 		}
 
 		friendlyURLMap = new HashMap<>();
@@ -229,7 +229,7 @@ public class LayoutFriendlyURLTest {
 				(LayoutFriendlyURLException)layoutFriendlyURLExceptions.get(0);
 
 			Assert.assertEquals(
-				layoutFriendlyURLException.getKeywordConflict(), "/-/");
+				"/-/", layoutFriendlyURLException.getKeywordConflict());
 		}
 	}
 
@@ -302,7 +302,7 @@ public class LayoutFriendlyURLTest {
 				String keywordsConflict =
 					((LayoutFriendlyURLException)e).getKeywordConflict();
 
-				Assert.assertEquals(keywordsConflict, "tags");
+				Assert.assertEquals("tags", keywordsConflict);
 			}
 		}
 	}
@@ -398,6 +398,37 @@ public class LayoutFriendlyURLTest {
 		}
 		catch (LayoutFriendlyURLsException lfurle) {
 		}
+	}
+
+	@Test
+	public void testValidFriendlyURLEndingWithLanguageId() throws Exception {
+		Map<Locale, String> friendlyURLMap = new HashMap<>();
+
+		friendlyURLMap.put(LocaleUtil.US, "/home/es");
+
+		addLayout(_group.getGroupId(), false, friendlyURLMap);
+	}
+
+	@Test
+	public void testValidFriendlyURLEndingWithLanguageIdAndCountryId()
+		throws Exception {
+
+		Map<Locale, String> friendlyURLMap = new HashMap<>();
+
+		friendlyURLMap.put(LocaleUtil.US, "/home/es_ES");
+
+		addLayout(_group.getGroupId(), false, friendlyURLMap);
+	}
+
+	@Test
+	public void testValidFriendlyURLEndingWithLowerCaseLanguageIdAndCountryId()
+		throws Exception {
+
+		Map<Locale, String> friendlyURLMap = new HashMap<>();
+
+		friendlyURLMap.put(LocaleUtil.US, "/home/es_es");
+
+		addLayout(_group.getGroupId(), false, friendlyURLMap);
 	}
 
 	@Test

@@ -9,11 +9,6 @@
 </thead>
 <tbody>
 <tr>
-	<td>EDITED_SITE_PAGES_VARIATION</td>
-	<td>//span[contains(@class,'layout-set-branch-selector')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>STAGING_NAVIGATION</td>
 	<td>//ul[contains(@class,'nav-tabs')]/li/a[contains(.,'Staging')]</td>
 	<td></td>
@@ -25,8 +20,23 @@
 </tr>
 <!--PROCESSES-->
 <tr>
+	<td>INITIAL_PROCESS_SUCCESSFUL</td>
+	<td>//div[contains(.,'Initial Publication')]//h6[contains(@class,'background-task-status-successful')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td>SCHEDULED</td>
 	<td>//ul[contains(@id,'StagingProcessesPortlet')]/li/a[contains(@title,'Scheduled')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PROCESS_SUCCESSFUL</td>
+	<td>//h6[contains(.,'Successful')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PROCESS_FAILED</td>
+	<td>//h6[contains(.,'Failed')]</td>
 	<td></td>
 </tr>
 <!--STAGING-->
@@ -41,23 +51,18 @@
 	<td></td>
 </tr>
 <tr>
-	<td>STAGING_DATE_RANGE</td>
-	<td>//span[@id='_86_selectedRange']</td>
-	<td></td>
-</tr>
-<tr>
-	<td>STAGING_CONTENT_COUNT</td>
-	<td>//span[contains(@class,'badge-info')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>STAGING_CONTENT_INFO</td>
-	<td>//span[contains(@id,'_86_selectedContent')]</td>
+	<td>STAGING_STATUS</td>
+	<td>xpath=(//h6[contains(text(),'Successful')])[1]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>STAGING_STATUS</td>
-	<td>//tr/td[contains(@class,'status-column')]</td>
+	<td>xpath=(//h6[contains(text(),'Successful')])[1]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>STAGING_STATUS_PORTLET</td>
+	<td>//h5[contains(text(),'Successful')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -127,6 +132,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>VARIATIONS_SELECTOR</td>
+	<td>//select[contains(@id,'variationsSelector')]</td>
+	<td></td>
+</tr>
+<tr>
 	<td></td>
 	<td></td>
 	<td></td>
@@ -145,7 +155,7 @@
 <!--PAGE_VARIATION_MENULIST-->
 <tr>
 	<td>PAGE_VARIATION_MENULIST_NAME</td>
-	<td>xpath=(//ul//li//a[contains(.,'${key_pageVariationName}')])[2]</td>
+	<td>//a[contains(.,'${key_pageVariationName}') and contains(@href,'layoutBranchId')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -156,7 +166,12 @@
 <!--HISTORY-->
 <tr>
 	<td>HISTORY_VERSION</td>
-	<td>//td/span[@class='layout-revision-current']</td>
+	<td>//span[contains(@class,'layout-revision')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>HISTORY_VERSION_ANCHOR</td>
+	<td>//a[contains(@class,'layout-revision')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -172,7 +187,7 @@
 </tr>
 <tr>
 	<td>LIVE_MENU_MESSAGE</td>
-	<td>//div[@class='staging-details']</td>
+	<td>//span[@class='last-publication-branch']</td>
 	<td></td>
 </tr>
 <tr>
@@ -192,13 +207,8 @@
 	<td></td>
 </tr>
 <tr>
-	<td>STAGING_MENU_MARK_AS_READY_FOR_PUBLICATION_BUTTON</td>
-	<td>//a[contains(@id,'submitLink') and contains(.,'Mark as Ready for Publication')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>STAGING_MENU_READY_FOR_PUBLICATION</td>
-	<td>//span[@class='workflow-status']/strong[contains(.,'Ready for Publication')]</td>
+	<td>//span[@class='toggle-switch-handle' and @data-label-on='Ready for Publication']</td>
 	<td></td>
 </tr>
 <tr>
@@ -228,7 +238,7 @@
 </tr>
 <tr>
 	<td>STAGING_MENU_REVISION_DETAILS_MESSAGE</td>
-	<td>//span[contains(@id,'layoutRevisionDetails')]/li/p</td>
+	<td>//li[contains(@id,'layoutRevisionDetails')]/ul/li/p</td>
 	<td></td>
 </tr>
 <tr>

@@ -14,11 +14,10 @@
 
 package com.liferay.amazon.rankings.web.portlet;
 
-import aQute.bnd.annotation.metatype.Configurable;
-
 import com.liferay.amazon.rankings.web.configuration.AmazonRankingsConfiguration;
+import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
+import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
-import com.liferay.portal.model.Release;
 
 import java.io.IOException;
 
@@ -77,7 +76,7 @@ public class AmazonRankingsPortlet extends MVCPortlet {
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
-		_amazonRankingsConfiguration = Configurable.createConfigurable(
+		_amazonRankingsConfiguration = ConfigurableUtil.createConfigurable(
 			AmazonRankingsConfiguration.class, properties);
 	}
 

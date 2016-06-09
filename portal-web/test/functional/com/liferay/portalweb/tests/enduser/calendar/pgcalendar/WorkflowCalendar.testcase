@@ -1,5 +1,6 @@
 <definition component-name="portal-workflow">
-	<property name="custom.properties" value="default.layout.template.id=1_column" />
+	<property name="portal.release" value="true" />
+	<property name="custom.properties" value="default.layout.template.id=1_column${line.separator}company.default.time.zone=America/Los_Angeles" />
 	<property name="testray.main.component.name" value="Workflow" />
 
 	<set-up>
@@ -11,7 +12,7 @@
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -40,7 +41,7 @@
 				<execute macro="PortalInstances#tearDownCP" />
 			</then>
 			<else>
-				<execute macro="Page#gotoPG">
+				<execute macro="Navigator#gotoPage">
 					<var name="pageName" value="Calendar Page" />
 				</execute>
 
@@ -63,7 +64,7 @@
 	<command name="ApproveEventWithInvitedUser" priority="5">
 		<property name="portal.acceptance" value="true" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -79,22 +80,26 @@
 			<var name="workflow" value="true" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
+		</execute>
+
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewSiteRSVPWithUnapprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewNoUserInviteWithUnapprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Page#gotoMyAccount">
@@ -117,7 +122,7 @@
 			<var name="workflowTask" value="Review" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -129,7 +134,7 @@
 
 		<execute macro="CalendarEvent#viewInvitedUserRSVPWithApprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 			<var name="userCalendarName" value="Test Test" />
 		</execute>
 	</command>
@@ -137,7 +142,12 @@
 	<command name="DeleteAndRestoreEvent" priority="3">
 		<description message="This is a use case for LPS-59572." />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -153,13 +163,13 @@
 			<var name="workflow" value="true" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewSiteRSVPWithUnapprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Page#gotoMyAccount">
@@ -172,7 +182,7 @@
 			<var name="workflowTask" value="Review" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -180,7 +190,7 @@
 			<var name="eventTitle" value="Calendar Event Title" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -205,13 +215,13 @@
 			<var name="assetName" value="Calendar Event Title" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewSiteRSVPWithUnapprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Page#gotoMyAccount">
@@ -230,7 +240,7 @@
 			<var name="workflowTask" value="Review" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -238,7 +248,7 @@
 			<var name="eventTitle" value="Calendar Event Title" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -263,13 +273,13 @@
 			<var name="assetName" value="Calendar Event Title" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewSiteRSVPWithUnapprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Page#gotoMyAccount">
@@ -288,7 +298,7 @@
 			<var name="workflowTask" value="Review" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -300,13 +310,18 @@
 
 		<execute macro="CalendarEvent#viewInvitedUserRSVPWithApprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 			<var name="userCalendarName" value="Test Test" />
 		</execute>
 	</command>
 
 	<command name="RejectEventWithInvitedUser" priority="4">
-		<execute macro="Page#gotoPG">
+		<execute macro="TestCase#getSiteName">
+			<return from="siteName" name="siteName" />
+			<var name="siteName" value="${siteName}" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
@@ -322,22 +337,22 @@
 			<var name="workflow" value="true" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewSiteRSVPWithUnapprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewNoUserInviteWithUnapprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="Page#gotoMyAccount">
@@ -360,18 +375,18 @@
 			<var name="workflowTask" value="Review" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Calendar Page" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewSiteRSVPWithUnapprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 		</execute>
 
 		<execute macro="CalendarEvent#viewNoUserInviteWithUnapprovedWorkflow">
 			<var name="eventTitle" value="Calendar Event Title" />
-			<var name="siteCalendarName" value="Liferay" />
+			<var name="siteCalendarName" value="${siteName}" />
 			<var name="userCalendarName" value="Test Test" />
 		</execute>
 	</command>

@@ -14,54 +14,38 @@
 
 package com.liferay.gradle.plugins.workspace.configurators;
 
-import com.liferay.gradle.plugins.LiferayJavaPlugin;
-import com.liferay.gradle.plugins.gulp.ExecuteGulpTask;
-import com.liferay.gradle.plugins.gulp.GulpPlugin;
-import com.liferay.gradle.plugins.node.NodePlugin;
+import com.liferay.gradle.plugins.LiferayThemePlugin;
+import com.liferay.gradle.plugins.extensions.LiferayExtension;
 import com.liferay.gradle.plugins.workspace.WorkspaceExtension;
 import com.liferay.gradle.plugins.workspace.util.GradleUtil;
-import com.liferay.gradle.util.StringUtil;
-
-import groovy.json.JsonOutput;
 
 import groovy.lang.Closure;
 
 import java.io.File;
 import java.io.IOException;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import org.gradle.api.Action;
-import org.gradle.api.GradleException;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.initialization.Settings;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.plugins.BasePluginConvention;
 import org.gradle.api.plugins.ExtensionAware;
-import org.gradle.api.tasks.Delete;
-import org.gradle.api.tasks.TaskContainer;
 
 /**
  * @author Andrea Di Giorgi
  * @author David Truong
  */
 public class ThemesProjectConfigurator extends BaseProjectConfigurator {
-
-	public static final String CREATE_LIFERAY_THEME_JSON_TASK_NAME =
-		"createLiferayThemeJson";
 
 	public ThemesProjectConfigurator(Settings settings) {
 		super(settings);
@@ -72,20 +56,9 @@ public class ThemesProjectConfigurator extends BaseProjectConfigurator {
 		WorkspaceExtension workspaceExtension = GradleUtil.getExtension(
 			(ExtensionAware)project.getGradle(), WorkspaceExtension.class);
 
-		// liferay-theme-tasks already uses the "build" directory
+		GradleUtil.applyPlugin(project, LiferayThemePlugin.class);
 
-		project.setBuildDir("build_gradle");
-
-		GradleUtil.applyPlugin(project, BasePlugin.class);
-		GradleUtil.applyPlugin(project, GulpPlugin.class);
-
-		Task createLiferayThemeJsonTask = addTaskCreateLiferayThemeJson(
-			project, workspaceExtension);
-
-		addTaskDeploy(project);
-		configureTaskAssemble(project);
-		configureTaskClean(project);
-		configureTasksExecuteGulp(project, createLiferayThemeJsonTask);
+		configureLiferay(project, workspaceExtension);
 
 		configureRootTaskDistBundle(
 			project, RootProjectConfigurator.DIST_BUNDLE_TAR_TASK_NAME);
@@ -98,67 +71,13 @@ public class ThemesProjectConfigurator extends BaseProjectConfigurator {
 		return _NAME;
 	}
 
-	protected Task addTaskCreateLiferayThemeJson(
-		Project project, final WorkspaceExtension workspaceExtension) {
+	protected void configureLiferay(
+		Project project, WorkspaceExtension workspaceExtension) {
 
-		Task task = project.task(CREATE_LIFERAY_THEME_JSON_TASK_NAME);
+		LiferayExtension liferayExtension = GradleUtil.getExtension(
+			project, LiferayExtension.class);
 
-		final File liferayThemeJsonFile = project.file("liferay-theme.json");
-
-		task.doLast(
-			new Action<Task>() {
-
-				@Override
-				public void execute(Task task) {
-					Project project = task.getProject();
-
-					Map<String, Object> map = new HashMap<>();
-
-					File appServerDir = new File(
-						workspaceExtension.getHomeDir(), "tomcat-7.0.62");
-
-					map.put("appServerPath", appServerDir.getAbsolutePath());
-
-					File appServerThemeDir = new File(
-						appServerDir, "webapps/" + project.getName());
-
-					map.put(
-						"appServerPathTheme",
-						appServerThemeDir.getAbsolutePath());
-
-					map.put("deployed", false);
-
-					File deployDir = new File(
-						workspaceExtension.getHomeDir(), "osgi/modules");
-
-					map.put("deployPath", deployDir.getAbsolutePath());
-					map.put("themeName", project.getName());
-
-					String json = JsonOutput.toJson(
-						Collections.singletonMap("LiferayTheme", map));
-
-					try {
-						Files.write(
-							liferayThemeJsonFile.toPath(),
-							json.getBytes(StandardCharsets.UTF_8));
-					}
-					catch (IOException ioe) {
-						throw new GradleException(ioe.getMessage(), ioe);
-					}
-				}
-
-			});
-
-		return task;
-	}
-
-	protected Task addTaskDeploy(Project project) {
-		Task task = project.task(LiferayJavaPlugin.DEPLOY_TASK_NAME);
-
-		task.dependsOn(_GULP_DEPLOY_TASK_NAME);
-		task.setDescription("Assembles the theme and deploys it to Liferay.");
-
-		return task;
+		liferayExtension.setAppServerParentDir(workspaceExtension.getHomeDir());
 	}
 
 	protected void configureRootTaskDistBundle(
@@ -173,53 +92,13 @@ public class ThemesProjectConfigurator extends BaseProjectConfigurator {
 
 				@SuppressWarnings("unused")
 				public void doCall(CopySpec copySpec) {
-					ConfigurableFileTree fileTree = project.fileTree("dist");
+					ConfigurableFileCollection configurableFileCollection =
+						project.files(getWarFile(project));
 
-					fileTree.builtBy(_GULP_DEPLOY_TASK_NAME);
-					fileTree.include("*.war");
+					configurableFileCollection.builtBy(
+						BasePlugin.ASSEMBLE_TASK_NAME);
 
-					copySpec.from(fileTree);
-				}
-
-			});
-	}
-
-	protected void configureTaskAssemble(Project project) {
-		Task task = GradleUtil.getTask(project, BasePlugin.ASSEMBLE_TASK_NAME);
-
-		task.dependsOn(_GULP_BUILD_TASK_NAME);
-	}
-
-	protected void configureTaskClean(Project project) {
-		Delete delete = (Delete)GradleUtil.getTask(
-			project, BasePlugin.CLEAN_TASK_NAME);
-
-		delete.delete("build", "dist");
-		delete.dependsOn(
-			BasePlugin.CLEAN_TASK_NAME +
-				StringUtil.capitalize(NodePlugin.NPM_INSTALL_TASK_NAME));
-	}
-
-	protected void configureTaskExecuteGulp(
-		ExecuteGulpTask executeGulpTask, Task createLiferayThemeJsonTask) {
-
-		executeGulpTask.dependsOn(
-			createLiferayThemeJsonTask, NodePlugin.NPM_INSTALL_TASK_NAME);
-	}
-
-	protected void configureTasksExecuteGulp(
-		Project project, final Task createLiferayThemeJsonTask) {
-
-		TaskContainer taskContainer = project.getTasks();
-
-		taskContainer.withType(
-			ExecuteGulpTask.class,
-			new Action<ExecuteGulpTask>() {
-
-				@Override
-				public void execute(ExecuteGulpTask executeGulpTask) {
-					configureTaskExecuteGulp(
-						executeGulpTask, createLiferayThemeJsonTask);
+					copySpec.from(getWarFile(project));
 				}
 
 			});
@@ -263,9 +142,13 @@ public class ThemesProjectConfigurator extends BaseProjectConfigurator {
 		return projectDirs;
 	}
 
-	private static final String _GULP_BUILD_TASK_NAME = "gulpBuild";
+	protected File getWarFile(Project project) {
+		BasePluginConvention basePluginConvention = GradleUtil.getConvention(
+			project, BasePluginConvention.class);
 
-	private static final String _GULP_DEPLOY_TASK_NAME = "gulpDeploy";
+		return project.file(
+			"dist/" + basePluginConvention.getArchivesBaseName() + ".war");
+	}
 
 	private static final String _NAME = "themes";
 

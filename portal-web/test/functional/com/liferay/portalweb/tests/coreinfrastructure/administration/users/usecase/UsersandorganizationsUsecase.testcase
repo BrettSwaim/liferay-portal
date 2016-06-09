@@ -1,4 +1,5 @@
 <definition component-name="portal-user-management-and-portal-configuration">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Users and Organizations" />
 
 	<set-up>
@@ -111,7 +112,7 @@
 
 		<execute macro="UserBar#gotoProfile" />
 
-		<execute function="AssertTextEquals" locator1="Home#SITE_NAME" value1="&lt;userfn&gt; userln" />
+		<execute function="AssertTextEquals" locator1="Home#USER_NAME_HEADER" value1="&lt;userfn&gt; userln" />
 	</command>
 
 	<command name="CannotViewSiteSettingsInUserPersonalSite" priority="4">
@@ -152,11 +153,19 @@
 			<var name="userScreenName" value="usersn1" />
 		</execute>
 
+		<execute macro="ProductMenu#gotoControlPanelUsers">
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
 		<execute macro="User#addCP">
 			<var name="userEmailAddress" value="userea2@liferay.com" />
 			<var name="userFirstName" value="userfn2" />
 			<var name="userLastName" value="userln2" />
 			<var name="userScreenName" value="usersn2" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoControlPanelUsers">
+			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
 		<execute macro="User#addCP">
@@ -340,6 +349,10 @@
 			<var name="tagName" value="alpha" />
 		</execute>
 
+		<execute macro="ProductMenu#gotoControlPanelUsers">
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
 		<execute macro="Organization#addCP">
 			<var name="orgName" value="Organization Name 2" />
 			<var name="orgType" value="Organization" />
@@ -372,6 +385,10 @@
 				<equals arg1="${count}" arg2="5" />
 			</not>
 			<then>
+				<execute macro="ProductMenu#gotoControlPanelUsers">
+					<var name="portlet" value="Users and Organizations" />
+				</execute>
+
 				<execute macro="Organization#addCP">
 					<var name="orgName" value="Suborganization Name ${count}" />
 					<var name="orgType" value="Organization" />
@@ -396,6 +413,8 @@
 				<execute macro="ProductMenu#gotoControlPanelUsers">
 					<var name="portlet" value="Users and Organizations" />
 				</execute>
+
+				<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
 
 				<execute macro="Organization#viewParentOrganizationCP">
 					<var name="orgName" value="Suborganization Name ${count}" />
@@ -575,22 +594,19 @@
 
 		<execute macro="User#basicSearchCP">
 			<var name="userBasicSearch" value="Basic" />
-			<var name="userFirstName" value="userfn1" />
-			<var name="userLastName" value="userln1" />
+			<var name="userName" value="userfn1 userln1" />
 			<var name="userScreenName" value="usersn1" />
 		</execute>
 
 		<execute macro="User#basicSearchCP">
 			<var name="userBasicSearch" value="Basic" />
-			<var name="userFirstName" value="userfn2" />
-			<var name="userLastName" value="userln2" />
+			<var name="userName" value="userfn2 userln2" />
 			<var name="userScreenName" value="usersn2" />
 		</execute>
 
 		<execute macro="User#basicSearchCP">
 			<var name="userBasicSearch" value="Basic" />
-			<var name="userFirstName" value="userfn3" />
-			<var name="userLastName" value="userln3" />
+			<var name="userName" value="userfn3 userln3" />
 			<var name="userScreenName" value="usersn3" />
 		</execute>
 
@@ -634,7 +650,7 @@
 
 		<execute macro="Role#definePermissionCP">
 			<var name="permissionDefinitionKey" value="CONTROL_PANEL_GENERAL_PERMISSIONS_GO_TO_CONTROL_PANEL_CHECKBOX" />
-			<var name="permissionDefinitionValue" value="Go to Control Panel" />
+			<var name="permissionDefinitionValue" value="View Control Panel Menu" />
 			<var name="permissionNavigationKey" value="CONTROL_PANEL_GENERAL_PERMISSIONS" />
 			<var name="permissionNavigationValue" value="General Permissions" />
 			<var name="roleName" value="Authenticated" />
@@ -686,6 +702,8 @@
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
+
+		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
 
 		<execute macro="Organization#assignOrgRoleCP">
 			<var name="orgName" value="Organization Name" />
@@ -742,8 +760,7 @@
 		</execute>
 
 		<execute macro="User#activateCP">
-			<var name="userFirstName" value="userfn2" />
-			<var name="userLastName" value="userln2" />
+			<var name="userName" value="userfn2 userln2" />
 			<var name="userScreenName" value="usersn2" />
 		</execute>
 
@@ -768,14 +785,14 @@
 			</execute>
 		</for>
 
-		<execute function="Click" locator1="ProductMenu#SITES_COMPASS" />
-
-		<execute function="AssertVisible" locator1="ProductMenu#SITES_POPUP" />
+		<execute macro="ProductMenu#gotoControlPanelSites">
+			<var name="portlet" value="Sites" />
+		</execute>
 
 		<for list="${siteNameList}" param="siteName" >
-			<execute macro="ProductMenuHelper#viewSite">
-				<var name="site" value="${siteName}" />
-			</execute>
+			<var name="key_siteName" value="${siteName}" />
+
+			<execute function="AssertTextEquals" locator1="Sites#SITE_TABLE_NAME" value1="${siteName}" />
 		</for>
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
@@ -800,9 +817,6 @@
 			<var name="userScreenName" value="test" />
 		</execute>
 
-		<execute function="Click" locator1="ProductMenu#SITES_COMPASS" />
-
-		<execute function="AssertVisible" locator1="ProductMenu#SITES_POPUP" />
 		<execute function="AssertTextPresent" locator1="ProductMenu#PRODUCT_MENU_PANEL_MENU_ITEM" value1="Site Name H" />
 	</command>
 
@@ -884,7 +898,7 @@
 		</execute>
 	</command>
 
-	<command  name="OrganizationUserManagement" priority="3">
+	<command name="OrganizationUserManagement" priority="3">
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
@@ -894,12 +908,6 @@
 			<var name="orgType" value="Organization" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
-
 		<execute macro="Organization#addAddressCP">
 			<var name="orgAddressCity" value="Diamond Bar" />
 			<var name="orgAddressCountry" value="United States" />
@@ -907,70 +915,29 @@
 			<var name="orgAddressRegion" value="California" />
 			<var name="orgAddressStreet" value="1400 Montefino Ave" />
 			<var name="orgAddressType" value="Billing" />
-			<var name="orgName" value="Organization Name" />
 		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
 
 		<execute macro="Organization#addPhoneNumbersCP">
-			<var name="orgName" value="Organization Name" />
 			<var name="orgPhoneNumber" value="1-877-543-3729" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
-
 		<execute macro="Organization#addAdditionalEmailAddressesCP">
 			<var name="orgAdditionalEmailAddress" value="testuser@liferay.com" />
-			<var name="orgName" value="Organization Name" />
 		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
 
 		<execute macro="Organization#addWebsitesCP">
-			<var name="orgName" value="Organization Name" />
 			<var name="orgWebsite" value="http://www.liferay.com" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
-
 		<execute macro="Organization#addServicesCP">
-			<var name="orgName" value="Organization Name" />
 			<var name="orgServicesClosed" value="18:00" />
 			<var name="orgServicesOpen" value="08:00" />
 		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
 
 		<execute macro="Organization#addCommentCP">
 			<var name="orgComment" value="This is a test organization." />
 			<var name="orgName" value="Organization Name" />
 		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelUsers">
-			<var name="portlet" value="Users and Organizations" />
-		</execute>
-
-		<execute macro="UsersAndOrganizationsNavigator#gotoOrganizations" />
 
 		<execute macro="Organization#addReminderQueriesCP">
 			<var name="orgLocalizedLanguage" value="Japanese (Japan)" />
@@ -1002,6 +969,10 @@
 		<execute function="Click" locator1="PasswordPolicies#DEFAULT_PASSWORD_POLICY_TABLE_ACTIONS_BUTTON" />
 		<execute function="AssertClick" locator1="MenuItem#EDIT" value1="Edit" />
 
+		<execute macro="Panel#expandPanel">
+			<var name="panelHeading" value="Password Syntax Checking" />
+		</execute>
+
 		<execute function="Check" locator1="Checkbox#ENABLE_SYNTAX_CHECKING" />
 		<execute function="Uncheck" locator1="Checkbox#ALLOW_DICTIONARY_WORDS" />
 		<execute function="Type" locator1="TextInput#MINIMUM_ALPHA_NUMERIC" value1="0" />
@@ -1013,7 +984,7 @@
 
 		<execute function="Type" locator1="TextInput#REGULAR_EXPRESSION" value1="${atLeastFourCharNoNumbers}" />
 
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
+		<execute macro="Button#clickSave" />
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
@@ -1046,9 +1017,13 @@
 
 		<execute function="AssertClick" locator1="MenuItem#EDIT" value1="Edit" />
 
+		<execute macro="Panel#expandPanel">
+			<var name="panelHeading" value="Password Syntax Checking" />
+		</execute>
+
 		<execute function="Type" locator1="TextInput#REGULAR_EXPRESSION" value1="${atLeastSixCharNumbersPermitted}" />
 
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
+		<execute macro="Button#clickSave" />
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
@@ -1093,9 +1068,13 @@
 
 		<execute function="AssertClick" locator1="MenuItem#EDIT" value1="Edit" />
 
+		<execute macro="Panel#expandPanel">
+			<var name="panelHeading" value="Password Syntax Checking" />
+		</execute>
+
 		<execute function="Type" locator1="TextInput#MINIMUM_NUMBERS" value1="2" />
 
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
+		<execute macro="Button#clickSave" />
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
@@ -1133,6 +1112,8 @@
 	</command>
 
 	<command name="ViewContentInLocationOrganizationSite" priority="4">
+		<property name="custom.properties" value="organizations.types=organization,location${line.separator}organizations.rootable[location]=true${line.separator}organizations.children.types[organization]=organization,location" />
+
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Roles" />
 		</execute>
@@ -1192,11 +1173,19 @@
 			<var name="orgType" value="Organization" />
 		</execute>
 
+		<execute macro="ProductMenu#gotoControlPanelUsers">
+			<var name="portlet" value="Users and Organizations" />
+		</execute>
+
 		<execute macro="Organization#addCP">
 			<var name="orgCountry" value="United States" />
 			<var name="orgName" value="United States" />
 			<var name="orgParent" value="North America" />
 			<var name="orgType" value="Location" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoControlPanelUsers">
+			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
 		<execute macro="Organization#addCP">

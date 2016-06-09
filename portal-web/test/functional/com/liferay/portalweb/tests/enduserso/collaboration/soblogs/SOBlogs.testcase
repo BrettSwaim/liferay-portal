@@ -40,7 +40,7 @@
 		<var name="entryTitle2" value="Blogs Entry2 Title" />
 		<var name="entryTitle3" value="Blogs Entry3 Title" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -60,7 +60,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -80,7 +80,7 @@
 			<var name="entryTitle" value="${entryTitle2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -100,7 +100,7 @@
 			<var name="entryTitle" value="${entryTitle3}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -110,7 +110,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -120,7 +120,7 @@
 			<var name="entryTitle" value="${entryTitle2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -130,117 +130,44 @@
 			<var name="entryTitle" value="${entryTitle3}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
 		<var name="key_entryTitle" value="${entryTitle1}" />
 
-		<execute function="AssertClick" locator1="PGBlogs#ENTRY_TITLE" value1="${entryTitle1}" />
+		<execute function="AssertClick" locator1="BlogsEntry#TITLE_LINK" value1="${entryTitle1}" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_TITLE" value1="${entryTitle1}" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_CONTENT" value1="${entryContent1}" />
+		<execute function="AssertTextEquals" locator1="BlogsEntry#TITLE" value1="${entryTitle1}" />
+		<execute function="AssertTextEquals" locator1="BlogsEntry#CONTENT" value1="${entryContent1}" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#PREVIOUS" value1="Previous" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogsEntry#PREVIOUS_LINK" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#NEXT_LINK" value1="Next" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogsEntry#NEXT" />
-		<execute function="AssertClick" locator1="PGBlogsEntry#NEXT_LINK" value1="Next" />
+		<execute function="AssertTextEquals" locator1="Pagination#PREVIOUS_LINK" value1="Previous" />
+		<execute function="AssertElementNotPresent" locator1="Pagination#PREVIOUS_LINK" />
+		<execute function="AssertTextEquals" locator1="Pagination#NEXT_LINK" value1="Next" />
+		<execute function="AssertElementNotPresent" locator1="Pagination#NEXT_LINK" />
+		<execute function="AssertClick" locator1="Pagination#NEXT_LINK" value1="Next" />
 
 		<var name="key_entryTitle" value="${entryTitle2}" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_TITLE" value1="${entryTitle2}" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_CONTENT" value1="${entryContent2}" />
+		<execute function="AssertTextEquals" locator1="BlogsEntry#TITLE" value1="${entryTitle2}" />
+		<execute function="AssertTextEquals" locator1="BlogsEntry#CONTENT" value1="${entryContent2}" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#PREVIOUS_LINK" value1="Previous" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogsEntry#PREVIOUS" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#NEXT_LINK" value1="Next" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogsEntry#NEXT" />
-		<execute function="AssertClick" locator1="PGBlogsEntry#NEXT_LINK" value1="Next" />
+		<execute function="AssertTextEquals" locator1="Pagination#PREVIOUS_LINK" value1="Previous" />
+		<execute function="AssertElementNotPresent" locator1="Pagination#PREVIOUS_LINK" />
+		<execute function="AssertTextEquals" locator1="Pagination#NEXT_LINK" value1="Next" />
+		<execute function="AssertElementNotPresent" locator1="Pagination#NEXT_LINK" />
+		<execute function="AssertClick" locator1="Pagination#NEXT_LINK" value1="Next" />
 
 		<var name="key_entryTitle" value="${entryTitle3}" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_TITLE" value1="${entryTitle3}" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_CONTENT" value1="${entryContent3}" />
+		<execute function="AssertTextEquals" locator1="BlogsEntry#TITLE" value1="${entryTitle3}" />
+		<execute function="AssertTextEquals" locator1="BlogsEntry#CONTENT" value1="${entryContent3}" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#PREVIOUS_LINK" value1="Previous" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogsEntry#PREVIOUS" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#NEXT" value1="Next" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogsEntry#NEXT_LINK" />
-	</command>
-
-	<command name="AddSOBlogsEntry" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<var name="key_entryTitle" value="${entryTitle}" />
-
-		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_COMMENT_1" value1="0 Comments" />
-		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_AVERAGE_RATING" value1="Average (0 Votes)" />
-
-		<execute macro="BlogsEntry#viewPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewDetailsPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_STATS_COMMENTS" value1="0 Comments" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#AVERAGE" value1="Average (0 Votes)" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewDetailsPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_STATS_VIEW_COUNT" value1="2 Views," />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewDetailsPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_STATS_VIEW_COUNT" value1="3 Views," />
-
-		<execute function="Open" locator1="http://localhost:8080/web/open-site-name/blogs/-/blogs/rss" />
-
-		<execute function="AssertTextEquals" locator1="PGBlogsRSS#FEED_TITLE" value1="Open Site Name" />
-		<execute function="AssertTextEquals" locator1="PGBlogsRSS#FEED_SUBTITLE" value1="Open Site Name" />
-		<execute function="AssertTextEquals" locator1="PGBlogsRSS#ENTRY_TITLE" value1="${entryTitle}" />
-		<execute function="AssertTextEquals" locator1="PGBlogsRSS#ENTRY_CONTENT" value1="${entryContent}" />
-		<execute function="Click" locator1="PGBlogsRSS#ENTRY_TITLE" />
-
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_TITLE" value1="${entryTitle}" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_CONTENT" value1="${entryContent}" />
+		<execute function="AssertTextEquals" locator1="Pagination#PREVIOUS_LINK" value1="Previous" />
+		<execute function="AssertElementNotPresent" locator1="Pagination#PREVIOUS_LINK" />
+		<execute function="AssertTextEquals" locator1="Pagination#NEXT_LINK" value1="Next" />
+		<execute function="AssertElementNotPresent" locator1="Pagination#NEXT_LINK" />
 	</command>
 
 	<command name="AddSOBlogsEntryCategories" priority="4">
@@ -266,7 +193,7 @@
 			<var name="vocabularyName" value="${vocabularyName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -277,52 +204,6 @@
 			<var name="entryContent" value="${entryContent}" />
 			<var name="entryTitle" value="${entryTitle}" />
 			<var name="vocabularyName" value="${vocabularyName}" />
-		</execute>
-	</command>
-
-	<command name="AddSOBlogsEntryComment" priority="4">
-		<var name="entryComment" value="Blogs Entry Comment" />
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-		<var name="userFullName" value="Test Test" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<var name="key_entryTitle" value="${entryTitle}" />
-
-		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_COMMENT_1" value1="0 Comments" />
-		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_AVERAGE_RATING" value1="Average (0 Votes)" />
-
-		<execute macro="BlogsNavigator#gotoEntryPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsEntryComment#add">
-			<var name="entryComment" value="${entryComment}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsNavigator#gotoEntryPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsEntryComment#viewPG">
-			<var name="entryComment" value="${entryComment}" />
-			<var name="userFullName" value="${userFullName}" />
 		</execute>
 	</command>
 
@@ -347,7 +228,7 @@
 			<var name="userScreenName" value="${userScreenName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -362,7 +243,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -371,7 +252,7 @@
 			<var name="siteName" value="${siteName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -385,7 +266,7 @@
 			<var name="entryComment" value="${entryComment}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -398,64 +279,6 @@
 		<execute macro="BlogsEntryComment#viewPG">
 			<var name="entryComment" value="${entryComment}" />
 			<var name="userFullName" value="${userName}" />
-		</execute>
-	</command>
-
-	<command name="AddSOBlogsEntryContentNull" priority="3">
-		<var name="entryContent" value="" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryInvalidContent" value="true" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewNoPG">
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-	</command>
-
-	<command name="AddSOBlogsEntryScheduled" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsNavigator#gotoAddEntry" />
-
-		<execute macro="BlogsEntry#addEntryContent">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsNavigator#gotoSettings" />
-
-		<execute macro="BlogsEntry#scheduleBlogEntry" />
-
-		<execute macro="BlogsEntry#publish" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewScheduledPost">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 	</command>
 
@@ -568,7 +391,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -586,7 +409,7 @@
 			<var name="site" value="${siteName}" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesUsers">
+		<execute macro="ProductMenu#gotoSitesMembers">
 			<var name="portlet" value="Site Memberships" />
 		</execute>
 
@@ -601,7 +424,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -621,15 +444,15 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
 		<var name="key_entryTitle" value="${entryTitle}" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_COMMENT_1" value1="0 Comments" />
-		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_AVERAGE_RATING" value1="Average (0 Votes)" />
+		<execute function="AssertTextEquals" locator1="Comments#ENTRY_COUNT_PANEL" value1="0 Comments" />
+		<execute function="AssertTextEquals" locator1="Ratings#AVERAGE_LABEL" value1="Average (0 Votes)" />
 
 		<execute macro="BlogsEntry#viewDetailsPG">
 			<var name="entryAuthorFirstName" value="${userFirstName}" />
@@ -639,15 +462,15 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_STATS_COMMENTS" value1="0 Comments" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#AVERAGE" value1="Average (0 Votes)" />
+		<execute function="AssertTextEquals" locator1="Comments#ENTRY_COUNT_PANEL" value1="0 Comments" />
+		<execute function="AssertTextEquals" locator1="Ratings#AVERAGE_LABEL" value1="Average (0 Votes)" />
 
 		<execute macro="User#logoutAndLoginPG">
 			<var name="userLoginEmailAddress" value="${adminEmailAddress}" />
 			<var name="userLoginFullName" value="${adminName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -662,15 +485,15 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
 		<var name="key_entryTitle" value="${entryTitle}" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_COMMENT_1" value1="0 Comments" />
-		<execute function="AssertTextEquals" locator1="PGBlogs#ENTRY_AVERAGE_RATING" value1="Average (0 Votes)" />
+		<execute function="AssertTextEquals" locator1="Comments#ENTRY_COUNT_PANEL" value1="0 Comments" />
+		<execute function="AssertTextEquals" locator1="Ratings#AVERAGE_LABEL" value1="Average (0 Votes)" />
 
 		<execute macro="BlogsEntry#viewDetailsPG">
 			<var name="entryAuthorFirstName" value="${userFirstName}" />
@@ -680,8 +503,8 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_STATS_COMMENTS" value1="0 Comments" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#AVERAGE" value1="Average (0 Votes)" />
+		<execute function="AssertTextEquals" locator1="Comments#ENTRY_COUNT_PANEL" value1="0 Comments" />
+		<execute function="AssertTextEquals" locator1="Ratings#AVERAGE_LABEL" value1="Average (0 Votes)" />
 	</command>
 
 	<command name="AddSOBlogsEntryTag" priority="4">
@@ -689,7 +512,7 @@
 		<var name="entryTitle" value="Blogs Entry Title" />
 		<var name="tagName" value="Tag Name" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -702,93 +525,6 @@
 		</execute>
 	</command>
 
-	<command name="AddSOBlogsEntryTitle150Characters" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="|||||||||1|||||||||2|||||||||3|||||||||4|||||||||5|||||||||6|||||||||7|||||||||8|||||||||9||||||||10||||||||11||||||||12||||||||13||||||||14||||||||15" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-	</command>
-
-	<command name="AddSOBlogsEntryTitle151Characters" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="|||||||||1|||||||||2|||||||||3|||||||||4|||||||||5|||||||||6|||||||||7|||||||||8|||||||||9||||||||10||||||||11||||||||12||||||||13||||||||14||||||||15X" />
-		<var name="entryValidTitleLength" value="|||||||||1|||||||||2|||||||||3|||||||||4|||||||||5|||||||||6|||||||||7|||||||||8|||||||||9||||||||10||||||||11||||||||12||||||||13||||||||14||||||||15" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryInvalidTitleLength" value="true" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="entryValidTitleLength" value="${entryValidTitleLength}" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewPG">
-			<var name="entryTitle" value="${entryValidTitleLength}" />
-		</execute>
-	</command>
-
-	<command name="AddSOBlogsEntryTitleEscapeCharacters" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="&lt;!--Html Escape Character Test--&gt;" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-	</command>
-
-	<command name="AddSOBlogsEntryTitleNull" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryInvalidTitle" value="true" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewNoPG">
-			<var name="entryTitle" value="${entryContent}" />
-		</execute>
-	</command>
-
 	<command name="AddSOBlogsEntryWithSamePageScope" priority="3">
 		<var name="entryContent" value="Blogs Entry1 Content" />
 		<var name="entryContent2" value="Blogs Entry2 Content" />
@@ -797,7 +533,7 @@
 		<var name="pageName2" value="Blogs Page2 Name" />
 		<var name="portletName" value="Blogs" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
@@ -807,7 +543,7 @@
 			<var name="pageName" value="${pageName2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName2}" />
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
@@ -826,7 +562,7 @@
 			<var name="soPage" value="false" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName2}" />
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
@@ -837,7 +573,7 @@
 			<var name="entryTitle" value="${entryTitle2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
@@ -848,7 +584,7 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName}" />
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
@@ -863,7 +599,7 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName2}" />
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
@@ -886,7 +622,7 @@
 			<var name="soPage" value="false" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="${pageName2}" />
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
@@ -923,7 +659,7 @@
 			<var name="userScreenName" value="${userScreenName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -941,7 +677,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -950,7 +686,7 @@
 			<var name="siteName" value="${siteName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -964,7 +700,7 @@
 			<var name="entryComment" value="${entryComment}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -976,7 +712,7 @@
 			<var name="soPage" value="${soPage}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -997,7 +733,7 @@
 		<var name="entryTitle" value="Blogs Entry Title" />
 		<var name="entryTitleEdit" value="Blogs Entry Title Edit" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1007,14 +743,14 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute macro="BlogsEntry#editPG">
+		<execute macro="Blogs#editEntryPG">
 			<var name="entryContent" value="${entryContent}" />
 			<var name="entryContentEdit" value="${entryContentEdit}" />
 			<var name="entryTitle" value="${entryTitle}" />
 			<var name="entryTitleEdit" value="${entryTitleEdit}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1057,7 +793,7 @@
 			<var name="userScreenName" value="${userScreenName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1075,7 +811,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1084,7 +820,7 @@
 			<var name="siteName" value="${siteName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1098,7 +834,7 @@
 			<var name="entryComment" value="${entryComment}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1113,7 +849,7 @@
 			<var name="entryCommentEdit" value="${entryCommentEdit}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1138,7 +874,7 @@
 
 		<var name="entryTitle" value="Blogs Entry Title" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1150,18 +886,17 @@
 
 		<execute macro="SOUserBar#showEditControls" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute macro="BlogsEntry#editContentInlinePG">
+		<execute macro="BlogsEntry#editEntryContent">
 			<var name="entryContent" value="${entryContentOriginal}" />
 			<var name="entryContentEdit" value="${entryContentEdit}" />
-			<var name="useSendKeys" value="true" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1285,7 +1020,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1303,7 +1038,7 @@
 			<var name="site" value="${siteName}" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesUsers">
+		<execute macro="ProductMenu#gotoSitesMembers">
 			<var name="portlet" value="Site Memberships" />
 		</execute>
 
@@ -1318,7 +1053,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1328,7 +1063,7 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute macro="BlogsEntry#editPG">
+		<execute macro="Blogs#editEntryPG">
 			<var name="entryContent" value="${entryContent}" />
 			<var name="entryContentEdit" value="${entryContentEdit}" />
 			<var name="entryTitle" value="${entryTitle}" />
@@ -1340,7 +1075,7 @@
 			<var name="userLoginFullName" value="${adminName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1355,8 +1090,8 @@
 			<var name="entryTitle" value="${entryTitleEdit}" />
 		</execute>
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_STATS_COMMENTS" value1="0 Comments" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_AVERAGE_RATING" value1="Average (0 Votes)" />
+		<execute function="AssertTextEquals" locator1="Comments#ENTRY_COUNT_PANEL" value1="0 Comments" />
+		<execute function="AssertTextEquals" locator1="Ratings#AVERAGE_LABEL" value1="Average (0 Votes)" />
 	</command>
 
 	<command name="ImportLarSOBlogsEntry" priority="4">
@@ -1399,7 +1134,7 @@
 			<var name="vocabularyName" value="${vocabularyName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1413,7 +1148,7 @@
 			<var name="vocabularyName" value="${vocabularyName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1422,7 +1157,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1436,7 +1171,7 @@
 			<var name="entryComment" value="${entryComment}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1446,7 +1181,7 @@
 			<var name="roleName" value="Guest" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1459,19 +1194,19 @@
 			<var name="vocabularyName" value="${vocabularyName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute macro="BlogsEntry#editPG">
+		<execute macro="Blogs#editEntryPG">
 			<var name="entryContent" value="${entryContent2}" />
 			<var name="entryContentEdit" value="${entryContent2Edit}" />
 			<var name="entryTitle" value="${entryTitle2}" />
 			<var name="entryTitleEdit" value="${entryTitle2Edit}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1491,7 +1226,7 @@
 			<var name="siteType" value="${siteType}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1503,7 +1238,7 @@
 			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1518,7 +1253,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1527,7 +1262,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1542,7 +1277,7 @@
 			<var name="userFullName" value="${userFullName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1552,7 +1287,7 @@
 			<var name="tagNameList" value="${tagName1},${tagName2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1563,7 +1298,7 @@
 			<var name="viewPermissionValue" value="unchecked" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1578,18 +1313,18 @@
 			<var name="entryTitle" value="${entryTitle2Edit}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute macro="BlogsEntry#viewCategoryPG">
+		<execute macro="BlogsEntry#viewCategory">
 			<var name="categoryName" value="${categoryName}" />
 			<var name="entryTitle" value="${entryTitle2Edit}" />
 			<var name="vocabularyName" value="${vocabularyName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1599,32 +1334,6 @@
 			<var name="roleName" value="Guest" />
 			<var name="viewPermissionValue" value="checked" />
 		</execute>
-	</command>
-
-	<command name="MoveToRecycleBinSOBlogsEntry" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsEntry#moveToRecycleBinPG">
-			<var name="assetType" value="Blogs Entry" />
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<var name="key_entryTitle" value="${entryTitle}" />
-
-		<execute function="AssertElementPresent" locator1="SOBlogs#RECENT_BLOGS_ENTRY_NO_ENTRIES" />
-		<execute function="AssertElementNotPresent" locator1="SOBlogs#RECENT_BLOGS_ENTRY_TITLE" />
 	</command>
 
 	<command name="MoveToRecycleBinSOBlogsEntrySOUser" priority="4">
@@ -1736,7 +1445,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1754,7 +1463,7 @@
 			<var name="site" value="${siteName}" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesUsers">
+		<execute macro="ProductMenu#gotoSitesMembers">
 			<var name="portlet" value="Site Memberships" />
 		</execute>
 
@@ -1769,7 +1478,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1790,98 +1499,17 @@
 			<var name="userLoginFullName" value="${adminName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute function="AssertElementPresent" locator1="PGBlogs#ADD_ENTRY_BUTTON" value1="Add Blog Entry" />
-		<execute function="AssertElementPresent" locator1="PGBlogs#PERMISSIONS_BUTTON" value1="Permissions" />
-		<execute function="AssertTextEquals" locator1="PGBlogs#RSS_LINK" value1="RSS" />
-		<execute function="AssertTextEquals" locator1="PGBlogs#SUBSCRIBE_LINK" value1="Subscribe" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_TITLE_1" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_CONTENT_1" />
-	</command>
-
-	<command name="RateSOBlogsEntry" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsEntry#rate4StarsPG">
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewDetailsPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewRate4StarsPG" />
-	</command>
-
-	<command name="SaveSOBlogsEntryDraft" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#addDraftPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-	</command>
-
-	<command name="SaveSOBlogsEntryDraftAuto" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#addDraftAutoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
+		<execute function="AssertElementPresent" locator1="Blogs#ADD_BLOGS_ENTRY" value1="Add Blog Entry" />
+		<execute function="AssertElementPresent" locator1="Button#PERMISSIONS" value1="Permissions" />
+		<execute function="AssertTextEquals" locator1="Link#RSS" value1="RSS" />
+		<execute function="AssertTextEquals" locator1="Link#SUBSCRIBE" value1="Subscribe" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#TITLE" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#CONTENT" />
 	</command>
 
 	<command name="SaveSOBlogsEntryEditAsDraft" priority="4">
@@ -1890,7 +1518,7 @@
 		<var name="entryTitle" value="Blogs Entry Title" />
 		<var name="entryTitleEdit" value="Blogs Entry Title Edit" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1900,20 +1528,19 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute macro="BlogsEntry#editPG">
+		<execute macro="Blogs#editDraftPG">
 			<var name="entryContent" value="${entryContent}" />
 			<var name="entryContentEdit" value="${entryContentEdit}" />
 			<var name="entryTitle" value="${entryTitle}" />
 			<var name="entryTitleEdit" value="${entryTitleEdit}" />
-			<var name="saveAsDraft" value="true" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -1921,333 +1548,6 @@
 		<execute macro="BlogsEntry#viewEntry">
 			<var name="entryContent" value="${entryContentEdit}" />
 			<var name="entryTitle" value="${entryTitleEdit}" />
-		</execute>
-	</command>
-
-	<command name="SearchSOBlogsEntryComment" priority="4">
-		<var name="entryComment" value="Blogs Entry Comment" />
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsNavigator#gotoEntryPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsEntryComment#add">
-			<var name="entryComment" value="${entryComment}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntryComment#searchPG">
-			<var name="entryComment" value="${entryComment}" />
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Comment" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-	</command>
-
-	<command name="SearchSOBlogsEntryContent" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Blogs" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Entry" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Content" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Blogs1" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Entry1" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Content1" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-	</command>
-
-	<command name="SearchSOBlogsEntryContentQuotes" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Blogs Entry Content"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Blogs"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Entry"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Content"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Blogs1"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Entry1"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Content1"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Blogs Entry Content1"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-	</command>
-
-	<command name="SearchSOBlogsEntryTitle" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="${entryTitle}" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Blogs" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Entry" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Title" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Blogs1" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Entry1" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm" value="Title1" />
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-	</command>
-
-	<command name="SearchSOBlogsEntryTitleQuotes" priority="4">
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Blogs Entry Title"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Blogs"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Entry"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Title"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Blogs1"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Entry1"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Title1"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
-		</execute>
-
-		<execute macro="BlogsEntry#searchNoPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entrySearchTerm">"Blogs Entry Title1"</var>
-			<var name="entryTitle" value="${entryTitle}" />
-			<var name="soPage" value="${soPage}" />
 		</execute>
 	</command>
 
@@ -2288,7 +1588,7 @@
 			<var name="roleName" value="Site Member" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2304,7 +1604,7 @@
 			<var name="siteName" value="${siteName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2316,7 +1616,7 @@
 			<var name="userLoginFullName" value="${adminName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2363,8 +1663,8 @@
 
 		<execute function="Pause" locator1="1000" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_TITLE" value1="${entryTitle}" />
-		<execute function="AssertTextEquals" locator1="PGBlogsEntry#ENTRY_CONTENT" value1="${entryContent}" />
+		<execute function="AssertTextEquals" locator1="BlogsEntry#TITLE" value1="${entryTitle}" />
+		<execute function="AssertTextEquals" locator1="BlogsEntry#CONTENT" value1="${entryContent}" />
 	</command>
 
 	<command name="UserFlagsEntryAndAdminViewsNotificationInGmail" priority="4">
@@ -2420,7 +1720,7 @@
 			<var name="siteType" value="${siteType}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2437,7 +1737,7 @@
 			<var name="userLoginFullName" value="Test Test" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2488,7 +1788,7 @@
 		<var name="entryTitle6" value="Blogs Entry6 Title" />
 		<var name="maximumItemsToDisplay" value="5" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2523,7 +1823,7 @@
 			<var name="entryTitle" value="${entryTitle6}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2533,7 +1833,7 @@
 			<var name="entryTitle" value="${entryTitle6}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2543,7 +1843,7 @@
 			<var name="entryTitle" value="${entryTitle5}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2553,7 +1853,7 @@
 			<var name="entryTitle" value="${entryTitle4}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2563,7 +1863,7 @@
 			<var name="entryTitle" value="${entryTitle3}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2573,7 +1873,7 @@
 			<var name="entryTitle" value="${entryTitle2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2595,7 +1895,7 @@
 
 		<execute macro="BlogsConfiguration#saveConfigurationIFrame" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2605,7 +1905,7 @@
 			<var name="entryTitle" value="${entryTitle6}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2615,7 +1915,7 @@
 			<var name="entryTitle" value="${entryTitle5}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2625,7 +1925,7 @@
 			<var name="entryTitle" value="${entryTitle4}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2635,7 +1935,7 @@
 			<var name="entryTitle" value="${entryTitle3}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2645,45 +1945,45 @@
 			<var name="entryTitle" value="${entryTitle2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
 		<var name="key_entryTitle" value="${entryTitle1}" />
 
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_TITLE" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_CONTENT" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#TITLE" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#CONTENT" />
 
-		<execute function="AssertTextEquals" locator1="PGBlogs#PAGINATION_ITEMS_PER_PAGE" value1="— 5 Items per Page" />
-		<execute function="AssertTextEquals" locator1="PGBlogs#PAGINATION_PAGE_SELECTOR" value1="Page 1 of 2" />
-		<execute function="AssertClick" locator1="PGBlogs#PAGINATION_NEXT_BUTTON" value1="Next" />
-		<execute function="AssertTextEquals" locator1="PGBlogs#PAGINATION_PAGE_SELECTOR" value1="Page 2 of 2" />
+		<execute function="AssertTextEquals" locator1="Pagination#VARIABLE_ITEMS_PER_PAGE" value1="— 5" />
+		<execute function="AssertTextEquals" locator1="Pagination#PARTICULAR_PAGE" value1="Page 1 of 2" />
+		<execute function="AssertClick" locator1="Button#NEXT" value1="Next" />
+		<execute function="AssertTextEquals" locator1="Pagination#PARTICULAR_PAGE" value1="Page 2 of 2" />
 
 		<var name="key_entryTitle" value="${entryTitle2}" />
 
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_TITLE" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_CONTENT" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#TITLE" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#CONTENT" />
 
 		<var name="key_entryTitle" value="${entryTitle3}" />
 
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_TITLE" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_CONTENT" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#TITLE" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#CONTENT" />
 
 		<var name="key_entryTitle" value="${entryTitle4}" />
 
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_TITLE" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_CONTENT" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#TITLE" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#CONTENT" />
 
 		<var name="key_entryTitle" value="${entryTitle5}" />
 
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_TITLE" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_CONTENT" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#TITLE" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#CONTENT" />
 
 		<var name="key_entryTitle" value="${entryTitle6}" />
 
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_TITLE" />
-		<execute function="AssertElementNotPresent" locator1="PGBlogs#ENTRY_CONTENT" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#TITLE" />
+		<execute function="AssertElementNotPresent" locator1="BlogsEntry#CONTENT" />
 
 		<execute macro="BlogsEntry#viewPG">
 			<var name="entryContent" value="${entryContent1}" />
@@ -2714,7 +2014,7 @@
 			<var name="userScreenName" value="${userScreenName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2735,7 +2035,7 @@
 			<var name="siteType" value="${siteType}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName2}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2745,7 +2045,7 @@
 			<var name="entryTitle" value="${entryTitle2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2758,7 +2058,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName2}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2779,7 +2079,7 @@
 			<var name="userLoginFullName" value="${adminName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2792,7 +2092,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2801,7 +2101,7 @@
 			<var name="selectionMethod" value="Users" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2811,7 +2111,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2824,7 +2124,7 @@
 			<var name="entryTitle" value="${entryTitle2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName2}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2840,7 +2140,7 @@
 			<var name="entryTitle" value="${entryTitle2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName2}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2849,7 +2149,7 @@
 			<var name="selectionMethod" value="Users" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName2}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2859,7 +2159,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName2}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2877,7 +2177,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2887,7 +2187,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2900,7 +2200,7 @@
 			<var name="entryTitle" value="${entryTitle2}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName2}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2910,7 +2210,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName2}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2949,7 +2249,7 @@
 			<var name="userScreenName" value="${userScreenName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2959,7 +2259,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2979,7 +2279,7 @@
 			<var name="userLoginFullName" value="${userName}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -2999,7 +2299,7 @@
 			<var name="entryTitle" value="${entryTitle1}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Blogs" />
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
@@ -3014,7 +2314,7 @@
 		<var name="entryContent" value="Blogs Entry Content" />
 		<var name="entryTitle" value="Blogs Entry Title" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
@@ -3024,150 +2324,12 @@
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="siteName" value="${siteName}" />
 			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SOBlogs#viewBlogsEntryRecentBlogs">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-	</command>
-
-	<command name="ViewSOBlogsEntryWithAbstractDisplayTemplate" priority="4">
-		<var name="displayTemplate" value="Abstract" />
-		<var name="entryAbstractDescription" value="Blogs Entry Abstract Description" />
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsNavigator#gotoEditPG">
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="BlogsNavigator#gotoSettings" />
-
-		<execute macro="BlogsEntry#addCustomAbstract">
-			<var name="entryAbstractDescription" value="${entryAbstractDescription}" />
-		</execute>
-
-		<execute macro="BlogsEntry#publish" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Portlet#gotoPortletOptions">
-			<var name="portletOption" value="Configuration" />
-		</execute>
-
-		<execute macro="BlogsConfiguration#selectConfigurationIFrame" />
-
-		<execute macro="BlogsConfiguration#selectDisplayTemplate">
-			<var name="displayTemplate" value="Abstract" />
-		</execute>
-
-		<execute macro="BlogsConfiguration#saveConfigurationIFrame" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewWithAbstractDisplayTemplatePG">
-			<var name="entryAbstractDescription" value="${entryAbstractDescription}" />
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-	</command>
-
-	<command name="ViewSOBlogsEntryWithFullContentDisplayTemplate" priority="4">
-		<var name="displayTemplate" value="Full Content" />
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Portlet#gotoPortletOptions">
-			<var name="portletOption" value="Configuration" />
-		</execute>
-
-		<execute macro="BlogsConfiguration#selectConfigurationIFrame" />
-
-		<execute macro="BlogsConfiguration#selectDisplayTemplate">
-			<var name="displayTemplate" value="Full Content" />
-		</execute>
-
-		<execute macro="BlogsConfiguration#saveConfigurationIFrame" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewPG">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-	</command>
-
-	<command name="ViewSOBlogsEntryWithTitleDisplayTemplate" priority="4">
-		<var name="displayTemplate" value="Title" />
-		<var name="entryContent" value="Blogs Entry Content" />
-		<var name="entryTitle" value="Blogs Entry Title" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Blogs#addEntry">
-			<var name="entryContent" value="${entryContent}" />
-			<var name="entryTitle" value="${entryTitle}" />
-		</execute>
-
-		<execute macro="Portlet#gotoPortletOptions">
-			<var name="portletOption" value="Configuration" />
-		</execute>
-
-		<execute macro="BlogsConfiguration#selectConfigurationIFrame" />
-
-		<execute macro="BlogsConfiguration#selectDisplayTemplate">
-			<var name="displayTemplate" value="Title" />
-		</execute>
-
-		<execute macro="BlogsConfiguration#saveConfigurationIFrame" />
-
-		<execute macro="Page#gotoPG">
-			<var name="siteName" value="${siteName}" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="BlogsEntry#viewWithTitleDisplayTemplatePG">
 			<var name="entryContent" value="${entryContent}" />
 			<var name="entryTitle" value="${entryTitle}" />
 		</execute>

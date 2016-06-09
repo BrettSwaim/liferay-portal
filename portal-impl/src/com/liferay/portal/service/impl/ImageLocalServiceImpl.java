@@ -14,18 +14,18 @@
 
 package com.liferay.portal.service.impl;
 
-import com.liferay.portal.exception.ImageTypeException;
-import com.liferay.portal.exception.NoSuchImageException;
 import com.liferay.portal.image.HookFactory;
+import com.liferay.portal.kernel.exception.ImageTypeException;
+import com.liferay.portal.kernel.exception.NoSuchImageException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.image.Hook;
 import com.liferay.portal.kernel.image.ImageToolUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Image;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.webserver.WebServerServletTokenUtil;
-import com.liferay.portal.model.Image;
 import com.liferay.portal.service.base.ImageLocalServiceBaseImpl;
 
 import java.io.File;
@@ -49,8 +49,7 @@ public class ImageLocalServiceImpl extends ImageLocalServiceBaseImpl {
 		}
 
 		/*
-		if (PropsValues.IMAGE_HOOK_IMPL.equals(
-				DatabaseHook.class.getName()) &&
+		if (PropsValues.IMAGE_HOOK_IMPL.equals(DatabaseHook.class.getName()) &&
 			(imagePersistence.getListeners().length == 0)) {
 
 			runSQL("delete from Image where imageId = " + imageId);

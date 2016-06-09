@@ -15,7 +15,10 @@
 package com.liferay.taglib.ui;
 
 import com.liferay.portal.kernel.language.LanguageUtil;
-import com.liferay.portal.kernel.language.UnicodeLanguageUtil;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletApp;
+import com.liferay.portal.kernel.model.SpriteImage;
+import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.servlet.BrowserSnifferUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
@@ -30,10 +33,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.PortletApp;
-import com.liferay.portal.model.SpriteImage;
-import com.liferay.portal.model.Theme;
 import com.liferay.taglib.util.IncludeTag;
 import com.liferay.taglib.util.TagResourceBundleUtil;
 
@@ -175,8 +174,8 @@ public class IconTag extends IncludeTag {
 		_onClick = null;
 		_src = null;
 		_srcHover = null;
-		_target = null;
-		_toolTip = false;
+		_target = "_self";
+		_toolTip = null;
 		_url = null;
 		_useDialog = false;
 	}
@@ -223,25 +222,13 @@ public class IconTag extends IncludeTag {
 			details = " alt=\"\"";
 		}
 		else {
-			StringBundler sb = new StringBundler(6);
+			StringBundler sb = new StringBundler(5);
 
 			sb.append(" alt=\"");
 			sb.append(LanguageUtil.get(resourceBundle, getProcessedMessage()));
+			sb.append("\" title=\"");
+			sb.append(LanguageUtil.get(resourceBundle, getProcessedMessage()));
 			sb.append("\"");
-
-			if (_toolTip) {
-				sb.append(" onmouseover=\"Liferay.Portal.ToolTip.show(this, '");
-				sb.append(
-					UnicodeLanguageUtil.get(
-						resourceBundle, getProcessedMessage()));
-				sb.append("')\"");
-			}
-			else {
-				sb.append(" title=\"");
-				sb.append(
-					LanguageUtil.get(resourceBundle, getProcessedMessage()));
-				sb.append("\"");
-			}
 
 			details = sb.toString();
 		}
@@ -389,6 +376,8 @@ public class IconTag extends IncludeTag {
 		else {
 			id = PortalUtil.generateRandomKey(request, IconTag.class.getName());
 		}
+
+		id = HtmlUtil.getAUICompatibleId(id);
 
 		return id;
 	}
@@ -584,13 +573,13 @@ public class IconTag extends IncludeTag {
 		request.setAttribute("liferay-ui:icon:cssClass", _cssClass);
 		request.setAttribute("liferay-ui:icon:data", getData());
 		request.setAttribute("liferay-ui:icon:details", getDetails());
+		request.setAttribute(
+			"liferay-ui:icon:forcePost", String.valueOf(isForcePost()));
 		request.setAttribute("liferay-ui:icon:icon", _icon);
 		request.setAttribute("liferay-ui:icon:iconCssClass", _iconCssClass);
 		request.setAttribute("liferay-ui:icon:id", getId());
 		request.setAttribute("liferay-ui:icon:image", _image);
 		request.setAttribute("liferay-ui:icon:imageHover", _imageHover);
-		request.setAttribute(
-			"liferay-ui:icon:forcePost", String.valueOf(isForcePost()));
 		request.setAttribute(
 			"liferay-ui:icon:label", String.valueOf(isLabel()));
 		request.setAttribute("liferay-ui:icon:lang", _lang);
@@ -605,8 +594,19 @@ public class IconTag extends IncludeTag {
 		request.setAttribute("liferay-ui:icon:src", getSrc());
 		request.setAttribute("liferay-ui:icon:srcHover", getSrcHover());
 		request.setAttribute("liferay-ui:icon:target", _target);
+
+		boolean toolTip = false;
+
+		if (_toolTip != null) {
+			toolTip = _toolTip.booleanValue();
+		}
+		else if (!isLabel() && Validator.isNotNull(getProcessedMessage())) {
+			toolTip = true;
+		}
+
 		request.setAttribute(
-			"liferay-ui:icon:toolTip", String.valueOf(_toolTip));
+			"liferay-ui:icon:toolTip", String.valueOf(toolTip));
+
 		request.setAttribute("liferay-ui:icon:url", getProcessedUrl());
 		request.setAttribute(
 			"liferay-ui:icon:useDialog", String.valueOf(_useDialog));
@@ -636,8 +636,8 @@ public class IconTag extends IncludeTag {
 	private String _src;
 	private String _srcHover;
 	private String _target = "_self";
-	private boolean _toolTip;
+	private Boolean _toolTip;
 	private String _url;
-	private boolean _useDialog = false;
+	private boolean _useDialog;
 
 }

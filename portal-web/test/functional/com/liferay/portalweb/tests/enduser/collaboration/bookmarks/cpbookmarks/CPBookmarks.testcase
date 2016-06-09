@@ -1,4 +1,5 @@
 <definition component-name="portal-collaboration">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Bookmarks" />
 
 	<set-up>
@@ -28,7 +29,7 @@
 
 		<var name="bookmarkDescription" value="This is a test bookmark!" />
 		<var name="bookmarkName" value="Test Bookmark" />
-		<var name="bookmarkURL" value="http://www.liferay.com" />
+		<var name="bookmarkURL" value="https://www.liferay.com" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -59,7 +60,7 @@
 
 		<var name="bookmark1Description" value="This is a test bookmark!" />
 		<var name="bookmark1Name" value="Test Bookmark" />
-		<var name="bookmark1URL" value="http://www.liferay.com" />
+		<var name="bookmark1URL" value="https://www.liferay.com" />
 		<var name="bookmark2Description" value="This is another test bookmark!" />
 		<var name="bookmark2Name" value="Test Bookmark 2" />
 		<var name="bookmark2URL" value="http://digg.com" />
@@ -197,7 +198,7 @@
 
 	<command name="AddNullTitleBookmark" priority="4">
 		<var name="bookmarkDescription" value="This is a test bookmark!" />
-		<var name="bookmarkURL" value="http://www.liferay.com" />
+		<var name="bookmarkURL" value="https://www.liferay.com" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -262,7 +263,7 @@
 
 		<var name="bookmarkDescription" value="This is a test bookmark!" />
 		<var name="bookmarkName" value="Test Bookmark" />
-		<var name="bookmarkURL" value="http://www.liferay.com" />
+		<var name="bookmarkURL" value="https://www.liferay.com" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -300,7 +301,7 @@
 		<var name="bookmark2URL" value="http://digg.com" />
 		<var name="bookmarkDescription" value="This is a test bookmark!" />
 		<var name="bookmarkName" value="Test Bookmark" />
-		<var name="bookmarkURL" value="http://www.liferay.com" />
+		<var name="bookmarkURL" value="https://www.liferay.com" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -343,10 +344,10 @@
 
 		<var name="bookmarkDescription" value="This is a test bookmark!" />
 		<var name="bookmarkName" value="Test Bookmark" />
-		<var name="bookmarkURL" value="http://www.liferay.com" />
+		<var name="bookmarkURL" value="https://www.liferay.com" />
 		<var name="editBookmarkDescription" value="This is a test bookmark edit!" />
 		<var name="editBookmarkName" value="Test Bookmark Edit" />
-		<var name="editBookmarkURL" value="http://www.narutofan.com" />
+		<var name="editBookmarkURL" value="https://www.google.com" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -468,7 +469,7 @@
 	<command name="MergeSubfolderBookmarkToFolder" priority="3">
 		<var name="bookmarkDescription" value="This is a test bookmark!" />
 		<var name="bookmarkName" value="Test Bookmark" />
-		<var name="bookmarkURL" value="http://www.liferay.com" />
+		<var name="bookmarkURL" value="https://www.liferay.com" />
 		<var name="folderDescription" value="This is a test bookmarks folder!" />
 		<var name="folderName" value="Test Bookmarks Folder" />
 		<var name="subfolderDescription" value="This is a test bookmarks subfolder!" />
@@ -563,7 +564,7 @@
 		<execute macro="Bookmark#addToSubfolderCP">
 			<var name="bookmarkDescription" value="This is a test bookmark!" />
 			<var name="bookmarkName" value="Test Bookmark" />
-			<var name="bookmarkURL" value="http://www.liferay.com" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 			<var name="folderName" value="${folderName}" />
 			<var name="subfolderName" value="${subfolderName}" />
 		</execute>
@@ -622,13 +623,6 @@
 	</command>
 
 	<command name="SearchBookmark" priority="3">
-		<var name="bookmark2Description" value="This is another test bookmark!" />
-		<var name="bookmark2Name" value="Test Bookmark 2" />
-		<var name="bookmark2URL" value="http://digg.com" />
-		<var name="bookmarkDescription" value="This is a test bookmark!" />
-		<var name="bookmarkName" value="Test Bookmark" />
-		<var name="bookmarkURL" value="http://www.liferay.com" />
-
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoSitesContent">
@@ -636,9 +630,9 @@
 		</execute>
 
 		<execute macro="Bookmark#addCP">
-			<var name="bookmarkDescription" value="${bookmarkDescription}" />
-			<var name="bookmarkName" value="${bookmarkName}" />
-			<var name="bookmarkURL" value="${bookmarkURL}" />
+			<var name="bookmarkDescription" value="This is a test bookmark!" />
+			<var name="bookmarkName" value="Test Bookmark" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Navigator#openURL" />
@@ -648,8 +642,8 @@
 		</execute>
 
 		<execute macro="Bookmark#viewBookmark">
-			<var name="bookmarkName" value="${bookmarkName}" />
-			<var name="bookmarkURL" value="${bookmarkURL}" />
+			<var name="bookmarkName" value="Test Bookmark" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Navigator#openURL" />
@@ -658,19 +652,16 @@
 			<var name="portlet" value="Bookmarks" />
 		</execute>
 
-		<execute macro="Bookmark#searchCP">
-			<var name="bookmarkName" value="${bookmarkName}" />
+		<execute macro="Search#searchCP">
+			<var name="searchTerm" value="Test Bookmark" />
+		</execute>
+
+		<execute macro="Search#viewSearchAssetTitle">
+			<var name="searchAssetTitle" value="Test Bookmark" />
 		</execute>
 	</command>
 
 	<command name="SearchBookmarks" priority="3">
-		<var name="bookmark1Description" value="This is a test bookmark!" />
-		<var name="bookmark1Name" value="Test Bookmark" />
-		<var name="bookmark1URL" value="http://www.liferay.com" />
-		<var name="bookmark2Description" value="This is another test bookmark!" />
-		<var name="bookmark2Name" value="Test Bookmark 2" />
-		<var name="bookmark2URL" value="http://digg.com" />
-
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoSitesContent">
@@ -678,9 +669,9 @@
 		</execute>
 
 		<execute macro="Bookmark#addCP">
-			<var name="bookmarkDescription" value="${bookmark1Description}" />
-			<var name="bookmarkName" value="${bookmark1Name}" />
-			<var name="bookmarkURL" value="${bookmark1URL}" />
+			<var name="bookmarkDescription" value="This is a test bookmark!" />
+			<var name="bookmarkName" value="Test Bookmark" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Navigator#openURL" />
@@ -690,9 +681,9 @@
 		</execute>
 
 		<execute macro="Bookmark#addCP">
-			<var name="bookmarkDescription" value="${bookmark2Description}" />
-			<var name="bookmarkName" value="${bookmark2Name}" />
-			<var name="bookmarkURL" value="${bookmark2URL}" />
+			<var name="bookmarkDescription" value="This is another test bookmark!" />
+			<var name="bookmarkName" value="Test Bookmark 2" />
+			<var name="bookmarkURL" value="http://digg.com" />
 		</execute>
 
 		<execute macro="Navigator#openURL" />
@@ -702,8 +693,8 @@
 		</execute>
 
 		<execute macro="Bookmark#viewBookmark">
-			<var name="bookmarkName" value="${bookmark1Name}" />
-			<var name="bookmarkURL" value="${bookmark1URL}" />
+			<var name="bookmarkName" value="Test Bookmark" />
+			<var name="bookmarkURL" value="https://www.liferay.com" />
 		</execute>
 
 		<execute macro="Navigator#openURL" />
@@ -713,8 +704,8 @@
 		</execute>
 
 		<execute macro="Bookmark#viewBookmark">
-			<var name="bookmarkName" value="${bookmark2Name}" />
-			<var name="bookmarkURL" value="${bookmark2URL}" />
+			<var name="bookmarkName" value="Test Bookmark 2" />
+			<var name="bookmarkURL" value="http://digg.com" />
 		</execute>
 
 		<execute macro="Navigator#openURL" />
@@ -723,8 +714,12 @@
 			<var name="portlet" value="Bookmarks" />
 		</execute>
 
-		<execute macro="Bookmark#searchCP">
-			<var name="bookmarkName" value="${bookmark1Name}" />
+		<execute macro="Search#searchCP">
+			<var name="searchTerm" value="Test Bookmark" />
+		</execute>
+
+		<execute macro="Search#viewSearchAssetTitle">
+			<var name="searchAssetTitle" value="Test Bookmark" />
 		</execute>
 
 		<execute macro="Navigator#openURL" />
@@ -733,8 +728,12 @@
 			<var name="portlet" value="Bookmarks" />
 		</execute>
 
-		<execute macro="Bookmark#searchCP">
-			<var name="bookmarkName" value="${bookmark2Name}" />
+		<execute macro="Search#searchCP">
+			<var name="searchTerm" value="Test Bookmark 2" />
+		</execute>
+
+		<execute macro="Search#viewSearchAssetTitle">
+			<var name="searchAssetTitle" value="Test Bookmark 2" />
 		</execute>
 	</command>
 
@@ -744,7 +743,7 @@
 		<var name="bookmark2URL" value="http://digg.com" />
 		<var name="bookmarkDescription" value="This is a test bookmark!" />
 		<var name="bookmarkName" value="Test Bookmark" />
-		<var name="bookmarkURL" value="http://www.liferay.com" />
+		<var name="bookmarkURL" value="https://www.liferay.com" />
 		<var name="nullBookmarkName" value="Test1" />
 
 		<execute macro="Navigator#openURL" />

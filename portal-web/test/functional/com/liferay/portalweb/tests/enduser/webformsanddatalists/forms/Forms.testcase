@@ -1,4 +1,5 @@
 <definition component-name="portal-web-forms-and-data-lists">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Forms" />
 
 	<set-up>
@@ -29,7 +30,10 @@
 		</if>
 	</tear-down>
 
-	<command name="ConfigureDataProviderWithSelectField" priority="4">
+	<command name="ConfigureDataProviderWithSelectField" priority="5">
+		<property name="portal.acceptance" value="true" />
+		<property name="test.name.skip.portal.instance" value="Forms#ConfigureDataProviderWithSelectField" />
+
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
 		<execute macro="Navigator#openURL" />
@@ -66,7 +70,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Select" />
+			<var name="fieldType" value="Select from List" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -85,7 +89,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -98,9 +102,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -124,10 +128,434 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Data Provider Select Field" />
 			<var name="fieldValue" value="united-states" />
 		</execute>
+	</command>
+
+	<command name="CreateUntitledForm" priority="3">
+		<description message="This is a use case for LPS-64379." />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoAddForm" />
+
+		<execute macro="Form#gotoAddFirstField">
+			<var name="fieldType" value="Text Field" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Text Field" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#save" />
+
+		<execute macro="FormsAdmin#viewForm">
+			<var name="formDescription" value="" />
+			<var name="formName" value="Untitled Form" />
+		</execute>
+	</command>
+
+	<command name="DeleteDateFieldAndViewEntries" priority="4">
+		<description message="This is a use case for LPS-60520." />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoAddForm" />
+
+		<execute macro="Form#editName" />
+
+		<execute macro="Form#editDescription" />
+
+		<execute macro="Form#gotoAddFirstField">
+			<var name="fieldType" value="Text Field" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Text Field" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Date" />
+			<var name="previousFieldLabel" value="Text Field" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Date Field" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#save" />
+
+		<execute macro="Page#add">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="pageName" value="Form Page" />
+			<var name="portletName" value="Form" />
+		</execute>
+
+		<execute macro="FormPortletNavigator#gotoSelectForm" />
+
+		<execute macro="FormPortletConfiguration#selectForm" />
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="FormFields#viewTextField">
+			<var name="fieldLabel" value="Text Field" />
+			<var name="fieldName" value="TextField" />
+		</execute>
+
+		<execute macro="FormFields#editText">
+			<var name="fieldName" value="TextField" />
+			<var name="fieldValue" value="Text Field Value" />
+		</execute>
+
+		<execute macro="FormFields#viewDateField">
+			<var name="fieldLabel" value="Date Field" />
+			<var name="fieldName" value="DateField" />
+		</execute>
+
+		<execute macro="FormFields#editDate">
+			<var name="fieldLabel" value="Date Field" />
+			<var name="fieldName" value="DateField" />
+			<var name="fieldValue" value="01/01/2016" />
+		</execute>
+
+		<execute macro="FormPortlet#submit" />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoDeleteField">
+			<var name="fieldLabel" value="Date Field" />
+			<var name="fieldName" value="DateField" />
+		</execute>
+
+		<execute macro="FormFields#viewDateFieldNotPresent">
+			<var name="fieldLabel" value="Date Field" />
+			<var name="fieldName" value="DateField" />
+		</execute>
+
+		<execute macro="Form#save" />
+
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="Descriptive" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoViewEntries" />
+
+		<execute macro="FormsAdmin#viewFormTableEntryNotPresent">
+			<var name="fieldLabel" value="Date Field" />
+			<var name="fieldValue" value="1/1/16" />
+		</execute>
+	</command>
+
+	<command name="EditAllFormFieldNames" priority="4">
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoAddForm" />
+
+		<execute macro="Form#editName" />
+
+		<execute macro="Form#editDescription" />
+
+		<execute macro="Form#gotoAddFirstField">
+			<var name="fieldType" value="Form Text" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Paragraph" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="Paragraph" />
+		</execute>
+
+		<execute macro="FormFields#editFieldName">
+			<var name="fieldValue" value="ParagraphName" />
+		</execute>
+
+		<execute macro="FormFields#editParagraphBody">
+			<var name="fieldValue" value="Paragraph body text." />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Text Field" />
+			<var name="previousFieldLabel" value="Paragraph" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Text" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="Text" />
+		</execute>
+
+		<execute macro="FormFields#editFieldName">
+			<var name="fieldValue" value="TextName" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Select from List" />
+			<var name="previousFieldLabel" value="Text" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Select" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="Select" />
+		</execute>
+
+		<execute macro="FormFields#editFieldName">
+			<var name="fieldValue" value="SelectName" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Select1" />
+			<var name="optionValue" value="Select 1" />
+		</execute>
+
+		<execute macro="FormFields#viewOptionsRowFieldName">
+			<var name="fieldName" value="Select1" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRowNameField">
+			<var name="optionValue" value="Select1Name" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Select2" />
+			<var name="optionValue" value="Select 2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#viewOptionsRowFieldName">
+			<var name="fieldName" value="Select2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRowNameField">
+			<var name="optionValue" value="Select2Name" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Single Selection" />
+			<var name="previousFieldLabel" value="Select" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Radio" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="Radio" />
+		</execute>
+
+		<execute macro="FormFields#editFieldName">
+			<var name="fieldValue" value="RadioName" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Option1" />
+			<var name="optionValue" value="Option 1" />
+		</execute>
+
+		<execute macro="FormFields#viewOptionsRowFieldName">
+			<var name="fieldName" value="Option1" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRowNameField">
+			<var name="optionValue" value="Option1Name" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Option2" />
+			<var name="optionValue" value="Option 2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#viewOptionsRowFieldName">
+			<var name="fieldName" value="Option2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRowNameField">
+			<var name="optionValue" value="Option2Name" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Date" />
+			<var name="previousFieldLabel" value="Radio" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Date" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="Date" />
+		</execute>
+
+		<execute macro="FormFields#editFieldName">
+			<var name="fieldValue" value="DateName" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Multiple Selection" />
+			<var name="previousFieldLabel" value="Date" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Checkbox" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="Checkbox" />
+		</execute>
+
+		<execute macro="FormFields#editFieldName">
+			<var name="fieldValue" value="CheckboxName" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#save" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoEdit">
+			<var name="formName" value="Created Form Name" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Paragraph" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="ParagraphName" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Text" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="TextName" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Select" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="SelectName" />
+		</execute>
+
+		<execute macro="FormFields#viewOptionsRowFieldName">
+			<var name="fieldName" value="Select1Name" />
+		</execute>
+
+		<execute macro="FormFields#viewOptionsRowFieldName">
+			<var name="fieldName" value="Select2Name" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Radio" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="RadioName" />
+		</execute>
+
+		<execute macro="FormFields#viewOptionsRowFieldName">
+			<var name="fieldName" value="Option1Name" />
+		</execute>
+
+		<execute macro="FormFields#viewOptionsRowFieldName">
+			<var name="fieldName" value="Option2Name" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Date" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="DateName" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Checkbox" />
+		</execute>
+
+		<execute macro="FormFields#viewFieldName">
+			<var name="fieldName" value="CheckboxName" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="Form#save" />
 	</command>
 
 	<command name="EditFormsConfigurationViaSystemSettings" priority="3">
@@ -146,7 +574,7 @@
 		</execute>
 
 		<execute macro="SystemSettings#gotoCategory">
-			<var name="category" value="Productivity" />
+			<var name="category" value="Forms and Workflow" />
 		</execute>
 
 		<execute macro="SystemSettings#editConfiguration">
@@ -158,9 +586,7 @@
 			<var name="selectOption" value="List" />
 		</execute>
 
-		<execute macro="Button#clickSave" />
-
-		<execute macro="Alert#viewRequestCompletedSuccessMessage" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSitesContent">
 			<var name="portlet" value="Forms" />
@@ -175,7 +601,7 @@
 		</execute>
 
 		<execute macro="SystemSettings#resetConfiguration">
-			<var name="category" value="Productivity" />
+			<var name="category" value="Forms and Workflow" />
 			<var name="configurationName" value="Forms" />
 		</execute>
 
@@ -205,7 +631,7 @@
 		</execute>
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -233,7 +659,7 @@
 		</execute>
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Checkbox" />
+			<var name="fieldType" value="Multiple Selection" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -293,6 +719,7 @@
 
 	<command name="PreviewAndPublishForm" priority="5">
 		<description message="This is a use case for LPS-61740" />
+		<property name="portal.acceptance" value="true" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -307,7 +734,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -331,6 +758,7 @@
 		<execute macro="Form#previewForm">
 			<var name="fieldLabel" value="Text Field" />
 			<var name="fieldName" value="TextField" />
+			<var name="fieldValue" value="Preview Form Text entry" />
 		</execute>
 
 		<execute macro="Navigator#closeWindow" />
@@ -347,10 +775,28 @@
 
 		<execute macro="Form#clickPublishSwitcher" />
 
-		<execute macro="Form#viewFormPublish">
+		<execute macro="Button#clickConfirm" />
+
+		<execute macro="Form#submitFormPublish">
 			<var name="fieldLabel" value="Text Field" />
 			<var name="fieldName" value="TextField" />
+			<var name="fieldValue" value="Published form text entry" />
 		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoViewEntries" />
+
+		<execute macro="FormsAdmin#viewFormTableEntry">
+			<var name="fieldLabel" value="Text Field" />
+			<var name="fieldValue" value="Published form text entry" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoSitesContent">
 			<var name="portlet" value="Forms" />
@@ -361,6 +807,8 @@
 		<execute macro="FormsAdminNavigator#gotoPublish" />
 
 		<execute macro="Form#clickPublishSwitcher" />
+
+		<execute macro="Button#clickConfirm" />
 
 		<execute macro="Form#viewFormNotPublished" />
 	</command>
@@ -387,7 +835,7 @@
 		</execute>
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -413,9 +861,9 @@
 			<var name="formName" value="Test Form" />
 		</execute>
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -443,7 +891,7 @@
 			<var name="formName" value="Test Form" />
 		</execute>
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Text Field" />
 			<var name="fieldValue" value="testEntry1" />
 		</execute>
@@ -453,7 +901,7 @@
 				<var name="searchTerm" value="${fieldValue}" />
 			</execute>
 
-			<execute macro="FormsAdmin#viewFormEntry">
+			<execute macro="FormsAdmin#viewFormTableEntry">
 				<var name="fieldLabel" value="Text Field" />
 				<var name="fieldValue" value="${fieldValue}" />
 			</execute>
@@ -464,7 +912,7 @@
 						<equals arg1="${fieldValueNotVisible}" arg2="${fieldValue}" />
 					</not>
 					<then>
-						<execute macro="FormsAdmin#viewEntryNotPresent">
+						<execute macro="FormsAdmin#viewTableEntryNotPresent">
 							<var name="fieldLabel" value="Text Field" />
 							<var name="fieldValue" value="${fieldValueNotVisible}" />
 						</execute>
@@ -494,7 +942,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -509,7 +957,7 @@
 
 		<execute macro="Form#gotoAddFirstField">
 			<var name="columnSize" value="10" />
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -524,7 +972,7 @@
 
 		<execute macro="Form#gotoAddFirstField">
 			<var name="columnSize" value="3" />
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -534,8 +982,8 @@
 		<execute macro="FormFields#save" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
-			<var name="previousFieldName" value="name" />
+			<var name="fieldType" value="Text Field" />
+			<var name="previousFieldLabel" value="name" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -551,7 +999,7 @@
 
 		<execute macro="Form#gotoAddFirstField">
 			<var name="columnSize" value="11" />
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -567,7 +1015,7 @@
 
 		<execute macro="Form#gotoAddFirstField">
 			<var name="columnSize" value="6" />
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -582,7 +1030,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -595,9 +1043,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -619,11 +1067,750 @@
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
 		<for list="one,two,three,four,five" param="fieldLabel">
-			<execute macro="FormsAdmin#viewFormEntry">
+			<execute macro="FormsAdmin#viewFormTableEntry">
 				<var name="fieldLabel" value="${fieldLabel}" />
 				<var name="fieldValue" value="Field ${fieldLabel}" />
 			</execute>
 		</for>
+	</command>
+
+	<command name="SubmitFormContainingCaptchaAndViewTextFieldValue" priority="3">
+		<description message="This is a use case for LPS-60818." />
+		<property name="custom.properties" value="captcha.max.challenges=0" />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoAddForm" />
+
+		<execute macro="Form#editName" />
+
+		<execute macro="Form#editDescription" />
+
+		<execute macro="Form#gotoAddFirstField">
+			<var name="fieldType" value="Text Field" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Text Field" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="FormsAdminNavigator#gotoSettings" />
+
+		<execute macro="Form#configureRequireCaptcha" />
+
+		<execute macro="Form#save" />
+
+		<execute macro="Page#add">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="pageName" value="Form Page" />
+			<var name="portletName" value="Form" />
+		</execute>
+
+		<execute macro="FormPortletNavigator#gotoSelectForm" />
+
+		<execute macro="FormPortletConfiguration#selectForm" />
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="FormFields#viewTextField">
+			<var name="fieldLabel" value="Text Field" />
+			<var name="fieldName" value="TextField" />
+		</execute>
+
+		<execute macro="FormFields#editText">
+			<var name="fieldName" value="TextField" />
+			<var name="fieldValue" value="Text Field Value" />
+		</execute>
+
+		<execute macro="FormFields#viewCaptchaField" />
+
+		<execute macro="FormFields#editCaptchaTextVerification">
+			<var name="fieldValue" value="1" />
+		</execute>
+
+		<execute macro="FormPortlet#submitWithError">
+			<var name="errorMessage" value="Text verification failed." />
+		</execute>
+
+		<execute macro="FormFields#viewTextValue">
+			<var name="fieldName" value="TextField" />
+			<var name="fieldValue" value="Text Field Value" />
+		</execute>
+	</command>
+
+	<command name="SubmitFormWithAllFieldTypesAfterEditingFields" priority="5">
+		<property name="portal.acceptance" value="true" />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoAddForm" />
+
+		<execute macro="Form#editName" />
+
+		<execute macro="Form#editDescription" />
+
+		<execute macro="Form#gotoAddFirstField">
+			<var name="fieldType" value="Form Text" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Paragraph" />
+		</execute>
+
+		<execute macro="FormFields#editParagraphBody">
+			<var name="fieldValue" value="Paragraph body text." />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Text Field" />
+			<var name="previousFieldLabel" value="Paragraph" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Text" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Select from List" />
+			<var name="previousFieldLabel" value="Text" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Select" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Select1" />
+			<var name="optionValue" value="Select 1" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Select2" />
+			<var name="optionValue" value="Select 2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Single Selection" />
+			<var name="previousFieldLabel" value="Select" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Radio" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Option1" />
+			<var name="optionValue" value="Option 1" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Option2" />
+			<var name="optionValue" value="Option 2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Date" />
+			<var name="previousFieldLabel" value="Radio" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Date" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Multiple Selection" />
+			<var name="previousFieldLabel" value="Date" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Checkbox" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#save" />
+
+		<execute macro="Page#add">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="pageName" value="Form Page" />
+			<var name="portletName" value="Form" />
+		</execute>
+
+		<execute macro="FormPortletNavigator#gotoSelectForm" />
+
+		<execute macro="FormPortletConfiguration#selectForm" />
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="FormFields#viewParagraphField">
+			<var name="fieldTitle" value="Paragraph" />
+			<var name="fieldValue" value="Paragraph body text." />
+		</execute>
+
+		<execute macro="FormFields#viewTextLabel">
+			<var name="fieldLabel" value="Text" />
+			<var name="fieldName" value="Text" />
+		</execute>
+
+		<execute macro="FormFields#viewSelectLabel">
+			<var name="fieldLabel" value="Select" />
+			<var name="fieldName" value="Select" />
+		</execute>
+
+		<execute macro="FormFields#selectSelectOption">
+			<var name="fieldName" value="Select" />
+			<var name="selectOption" value="Select 1" />
+		</execute>
+
+		<execute macro="FormFields#selectSelectOption">
+			<var name="fieldName" value="Select" />
+			<var name="selectOption" value="Select 2" />
+		</execute>
+
+		<execute macro="FormFields#viewRadioLabel">
+			<var name="fieldLabel" value="Radio" />
+			<var name="fieldName" value="Radio" />
+		</execute>
+
+		<execute macro="FormFields#selectRadioOption">
+			<var name="fieldName" value="Radio" />
+			<var name="radioOption" value="Option 1" />
+		</execute>
+
+		<execute macro="FormFields#selectRadioOption">
+			<var name="fieldName" value="Radio" />
+			<var name="radioOption" value="Option 2" />
+		</execute>
+
+		<execute macro="FormFields#viewDateLabel">
+			<var name="fieldLabel" value="Date" />
+			<var name="fieldName" value="Date" />
+		</execute>
+
+		<execute macro="FormFields#viewCheckboxLabel">
+			<var name="fieldLabel" value="Checkbox" />
+			<var name="fieldName" value="Checkbox" />
+		</execute>
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoEdit">
+			<var name="formName" value="Created Form Name" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Paragraph" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="New Paragraph" />
+		</execute>
+
+		<execute macro="FormFields#editParagraphBody">
+			<var name="fieldValue" value="New Paragraph body text." />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Text" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="New Text" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Select" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="New Select" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="NewSelect1" />
+			<var name="optionValue" value="New Select 1" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="NewSelect2" />
+			<var name="optionValue" value="New Select 2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Radio" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="New Radio" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="NewOption1" />
+			<var name="optionValue" value="New Option 1" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="NewOption2" />
+			<var name="optionValue" value="New Option 2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Date" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="New Date" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="FormsAdminNavigator#gotoEditField">
+			<var name="fieldName" value="Checkbox" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="New Checkbox" />
+		</execute>
+
+		<execute macro="FormFields#saveEdit" />
+
+		<execute macro="Form#save" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="FormFields#viewParagraphField">
+			<var name="fieldTitle" value="New Paragraph" />
+			<var name="fieldValue" value="New Paragraph body text." />
+		</execute>
+
+		<execute macro="FormFields#editText">
+			<var name="fieldName" value="NewText" />
+			<var name="fieldValue" value="Text" />
+		</execute>
+
+		<execute macro="FormFields#selectSelectOption">
+			<var name="fieldName" value="NewSelect" />
+			<var name="selectOption" value="New Select 1" />
+		</execute>
+
+		<execute macro="FormFields#selectSelectOption">
+			<var name="fieldName" value="NewSelect" />
+			<var name="selectOption" value="New Select 2" />
+		</execute>
+
+		<execute macro="FormFields#selectRadioOption">
+			<var name="fieldName" value="NewRadio" />
+			<var name="radioOption" value="New Option 1" />
+		</execute>
+
+		<execute macro="FormFields#selectRadioOption">
+			<var name="fieldName" value="NewRadio" />
+			<var name="radioOption" value="New Option 2" />
+		</execute>
+
+		<execute macro="FormFields#editDate">
+			<var name="fieldLabel" value="New Date" />
+			<var name="fieldName" value="NewDate" />
+			<var name="fieldValue" value="05/02/2016" />
+		</execute>
+
+		<execute macro="FormFields#enableCheckbox">
+			<var name="fieldName" value="NewCheckbox" />
+		</execute>
+
+		<execute macro="FormPortlet#submit" />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoViewEntries" />
+
+		<execute macro="FormsAdminNavigator#gotoView" />
+
+		<execute macro="FormFields#viewParagraphField">
+			<var name="fieldTitle" value="New Paragraph" />
+			<var name="fieldValue" value="New Paragraph body text." />
+		</execute>
+
+		<execute macro="FormsAdmin#viewTextEntry">
+			<var name="fieldLabel" value="New Text" />
+			<var name="fieldName" value="NewText" />
+			<var name="fieldValue" value="Text" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewSelectEntry">
+			<var name="fieldLabel" value="New Select" />
+			<var name="fieldName" value="NewSelect" />
+			<var name="selectOption" value="New Select 2" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewRadioEntry">
+			<var name="fieldLabel" value="New Radio" />
+			<var name="fieldName" value="NewRadio" />
+			<var name="fieldValue" value="New Option 1" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewDateEntry">
+			<var name="fieldLabel" value="New Date" />
+			<var name="fieldName" value="NewDate" />
+			<var name="fieldValue" value="05/02/2016" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewCheckboxEntry">
+			<var name="fieldLabel" value="New Checkbox" />
+			<var name="fieldName" value="NewCheckbox" />
+		</execute>
+	</command>
+
+	<command name="SubmitFormWithAllFieldTypesAndTwoPages" priority="5">
+		<description message="This is a use case for LPS-64798." />
+		<property name="portal.acceptance" value="true" />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoAddForm" />
+
+		<execute macro="Form#editName" />
+
+		<execute macro="Form#editDescription" />
+
+		<execute macro="Form#editPageTitle">
+			<var name="formPageName" value="Page 1" />
+		</execute>
+
+		<execute macro="Form#gotoAddFirstField">
+			<var name="fieldType" value="Form Text" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Paragraph" />
+		</execute>
+
+		<execute macro="FormFields#editParagraphBody">
+			<var name="fieldValue" value="Paragraph body text." />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Text Field" />
+			<var name="previousFieldLabel" value="Paragraph" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="SingleLineText" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Text Field" />
+			<var name="previousFieldLabel" value="SingleLineText" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="MultilineText" />
+		</execute>
+
+		<execute macro="FormFields#selectTextFieldLineOption">
+			<var name="textFieldLineOption" value="multiline" />
+		</execute>
+
+		<execute macro="FormFields#enableSwitcher">
+			<var name="fieldName" value="required" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Select from List" />
+			<var name="previousFieldLabel" value="MultilineText" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Select" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Select1" />
+			<var name="optionValue" value="Select 1" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Select2" />
+			<var name="optionValue" value="Select 2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Single Selection" />
+			<var name="previousFieldLabel" value="Select" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Radio" />
+		</execute>
+
+		<execute macro="FormFields#enableSwitcher">
+			<var name="fieldName" value="required" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Option1" />
+			<var name="optionValue" value="Option 1" />
+		</execute>
+
+		<execute macro="FormFields#editOptionsRow">
+			<var name="optionName" value="Option2" />
+			<var name="optionValue" value="Option 2" />
+			<var name="rowNumber" value="2" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Date" />
+			<var name="previousFieldLabel" value="Radio" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Date" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#gotoAddAdditionalField">
+			<var name="fieldType" value="Multiple Selection" />
+			<var name="previousFieldLabel" value="Date" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="Checkbox" />
+		</execute>
+
+		<execute macro="FormFields#enableSwitcher">
+			<var name="fieldName" value="required" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#addPage" />
+
+		<execute macro="Form#editPageTitle">
+			<var name="formPageName" value="Page 2" />
+		</execute>
+
+		<execute macro="Form#gotoAddFirstField">
+			<var name="fieldType" value="Text Field" />
+		</execute>
+
+		<execute macro="Form#editFieldLabel">
+			<var name="fieldValue" value="SingleLineText2" />
+		</execute>
+
+		<execute macro="FormFields#save" />
+
+		<execute macro="Form#save" />
+
+		<execute macro="Page#add">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="Portlet#addPG">
+			<var name="pageName" value="Form Page" />
+			<var name="portletName" value="Form" />
+		</execute>
+
+		<execute macro="FormPortletNavigator#gotoSelectForm" />
+
+		<execute macro="FormPortletConfiguration#selectForm" />
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Form Page" />
+		</execute>
+
+		<execute macro="FormFields#viewParagraphField">
+			<var name="fieldTitle" value="Paragraph" />
+			<var name="fieldValue" value="Paragraph body text." />
+		</execute>
+
+		<execute macro="FormFields#editText">
+			<var name="fieldName" value="SingleLineText" />
+			<var name="fieldValue" value="Single Line Text" />
+		</execute>
+
+		<execute macro="FormFields#editTextMultiline">
+			<var name="fieldName" value="MultilineText" />
+			<var name="fieldValue" value="Multiline Text" />
+		</execute>
+
+		<execute macro="FormFields#selectSelectOption">
+			<var name="fieldName" value="Select" />
+			<var name="selectOption" value="Select 1" />
+		</execute>
+
+		<execute macro="FormFields#selectRadioOption">
+			<var name="fieldName" value="Radio" />
+			<var name="radioOption" value="Option 1" />
+		</execute>
+
+		<execute macro="FormFields#editDate">
+			<var name="fieldLabel" value="Date" />
+			<var name="fieldName" value="Date" />
+			<var name="fieldValue" value="05/02/2016" />
+		</execute>
+
+		<execute macro="FormFields#enableCheckbox">
+			<var name="fieldName" value="Checkbox" />
+		</execute>
+
+		<execute macro="FormPortlet#nextPage">
+			<var name="formPageCurrent" value="Page 1" />
+			<var name="formPageNext" value="Page 2" />
+		</execute>
+
+		<execute macro="FormFields#editText">
+			<var name="fieldName" value="SingleLineText2" />
+			<var name="fieldValue" value="SingleLineText2" />
+		</execute>
+
+		<execute macro="FormPortlet#submit" />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Forms" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoViewEntries" />
+
+		<execute macro="FormsAdminNavigator#gotoView" />
+
+		<execute macro="FormFields#viewParagraphField">
+			<var name="fieldTitle" value="Paragraph" />
+			<var name="fieldValue" value="Paragraph body text." />
+		</execute>
+
+		<execute macro="FormsAdmin#viewTextEntry">
+			<var name="fieldLabel" value="SingleLineText" />
+			<var name="fieldName" value="SingleLineText" />
+			<var name="fieldValue" value="Single Line Text" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewMultilineTextEntry">
+			<var name="fieldLabel" value="MultilineText" />
+			<var name="fieldName" value="MultilineText" />
+			<var name="fieldValue" value="Multiline Text" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewSelectEntry">
+			<var name="fieldLabel" value="Select" />
+			<var name="fieldName" value="Select" />
+			<var name="selectOption" value="Select 1" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewRadioEntry">
+			<var name="fieldLabel" value="Radio" />
+			<var name="fieldName" value="Radio" />
+			<var name="fieldValue" value="Option 1" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewDateEntry">
+			<var name="fieldLabel" value="Date" />
+			<var name="fieldName" value="Date" />
+			<var name="fieldValue" value="05/02/2016" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewCheckboxEntry">
+			<var name="fieldLabel" value="Checkbox" />
+			<var name="fieldName" value="Checkbox" />
+		</execute>
+
+		<execute macro="FormPortlet#nextPage">
+			<var name="formPageCurrent" value="Page 1" />
+			<var name="formPageNext" value="Page 2" />
+		</execute>
+
+		<execute macro="FormsAdmin#viewTextEntry">
+			<var name="fieldLabel" value="SingleLineText2" />
+			<var name="fieldName" value="SingleLineText2" />
+			<var name="fieldValue" value="SingleLineText2" />
+		</execute>
 	</command>
 
 	<command name="SubmitFormWithCustomTextContainingValidation" priority="5">
@@ -642,7 +1829,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -670,7 +1857,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -683,9 +1870,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -720,7 +1907,7 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Text" />
 			<var name="fieldValue" value="Test" />
 		</execute>
@@ -740,7 +1927,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -750,8 +1937,8 @@
 		<execute macro="FormFields#save" />
 
 		<execute macro="Form#gotoAddAdditionalField">
-			<var name="fieldType" value="Checkbox" />
-			<var name="previousFieldName" value="TextField" />
+			<var name="fieldType" value="Multiple Selection" />
+			<var name="previousFieldLabel" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -761,8 +1948,8 @@
 		<execute macro="FormFields#save" />
 
 		<execute macro="Form#gotoAddAdditionalField">
-			<var name="fieldType" value="Radio" />
-			<var name="previousFieldName" value="CheckboxField" />
+			<var name="fieldType" value="Single Selection" />
+			<var name="previousFieldLabel" value="Checkbox Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -783,8 +1970,8 @@
 		<execute macro="FormFields#save" />
 
 		<execute macro="Form#gotoAddAdditionalField">
-			<var name="fieldType" value="Select" />
-			<var name="previousFieldName" value="RadioField" />
+			<var name="fieldType" value="Select from List" />
+			<var name="previousFieldLabel" value="Radio Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -810,7 +1997,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -823,9 +2010,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -882,45 +2069,50 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Text Field" />
 			<var name="fieldValue" value="Text Field Value" />
 		</execute>
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Checkbox Field" />
 			<var name="fieldValue" value="Yes" />
 		</execute>
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Radio Field" />
 			<var name="fieldValue" value="Option 1" />
 		</execute>
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Select Field" />
 			<var name="fieldValue" value="Select 2" />
 		</execute>
-	</command>
 
-	<command name="SubmitFormWithoutAFormNameAndViewErrorMessage" priority="3">
-		<description message="This is a use case for LPS-59664." />
+		<execute macro="FormsAdminNavigator#gotoView" />
 
-		<execute macro="Navigator#openURL" />
-
-		<execute macro="ProductMenu#gotoSitesContent">
-			<var name="portlet" value="Forms" />
+		<execute macro="FormsAdmin#viewTextEntry">
+			<var name="fieldLabel" value="Text Field" />
+			<var name="fieldName" value="TextField" />
+			<var name="fieldValue" value="Text Field Value" />
 		</execute>
 
-		<execute macro="FormsAdminNavigator#gotoAddForm" />
+		<execute macro="FormsAdmin#viewCheckboxEntry">
+			<var name="fieldLabel" value="Checkbox Field" />
+			<var name="fieldName" value="CheckboxField" />
+		</execute>
 
-		<execute macro="Form#saveWithoutFormName" />
+		<execute macro="FormsAdmin#viewRadioEntry">
+			<var name="fieldLabel" value="Radio Field" />
+			<var name="fieldName" value="RadioField" />
+			<var name="fieldValue" value="Option 1" />
+		</execute>
 
-		<execute macro="Form#editName" />
-
-		<execute macro="Form#editDescription" />
-
-		<execute macro="Form#save" />
+		<execute macro="FormsAdmin#viewSelectEntry">
+			<var name="fieldLabel" value="Select Field" />
+			<var name="fieldName" value="SelectField" />
+			<var name="fieldValue" value="Select 2" />
+		</execute>
 	</command>
 
 	<command name="SubmitFormWithParagraphField" priority="4">
@@ -939,15 +2131,14 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Paragraph" />
+			<var name="fieldType" value="Form Text" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
 			<var name="fieldValue" value="Paragraph Field" />
 		</execute>
 
-		<execute macro="FormFields#editTextMultiline">
-			<var name="fieldName" value="text" />
+		<execute macro="FormFields#editParagraphBody">
 			<var name="fieldValue" value="Paragraph field body text." />
 		</execute>
 
@@ -968,14 +2159,14 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="FormFields#viewParagraphBody">
-			<var name="fieldName" value="ParagraphField" />
+		<execute macro="FormFields#viewParagraphField">
+			<var name="fieldTitle" value="Paragraph Field" />
 			<var name="fieldValue" value="Paragraph field body text." />
 		</execute>
 
@@ -989,9 +2180,16 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
-			<var name="fieldLabel" value="Form" />
+		<execute macro="FormsAdmin#viewFormTableEntry">
+			<var name="fieldLabel" value="Status" />
 			<var name="fieldValue" value="Approved" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoView" />
+
+		<execute macro="FormsAdmin#viewParagraphEntry">
+			<var name="fieldTitle" value="Paragraph Field" />
+			<var name="fieldValue" value="Paragraph field body text." />
 		</execute>
 	</command>
 
@@ -1011,7 +2209,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Checkbox" />
+			<var name="fieldType" value="Multiple Selection" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1030,7 +2228,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1043,16 +2241,18 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
 		<execute macro="FormFields#viewCheckboxLabel">
-			<var name="fieldLabel" value="Checkbox Field*" />
+			<var name="fieldLabel" value="Checkbox Field" />
 			<var name="fieldName" value="CheckboxField" />
 		</execute>
+
+		<execute macro="FormFields#viewRequiredAsterisk" />
 
 		<execute macro="FormPortlet#submitWithValidationError" />
 
@@ -1070,7 +2270,7 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Checkbox Field" />
 			<var name="fieldValue" value="Yes" />
 		</execute>
@@ -1092,7 +2292,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1115,7 +2315,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1128,9 +2328,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1162,7 +2362,7 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Text Field" />
 			<var name="fieldValue" value="Text Field Value" />
 		</execute>
@@ -1182,7 +2382,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Radio" />
+			<var name="fieldType" value="Single Selection" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1214,7 +2414,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1227,9 +2427,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1257,16 +2457,15 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Radio Field" />
 			<var name="fieldValue" value="Option 1" />
 		</execute>
 	</command>
 
 	<command name="SubmitFormWithRequiredRepeatingTextField" priority="5">
-		<property name="portal.acceptance" value="true" />
-
 		<description message="This is a use case for LPS-59335." />
+		<property name="portal.acceptance" value="true" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -1281,7 +2480,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1306,7 +2505,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1319,9 +2518,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1346,7 +2545,7 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Text" />
 			<var name="fieldValue" value="Text Field Value, Text Field Value Repeat" />
 		</execute>
@@ -1368,7 +2567,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1387,7 +2586,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1400,9 +2599,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1430,7 +2629,7 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Text Field" />
 			<var name="fieldValue" value="Text Field Value" />
 		</execute>
@@ -1452,7 +2651,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Checkbox" />
+			<var name="fieldType" value="Multiple Selection" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1471,7 +2670,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1484,9 +2683,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1509,9 +2708,16 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Checkbox Field" />
 			<var name="fieldValue" value="Yes" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoView" />
+
+		<execute macro="FormsAdmin#viewCheckboxEntry">
+			<var name="fieldLabel" value="Checkbox Field" />
+			<var name="fieldName" value="CheckboxField" />
 		</execute>
 	</command>
 
@@ -1531,7 +2737,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1546,7 +2752,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1559,9 +2765,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1585,8 +2791,16 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Text Field" />
+			<var name="fieldValue" value="Text Field Value" />
+		</execute>
+
+		<execute macro="FormsAdminNavigator#gotoView" />
+
+		<execute macro="FormsAdmin#viewTextEntry">
+			<var name="fieldLabel" value="Text Field" />
+			<var name="fieldName" value="TextField" />
 			<var name="fieldValue" value="Text Field Value" />
 		</execute>
 	</command>
@@ -1611,7 +2825,7 @@
 		</execute>
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1627,7 +2841,7 @@
 		</execute>
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Radio" />
+			<var name="fieldType" value="Single Selection" />
 		</execute>
 
 		<execute macro="FormFields#editText">
@@ -1635,7 +2849,7 @@
 			<var name="fieldValue" value="Radio" />
 		</execute>
 
-		<execute macro="FormFields#viewFormName">
+		<execute macro="FormFields#viewFieldName">
 			<var name="fieldName" value="Radio" />
 		</execute>
 
@@ -1659,7 +2873,7 @@
 		</execute>
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Checkbox" />
+			<var name="fieldType" value="Multiple Selection" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1674,7 +2888,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1687,9 +2901,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1742,17 +2956,17 @@
 
 		<execute macro="FormsAdminNavigator#gotoViewEntries" />
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Text" />
 			<var name="fieldValue" value="Text Field Value" />
 		</execute>
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Radio" />
 			<var name="fieldValue" value="Option 2" />
 		</execute>
 
-		<execute macro="FormsAdmin#viewFormEntry">
+		<execute macro="FormsAdmin#viewFormTableEntry">
 			<var name="fieldLabel" value="Checkbox" />
 			<var name="fieldValue" value="Yes" />
 		</execute>
@@ -1772,7 +2986,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1793,7 +3007,7 @@
 			<var name="pageName" value="Form Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1806,9 +3020,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 
@@ -1839,7 +3053,7 @@
 		<execute macro="Form#editDescription" />
 
 		<execute macro="Form#gotoAddFirstField">
-			<var name="fieldType" value="Text" />
+			<var name="fieldType" value="Text Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1849,8 +3063,8 @@
 		<execute macro="FormFields#save" />
 
 		<execute macro="Form#gotoAddAdditionalField">
-			<var name="fieldType" value="Text" />
-			<var name="previousFieldName" value="VisibleField" />
+			<var name="fieldType" value="Text Field" />
+			<var name="previousFieldLabel" value="Visible Field" />
 		</execute>
 
 		<execute macro="Form#editFieldLabel">
@@ -1861,7 +3075,7 @@
 
 		<execute macro="FormFields#editText">
 			<var name="fieldName" value="visibility" />
-			<var name="fieldValue" value="VisibleField.equals(&quot;test&quot;)" />
+			<var name="fieldValue" value="equals(VisibleField, &quot;test&quot;)" />
 		</execute>
 
 		<execute macro="FormFields#save" />
@@ -1881,9 +3095,9 @@
 
 		<execute macro="FormPortletConfiguration#selectForm" />
 
-		<execute macro="FormPortletConfiguration#save" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Form Page" />
 		</execute>
 

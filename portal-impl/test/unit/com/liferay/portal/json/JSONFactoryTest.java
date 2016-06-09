@@ -17,6 +17,7 @@ package com.liferay.portal.json;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONSerializer;
 import com.liferay.portal.kernel.test.AssertUtils;
+import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 
@@ -57,6 +58,25 @@ public class JSONFactoryTest {
 		String json = removeQuotes(JSONFactoryUtil.looseSerialize(fooBean1));
 
 		Assert.assertEquals("{collection:[element],value:173}", json);
+	}
+
+	@Test
+	public void testDeserializeLongArrayToIntegerArray() {
+		Map<String, long[]> map = new HashMap<>();
+
+		map.put("key", new long[] {1L, 2L, 3L, 4L, 5L});
+
+		String json = JSONFactoryUtil.serialize(map);
+
+		Object object = JSONFactoryUtil.deserialize(json);
+
+		Assert.assertTrue(object instanceof Map);
+
+		Map<String, long[]> deserializedMap = (Map<String, long[]>)object;
+
+		Object values = deserializedMap.get("key");
+
+		Assert.assertTrue(values instanceof Integer[]);
 	}
 
 	@Test
@@ -294,7 +314,7 @@ public class JSONFactoryTest {
 	}
 
 	protected String removeQuotes(String string) {
-		return StringUtil.replace(string, StringPool.QUOTE, StringPool.BLANK);
+		return StringUtil.replace(string, CharPool.QUOTE, StringPool.BLANK);
 	}
 
 	private static final double[] _DOUBLE_ARRAY = {1.2345, 2.3456, 5.6789};

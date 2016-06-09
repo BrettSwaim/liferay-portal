@@ -18,20 +18,18 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.AccessControlContext;
 import com.liferay.portal.kernel.security.auth.AuthException;
 import com.liferay.portal.kernel.security.auth.http.HttpAuthManagerUtil;
 import com.liferay.portal.kernel.security.auth.http.HttpAuthorizationHeader;
 import com.liferay.portal.kernel.security.auth.verifier.AuthVerifier;
 import com.liferay.portal.kernel.security.auth.verifier.AuthVerifierResult;
-import com.liferay.portal.kernel.security.service.access.policy.ServiceAccessPolicyThreadLocal;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PwdGenerator;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.UserLocalService;
-import com.liferay.sync.security.service.access.policy.SyncPolicies;
 
 import java.util.Date;
 import java.util.List;
@@ -64,7 +62,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	immediate = true,
 	property = {
-		"auth.verifier.SyncAuthVerifier.urls.includes=/api/jsonws/sync-web.syncdlobject/*"
+		"auth.verifier.SyncAuthVerifier.urls.includes=/api/jsonws/sync.syncdevice/*,/api/jsonws/sync.syncdlobject/*"
 	}
 )
 public class SyncAuthVerifier implements AuthVerifier {
@@ -123,7 +121,7 @@ public class SyncAuthVerifier implements AuthVerifier {
 		if (uri.startsWith("/download/")) {
 			String contextPath = request.getContextPath();
 
-			if (!contextPath.equals("/sync-web")) {
+			if (!contextPath.equals("/o/sync")) {
 				return authVerifierResult;
 			}
 		}
@@ -137,9 +135,6 @@ public class SyncAuthVerifier implements AuthVerifier {
 				authVerifierResult.setState(AuthVerifierResult.State.SUCCESS);
 				authVerifierResult.setUserId(
 					GetterUtil.getLong(credentials[0]));
-
-				ServiceAccessPolicyThreadLocal.addActiveServiceAccessPolicyName(
-					String.valueOf(SyncPolicies.POLICIES[1][0]));
 			}
 			else {
 

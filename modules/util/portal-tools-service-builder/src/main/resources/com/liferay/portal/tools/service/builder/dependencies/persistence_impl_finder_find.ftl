@@ -659,7 +659,14 @@ that may or may not be enforced with a unique index at the database level. Case
 		</#list>
 
 		int start, int end, OrderByComparator<${entity.name}> orderByComparator) {
-			if (!InlineSQLHelperUtil.isEnabled(<#if finder.hasColumn("groupId")>groupId</#if>)) {
+			<#if finder.hasColumn("groupId")>
+				if (!InlineSQLHelperUtil.isEnabled(groupId)) {
+			<#elseif finder.hasColumn("companyId")>
+				if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
+			<#else>
+				if (!InlineSQLHelperUtil.isEnabled()) {
+			</#if>
+
 				return findBy${finder.name}(
 
 				<#list finderColsList as finderCol>
@@ -788,7 +795,14 @@ that may or may not be enforced with a unique index at the database level. Case
 			</#list>
 
 			OrderByComparator<${entity.name}> orderByComparator) throws ${noSuchEntity}Exception {
-				if (!InlineSQLHelperUtil.isEnabled(<#if finder.hasColumn("groupId")>groupId</#if>)) {
+				<#if finder.hasColumn("groupId")>
+					if (!InlineSQLHelperUtil.isEnabled(groupId)) {
+				<#elseif finder.hasColumn("companyId")>
+					if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
+				<#else>
+					if (!InlineSQLHelperUtil.isEnabled()) {
+				</#if>
+
 					return findBy${finder.name}_PrevAndNext(${entity.PKVarName},
 
 					<#list finderColsList as finderCol>
@@ -1135,14 +1149,19 @@ that may or may not be enforced with a unique index at the database level. Case
 			</#list>
 
 			int start, int end, OrderByComparator<${entity.name}> orderByComparator) {
-				if (!InlineSQLHelperUtil.isEnabled(
-					<#if finder.hasColumn("groupId")>
+				<#if finder.hasColumn("groupId")>
+					if (!InlineSQLHelperUtil.isEnabled(
 						<#if finder.getColumn("groupId").hasArrayableOperator()>
 							groupIds
 						<#else>
 							groupId
 						</#if>
-					</#if>)) {
+					)) {
+				<#elseif finder.hasColumn("companyId")>
+					if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
+				<#else>
+					if (!InlineSQLHelperUtil.isEnabled()) {
+				</#if>
 
 					return findBy${finder.name}(
 
@@ -1721,8 +1740,8 @@ that may or may not be enforced with a unique index at the database level. Case
 				</#if>
 			</#list>
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new ${noSuchEntity}Exception(msg.toString());
@@ -1803,7 +1822,7 @@ that may or may not be enforced with a unique index at the database level. Case
 					<#if finderCol.isPrimitiveType(false)>
 						(${finderCol.name} != ${entity.varName}.get${finderCol.methodName}())
 					<#else>
-						!Validator.equals(${finderCol.name}, ${entity.varName}.get${finderCol.methodName}())
+						!Objects.equals(${finderCol.name}, ${entity.varName}.get${finderCol.methodName}())
 					</#if>
 
 					<#if finderCol_has_next>

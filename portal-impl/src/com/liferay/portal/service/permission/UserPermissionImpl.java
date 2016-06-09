@@ -17,23 +17,23 @@ package com.liferay.portal.service.permission;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Contact;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.RoleConstants;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.BaseModelPermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.service.OrganizationLocalServiceUtil;
+import com.liferay.portal.kernel.service.UserGroupRoleLocalServiceUtil;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.service.permission.OrganizationPermissionUtil;
 import com.liferay.portal.kernel.service.permission.UserPermission;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.util.PortalUtil;
-import com.liferay.portal.model.Contact;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.Organization;
-import com.liferay.portal.model.ResourceConstants;
-import com.liferay.portal.model.RoleConstants;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.OrganizationLocalServiceUtil;
-import com.liferay.portal.service.UserGroupRoleLocalServiceUtil;
-import com.liferay.portal.service.UserLocalServiceUtil;
 
 import java.util.List;
 
@@ -42,26 +42,10 @@ import java.util.List;
  * @author Jorge Ferrer
  */
 @OSGiBeanProperties(
-	property = {"model.class.name=com.liferay.portal.model.User"}
+	property = {"model.class.name=com.liferay.portal.kernel.model.User"}
 )
 public class UserPermissionImpl
 	implements BaseModelPermissionChecker, UserPermission {
-
-	/**
-	 * @deprecated As of 6.2.0, replaced by {@link #check(PermissionChecker,
-	 *             long, long[], String)}
-	 */
-	@Deprecated
-	@Override
-	public void check(
-			PermissionChecker permissionChecker, long userId,
-			long organizationId, long locationId, String actionId)
-		throws PrincipalException {
-
-		check(
-			permissionChecker, userId, new long[] {organizationId, locationId},
-			actionId);
-	}
 
 	@Override
 	public void check(
@@ -106,21 +90,6 @@ public class UserPermissionImpl
 		check(permissionChecker, primaryKey, organizationsIds, actionId);
 	}
 
-	/**
-	 * @deprecated As of 6.2.0, replaced by {@link #contains(PermissionChecker,
-	 *             long, long[], String)}
-	 */
-	@Deprecated
-	@Override
-	public boolean contains(
-		PermissionChecker permissionChecker, long userId, long organizationId,
-		long locationId, String actionId) {
-
-		return contains(
-			permissionChecker, userId, new long[] {organizationId, locationId},
-			actionId);
-	}
-
 	@Override
 	public boolean contains(
 		PermissionChecker permissionChecker, long userId,
@@ -154,12 +123,20 @@ public class UserPermissionImpl
 
 					return true;
 				}
+
+				if (permissionChecker.hasPermission(
+						0, User.class.getName(), userId, actionId)) {
+
+					return true;
+				}
 			}
+			else {
+				if (permissionChecker.hasPermission(
+						0, User.class.getName(), User.class.getName(),
+						actionId)) {
 
-			if (permissionChecker.hasPermission(
-					0, User.class.getName(), userId, actionId)) {
-
-				return true;
+					return true;
+				}
 			}
 
 			if (user == null) {

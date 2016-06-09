@@ -16,7 +16,6 @@ package com.liferay.portal.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.exception.NoSuchOrganizationException;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -28,13 +27,24 @@ import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.SQLQuery;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.exception.NoSuchOrganizationException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Organization;
 import com.liferay.portal.kernel.security.permission.InlineSQLHelperUtil;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
+import com.liferay.portal.kernel.service.persistence.GroupPersistence;
+import com.liferay.portal.kernel.service.persistence.OrganizationPersistence;
+import com.liferay.portal.kernel.service.persistence.UserPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.service.persistence.impl.TableMapper;
 import com.liferay.portal.kernel.service.persistence.impl.TableMapperFactory;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -42,18 +52,8 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.uuid.PortalUUIDUtil;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.MVCCModel;
-import com.liferay.portal.model.Organization;
 import com.liferay.portal.model.impl.OrganizationImpl;
 import com.liferay.portal.model.impl.OrganizationModelImpl;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.ServiceContextThreadLocal;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
-import com.liferay.portal.service.persistence.GroupPersistence;
-import com.liferay.portal.service.persistence.OrganizationPersistence;
-import com.liferay.portal.service.persistence.UserPersistence;
 
 import java.io.Serializable;
 
@@ -64,6 +64,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -75,7 +76,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see OrganizationPersistence
- * @see com.liferay.portal.service.persistence.OrganizationUtil
+ * @see com.liferay.portal.kernel.service.persistence.OrganizationUtil
  * @generated
  */
 @ProviderType
@@ -208,7 +209,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 
 			if ((list != null) && !list.isEmpty()) {
 				for (Organization organization : list) {
-					if (!Validator.equals(uuid, organization.getUuid())) {
+					if (!Objects.equals(uuid, organization.getUuid())) {
 						list = null;
 
 						break;
@@ -1166,7 +1167,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 
 			if ((list != null) && !list.isEmpty()) {
 				for (Organization organization : list) {
-					if (!Validator.equals(uuid, organization.getUuid()) ||
+					if (!Objects.equals(uuid, organization.getUuid()) ||
 							(companyId != organization.getCompanyId())) {
 						list = null;
 
@@ -1594,7 +1595,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	@Override
 	public List<Organization> filterFindByUuid_C(String uuid, long companyId,
 		int start, int end, OrderByComparator<Organization> orderByComparator) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByUuid_C(uuid, companyId, start, end, orderByComparator);
 		}
 
@@ -1706,7 +1707,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		String uuid, long companyId,
 		OrderByComparator<Organization> orderByComparator)
 		throws NoSuchOrganizationException {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByUuid_C_PrevAndNext(organizationId, uuid, companyId,
 				orderByComparator);
 		}
@@ -1990,7 +1991,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 */
 	@Override
 	public int filterCountByUuid_C(String uuid, long companyId) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return countByUuid_C(uuid, companyId);
 		}
 
@@ -2542,7 +2543,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	@Override
 	public List<Organization> filterFindByCompanyId(long companyId, int start,
 		int end, OrderByComparator<Organization> orderByComparator) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByCompanyId(companyId, start, end, orderByComparator);
 		}
 
@@ -2635,7 +2636,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		long organizationId, long companyId,
 		OrderByComparator<Organization> orderByComparator)
 		throws NoSuchOrganizationException {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByCompanyId_PrevAndNext(organizationId, companyId,
 				orderByComparator);
 		}
@@ -2880,7 +2881,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 */
 	@Override
 	public int filterCountByCompanyId(long companyId) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return countByCompanyId(companyId);
 		}
 
@@ -3408,7 +3409,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	@Override
 	public List<Organization> filterFindByLocations(long companyId, int start,
 		int end, OrderByComparator<Organization> orderByComparator) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByLocations(companyId, start, end, orderByComparator);
 		}
 
@@ -3501,7 +3502,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		long organizationId, long companyId,
 		OrderByComparator<Organization> orderByComparator)
 		throws NoSuchOrganizationException {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByLocations_PrevAndNext(organizationId, companyId,
 				orderByComparator);
 		}
@@ -3746,7 +3747,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 */
 	@Override
 	public int filterCountByLocations(long companyId) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return countByLocations(companyId);
 		}
 
@@ -4316,7 +4317,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	public List<Organization> filterFindByC_P(long companyId,
 		long parentOrganizationId, int start, int end,
 		OrderByComparator<Organization> orderByComparator) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByC_P(companyId, parentOrganizationId, start, end,
 				orderByComparator);
 		}
@@ -4415,7 +4416,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		long companyId, long parentOrganizationId,
 		OrderByComparator<Organization> orderByComparator)
 		throws NoSuchOrganizationException {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByC_P_PrevAndNext(organizationId, companyId,
 				parentOrganizationId, orderByComparator);
 		}
@@ -4671,7 +4672,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 */
 	@Override
 	public int filterCountByC_P(long companyId, long parentOrganizationId) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return countByC_P(companyId, parentOrganizationId);
 		}
 
@@ -5253,7 +5254,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	@Override
 	public List<Organization> filterFindByC_T(long companyId, String treePath,
 		int start, int end, OrderByComparator<Organization> orderByComparator) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByC_T(companyId, treePath, start, end, orderByComparator);
 		}
 
@@ -5365,7 +5366,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		long companyId, String treePath,
 		OrderByComparator<Organization> orderByComparator)
 		throws NoSuchOrganizationException {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByC_T_PrevAndNext(organizationId, companyId, treePath,
 				orderByComparator);
 		}
@@ -5649,7 +5650,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 */
 	@Override
 	public int filterCountByC_T(long companyId, String treePath) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return countByC_T(companyId, treePath);
 		}
 
@@ -5748,8 +5749,8 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 
 			msg.append(StringPool.CLOSE_CURLY_BRACE);
 
-			if (_log.isWarnEnabled()) {
-				_log.warn(msg.toString());
+			if (_log.isDebugEnabled()) {
+				_log.debug(msg.toString());
 			}
 
 			throw new NoSuchOrganizationException(msg.toString());
@@ -5794,7 +5795,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 			Organization organization = (Organization)result;
 
 			if ((companyId != organization.getCompanyId()) ||
-					!Validator.equals(name, organization.getName())) {
+					!Objects.equals(name, organization.getName())) {
 				result = null;
 			}
 		}
@@ -6353,7 +6354,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	public List<Organization> filterFindByO_C_P(long organizationId,
 		long companyId, long parentOrganizationId, int start, int end,
 		OrderByComparator<Organization> orderByComparator) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return findByO_C_P(organizationId, companyId, parentOrganizationId,
 				start, end, orderByComparator);
 		}
@@ -6532,7 +6533,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	@Override
 	public int filterCountByO_C_P(long organizationId, long companyId,
 		long parentOrganizationId) {
-		if (!InlineSQLHelperUtil.isEnabled()) {
+		if (!InlineSQLHelperUtil.isEnabled(companyId, 0)) {
 			return countByO_C_P(organizationId, companyId, parentOrganizationId);
 		}
 
@@ -6776,8 +6777,8 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 					primaryKey);
 
 			if (organization == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchOrganizationException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -7036,7 +7037,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	}
 
 	/**
-	 * Returns the organization with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the organization with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the organization
 	 * @return the organization
@@ -7048,8 +7049,8 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		Organization organization = fetchByPrimaryKey(primaryKey);
 
 		if (organization == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchOrganizationException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -7080,12 +7081,14 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 */
 	@Override
 	public Organization fetchByPrimaryKey(Serializable primaryKey) {
-		Organization organization = (Organization)entityCache.getResult(OrganizationModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(OrganizationModelImpl.ENTITY_CACHE_ENABLED,
 				OrganizationImpl.class, primaryKey);
 
-		if (organization == _nullOrganization) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		Organization organization = (Organization)serializable;
 
 		if (organization == null) {
 			Session session = null;
@@ -7101,7 +7104,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 				}
 				else {
 					entityCache.putResult(OrganizationModelImpl.ENTITY_CACHE_ENABLED,
-						OrganizationImpl.class, primaryKey, _nullOrganization);
+						OrganizationImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -7155,18 +7158,20 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Organization organization = (Organization)entityCache.getResult(OrganizationModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(OrganizationModelImpl.ENTITY_CACHE_ENABLED,
 					OrganizationImpl.class, primaryKey);
 
-			if (organization == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, organization);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (Organization)serializable);
+				}
 			}
 		}
 
@@ -7208,7 +7213,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(OrganizationModelImpl.ENTITY_CACHE_ENABLED,
-					OrganizationImpl.class, primaryKey, _nullOrganization);
+					OrganizationImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -7432,7 +7437,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @return the groups associated with the organization
 	 */
 	@Override
-	public List<com.liferay.portal.model.Group> getGroups(long pk) {
+	public List<com.liferay.portal.kernel.model.Group> getGroups(long pk) {
 		return getGroups(pk, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 	}
 
@@ -7449,8 +7454,8 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @return the range of groups associated with the organization
 	 */
 	@Override
-	public List<com.liferay.portal.model.Group> getGroups(long pk, int start,
-		int end) {
+	public List<com.liferay.portal.kernel.model.Group> getGroups(long pk,
+		int start, int end) {
 		return getGroups(pk, start, end, null);
 	}
 
@@ -7468,9 +7473,9 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @return the ordered range of groups associated with the organization
 	 */
 	@Override
-	public List<com.liferay.portal.model.Group> getGroups(long pk, int start,
-		int end,
-		OrderByComparator<com.liferay.portal.model.Group> orderByComparator) {
+	public List<com.liferay.portal.kernel.model.Group> getGroups(long pk,
+		int start, int end,
+		OrderByComparator<com.liferay.portal.kernel.model.Group> orderByComparator) {
 		return organizationToGroupTableMapper.getRightBaseModels(pk, start,
 			end, orderByComparator);
 	}
@@ -7543,7 +7548,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @param group the group
 	 */
 	@Override
-	public void addGroup(long pk, com.liferay.portal.model.Group group) {
+	public void addGroup(long pk, com.liferay.portal.kernel.model.Group group) {
 		Organization organization = fetchByPrimaryKey(pk);
 
 		if (organization == null) {
@@ -7575,10 +7580,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 			companyId = organization.getCompanyId();
 		}
 
-		for (long groupPK : groupPKs) {
-			organizationToGroupTableMapper.addTableMapping(companyId, pk,
-				groupPK);
-		}
+		organizationToGroupTableMapper.addTableMappings(companyId, pk, groupPKs);
 	}
 
 	/**
@@ -7588,22 +7590,11 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @param groups the groups
 	 */
 	@Override
-	public void addGroups(long pk, List<com.liferay.portal.model.Group> groups) {
-		long companyId = 0;
-
-		Organization organization = fetchByPrimaryKey(pk);
-
-		if (organization == null) {
-			companyId = companyProvider.getCompanyId();
-		}
-		else {
-			companyId = organization.getCompanyId();
-		}
-
-		for (com.liferay.portal.model.Group group : groups) {
-			organizationToGroupTableMapper.addTableMapping(companyId, pk,
-				group.getPrimaryKey());
-		}
+	public void addGroups(long pk,
+		List<com.liferay.portal.kernel.model.Group> groups) {
+		addGroups(pk,
+			ListUtil.toLongArray(groups,
+				com.liferay.portal.kernel.model.Group.GROUP_ID_ACCESSOR));
 	}
 
 	/**
@@ -7634,7 +7625,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @param group the group
 	 */
 	@Override
-	public void removeGroup(long pk, com.liferay.portal.model.Group group) {
+	public void removeGroup(long pk, com.liferay.portal.kernel.model.Group group) {
 		organizationToGroupTableMapper.deleteTableMapping(pk,
 			group.getPrimaryKey());
 	}
@@ -7647,9 +7638,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 */
 	@Override
 	public void removeGroups(long pk, long[] groupPKs) {
-		for (long groupPK : groupPKs) {
-			organizationToGroupTableMapper.deleteTableMapping(pk, groupPK);
-		}
+		organizationToGroupTableMapper.deleteTableMappings(pk, groupPKs);
 	}
 
 	/**
@@ -7660,11 +7649,10 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 */
 	@Override
 	public void removeGroups(long pk,
-		List<com.liferay.portal.model.Group> groups) {
-		for (com.liferay.portal.model.Group group : groups) {
-			organizationToGroupTableMapper.deleteTableMapping(pk,
-				group.getPrimaryKey());
-		}
+		List<com.liferay.portal.kernel.model.Group> groups) {
+		removeGroups(pk,
+			ListUtil.toLongArray(groups,
+				com.liferay.portal.kernel.model.Group.GROUP_ID_ACCESSOR));
 	}
 
 	/**
@@ -7683,9 +7671,8 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 
 		removeGroupPKsSet.removeAll(newGroupPKsSet);
 
-		for (long removeGroupPK : removeGroupPKsSet) {
-			organizationToGroupTableMapper.deleteTableMapping(pk, removeGroupPK);
-		}
+		organizationToGroupTableMapper.deleteTableMappings(pk,
+			ArrayUtil.toLongArray(removeGroupPKsSet));
 
 		newGroupPKsSet.removeAll(oldGroupPKsSet);
 
@@ -7700,10 +7687,8 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 			companyId = organization.getCompanyId();
 		}
 
-		for (long newGroupPK : newGroupPKsSet) {
-			organizationToGroupTableMapper.addTableMapping(companyId, pk,
-				newGroupPK);
-		}
+		organizationToGroupTableMapper.addTableMappings(companyId, pk,
+			ArrayUtil.toLongArray(newGroupPKsSet));
 	}
 
 	/**
@@ -7713,12 +7698,13 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @param groups the groups to be associated with the organization
 	 */
 	@Override
-	public void setGroups(long pk, List<com.liferay.portal.model.Group> groups) {
+	public void setGroups(long pk,
+		List<com.liferay.portal.kernel.model.Group> groups) {
 		try {
 			long[] groupPKs = new long[groups.size()];
 
 			for (int i = 0; i < groups.size(); i++) {
-				com.liferay.portal.model.Group group = groups.get(i);
+				com.liferay.portal.kernel.model.Group group = groups.get(i);
 
 				groupPKs[i] = group.getPrimaryKey();
 			}
@@ -7750,7 +7736,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @return the users associated with the organization
 	 */
 	@Override
-	public List<com.liferay.portal.model.User> getUsers(long pk) {
+	public List<com.liferay.portal.kernel.model.User> getUsers(long pk) {
 		return getUsers(pk, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
 	}
 
@@ -7767,8 +7753,8 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @return the range of users associated with the organization
 	 */
 	@Override
-	public List<com.liferay.portal.model.User> getUsers(long pk, int start,
-		int end) {
+	public List<com.liferay.portal.kernel.model.User> getUsers(long pk,
+		int start, int end) {
 		return getUsers(pk, start, end, null);
 	}
 
@@ -7786,9 +7772,9 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @return the ordered range of users associated with the organization
 	 */
 	@Override
-	public List<com.liferay.portal.model.User> getUsers(long pk, int start,
-		int end,
-		OrderByComparator<com.liferay.portal.model.User> orderByComparator) {
+	public List<com.liferay.portal.kernel.model.User> getUsers(long pk,
+		int start, int end,
+		OrderByComparator<com.liferay.portal.kernel.model.User> orderByComparator) {
 		return organizationToUserTableMapper.getRightBaseModels(pk, start, end,
 			orderByComparator);
 	}
@@ -7861,7 +7847,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @param user the user
 	 */
 	@Override
-	public void addUser(long pk, com.liferay.portal.model.User user) {
+	public void addUser(long pk, com.liferay.portal.kernel.model.User user) {
 		Organization organization = fetchByPrimaryKey(pk);
 
 		if (organization == null) {
@@ -7893,9 +7879,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 			companyId = organization.getCompanyId();
 		}
 
-		for (long userPK : userPKs) {
-			organizationToUserTableMapper.addTableMapping(companyId, pk, userPK);
-		}
+		organizationToUserTableMapper.addTableMappings(companyId, pk, userPKs);
 	}
 
 	/**
@@ -7905,22 +7889,11 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @param users the users
 	 */
 	@Override
-	public void addUsers(long pk, List<com.liferay.portal.model.User> users) {
-		long companyId = 0;
-
-		Organization organization = fetchByPrimaryKey(pk);
-
-		if (organization == null) {
-			companyId = companyProvider.getCompanyId();
-		}
-		else {
-			companyId = organization.getCompanyId();
-		}
-
-		for (com.liferay.portal.model.User user : users) {
-			organizationToUserTableMapper.addTableMapping(companyId, pk,
-				user.getPrimaryKey());
-		}
+	public void addUsers(long pk,
+		List<com.liferay.portal.kernel.model.User> users) {
+		addUsers(pk,
+			ListUtil.toLongArray(users,
+				com.liferay.portal.kernel.model.User.USER_ID_ACCESSOR));
 	}
 
 	/**
@@ -7951,7 +7924,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @param user the user
 	 */
 	@Override
-	public void removeUser(long pk, com.liferay.portal.model.User user) {
+	public void removeUser(long pk, com.liferay.portal.kernel.model.User user) {
 		organizationToUserTableMapper.deleteTableMapping(pk,
 			user.getPrimaryKey());
 	}
@@ -7964,9 +7937,7 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 */
 	@Override
 	public void removeUsers(long pk, long[] userPKs) {
-		for (long userPK : userPKs) {
-			organizationToUserTableMapper.deleteTableMapping(pk, userPK);
-		}
+		organizationToUserTableMapper.deleteTableMappings(pk, userPKs);
 	}
 
 	/**
@@ -7976,11 +7947,11 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @param users the users
 	 */
 	@Override
-	public void removeUsers(long pk, List<com.liferay.portal.model.User> users) {
-		for (com.liferay.portal.model.User user : users) {
-			organizationToUserTableMapper.deleteTableMapping(pk,
-				user.getPrimaryKey());
-		}
+	public void removeUsers(long pk,
+		List<com.liferay.portal.kernel.model.User> users) {
+		removeUsers(pk,
+			ListUtil.toLongArray(users,
+				com.liferay.portal.kernel.model.User.USER_ID_ACCESSOR));
 	}
 
 	/**
@@ -7999,9 +7970,8 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 
 		removeUserPKsSet.removeAll(newUserPKsSet);
 
-		for (long removeUserPK : removeUserPKsSet) {
-			organizationToUserTableMapper.deleteTableMapping(pk, removeUserPK);
-		}
+		organizationToUserTableMapper.deleteTableMappings(pk,
+			ArrayUtil.toLongArray(removeUserPKsSet));
 
 		newUserPKsSet.removeAll(oldUserPKsSet);
 
@@ -8016,10 +7986,8 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 			companyId = organization.getCompanyId();
 		}
 
-		for (long newUserPK : newUserPKsSet) {
-			organizationToUserTableMapper.addTableMapping(companyId, pk,
-				newUserPK);
-		}
+		organizationToUserTableMapper.addTableMappings(companyId, pk,
+			ArrayUtil.toLongArray(newUserPKsSet));
 	}
 
 	/**
@@ -8029,12 +7997,13 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	 * @param users the users to be associated with the organization
 	 */
 	@Override
-	public void setUsers(long pk, List<com.liferay.portal.model.User> users) {
+	public void setUsers(long pk,
+		List<com.liferay.portal.kernel.model.User> users) {
 		try {
 			long[] userPKs = new long[users.size()];
 
 			for (int i = 0; i < users.size(); i++) {
-				com.liferay.portal.model.User user = users.get(i);
+				com.liferay.portal.kernel.model.User user = users.get(i);
 
 				userPKs[i] = user.getPrimaryKey();
 			}
@@ -8083,10 +8052,10 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	protected FinderCache finderCache = FinderCacheUtil.getFinderCache();
 	@BeanReference(type = GroupPersistence.class)
 	protected GroupPersistence groupPersistence;
-	protected TableMapper<Organization, com.liferay.portal.model.Group> organizationToGroupTableMapper;
+	protected TableMapper<Organization, com.liferay.portal.kernel.model.Group> organizationToGroupTableMapper;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
-	protected TableMapper<Organization, com.liferay.portal.model.User> organizationToUserTableMapper;
+	protected TableMapper<Organization, com.liferay.portal.kernel.model.User> organizationToUserTableMapper;
 	private static final String _SQL_SELECT_ORGANIZATION = "SELECT organization FROM Organization organization";
 	private static final String _SQL_SELECT_ORGANIZATION_WHERE_PKS_IN = "SELECT organization FROM Organization organization WHERE organizationId IN (";
 	private static final String _SQL_SELECT_ORGANIZATION_WHERE = "SELECT organization FROM Organization organization WHERE ";
@@ -8109,34 +8078,4 @@ public class OrganizationPersistenceImpl extends BasePersistenceImpl<Organizatio
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"uuid", "type"
 			});
-	private static final Organization _nullOrganization = new OrganizationImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<Organization> toCacheModel() {
-				return _nullOrganizationCacheModel;
-			}
-		};
-
-	private static final CacheModel<Organization> _nullOrganizationCacheModel = new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<Organization>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public Organization toEntityModel() {
-			return _nullOrganization;
-		}
-	}
 }

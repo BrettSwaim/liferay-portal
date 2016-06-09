@@ -58,8 +58,8 @@ public class CSSBuilderTest {
 			new SimpleFileVisitor<Path>() {
 
 				@Override
-				public FileVisitResult visitFile(
-						Path path, BasicFileAttributes basicFileAttributes)
+				public FileVisitResult postVisitDirectory(
+						Path path, IOException ioe)
 					throws IOException {
 
 					Files.delete(path);
@@ -68,8 +68,8 @@ public class CSSBuilderTest {
 				}
 
 				@Override
-				public FileVisitResult postVisitDirectory(
-						Path path, IOException ioe)
+				public FileVisitResult visitFile(
+						Path path, BasicFileAttributes basicFileAttributes)
 					throws IOException {
 
 					Files.delete(path);
@@ -81,13 +81,23 @@ public class CSSBuilderTest {
 	}
 
 	@Test
-	public void testJniSassToCssBuilder() throws Exception {
-		_testSassToCssBuilder("jni");
+	public void testCssBuilderWithJni() throws Exception {
+		_testCssBuilder("jni", _PORTAL_COMMON_CSS_DIR_NAME);
 	}
 
 	@Test
-	public void testRubySassToCssBuilder() throws Exception {
-		_testSassToCssBuilder("ruby");
+	public void testCssBuilderWithJniAndPortalCommonJar() throws Exception {
+		_testCssBuilder("jni", _PORTAL_COMMON_CSS_JAR_FILE_NAME);
+	}
+
+	@Test
+	public void testCssBuilderWithRuby() throws Exception {
+		_testCssBuilder("ruby", _PORTAL_COMMON_CSS_DIR_NAME);
+	}
+
+	@Test
+	public void testCssBuilderWithRubyAndPortalCommonJar() throws Exception {
+		_testCssBuilder("ruby", _PORTAL_COMMON_CSS_JAR_FILE_NAME);
 	}
 
 	private String _read(String fileName) throws Exception {
@@ -99,43 +109,62 @@ public class CSSBuilderTest {
 			s, StringPool.RETURN_NEW_LINE, StringPool.NEW_LINE);
 	}
 
-	private void _testSassToCssBuilder(String compiler) throws Exception {
-		CSSBuilder cssBuilder = new CSSBuilder(
-			_docrootDirName, false,
-			"../../frontend/frontend-common-css/tmp/META-INF/resources", 6,
-			new String[0], compiler);
+	private void _testCssBuilder(String compiler, String portalCommonCssPath)
+		throws Exception {
 
-		cssBuilder.execute(Arrays.asList(new String[] {"/css"}));
+		try (CSSBuilder cssBuilder = new CSSBuilder(
+				_docrootDirName, false, ".sass-cache/", portalCommonCssPath, 6,
+				new String[0], compiler)) {
 
-		String expectedCacheContent = _read(
+			cssBuilder.execute(Arrays.asList(new String[] {"/css"}));
+		}
+
+		String expectedTestContent = _read(
 			_docrootDirName + "/expected/test.css");
-		String actualTestCacheContent = _read(
+
+		String actualTestContent = _read(
 			_docrootDirName + "/css/.sass-cache/test.css");
 
-		Assert.assertEquals(expectedCacheContent, actualTestCacheContent);
+		Assert.assertEquals(expectedTestContent, actualTestContent);
 
-		String actualMainCacheContent = _read(
-			_docrootDirName + "/css/.sass-cache/main.css");
+		String actualTestPartialContent = _read(
+			_docrootDirName + "/css/.sass-cache/test_partial.css");
 
-		Assert.assertEquals(expectedCacheContent, actualMainCacheContent);
+		Assert.assertEquals(expectedTestContent, actualTestPartialContent);
 
-		File file = new File(
+		File partialCssFile = new File(
 			Paths.get("/css/.sass-cache/_partial.css").toString());
 
-		Assert.assertFalse(file.exists());
+		Assert.assertFalse(partialCssFile.exists());
 
-		String expectedRtlCacheContent = _read(
+		String expectedTestRtlContent = _read(
 			_docrootDirName + "/expected/test_rtl.css");
-		String actualTestRtlCacheContent = _read(
+
+		String actualTestRtlContent = _read(
 			_docrootDirName + "/css/.sass-cache/test_rtl.css");
 
-		Assert.assertEquals(expectedRtlCacheContent, actualTestRtlCacheContent);
+		Assert.assertEquals(expectedTestRtlContent, actualTestRtlContent);
 
-		String actualMainRtlCacheContent = _read(
-			_docrootDirName + "/css/.sass-cache/main_rtl.css");
+		String actualTestPartialRtlContent = _read(
+			_docrootDirName + "/css/.sass-cache/test_partial_rtl.css");
 
-		Assert.assertEquals(expectedRtlCacheContent, actualMainRtlCacheContent);
+		Assert.assertEquals(
+			expectedTestRtlContent, actualTestPartialRtlContent);
+
+		String expectedUnicodeContent = _read(
+			_docrootDirName + "/expected/test_unicode.css");
+
+		String actualTestUnicodeContent = _read(
+			_docrootDirName + "/css/.sass-cache/test_unicode.css");
+
+		Assert.assertEquals(expectedUnicodeContent, actualTestUnicodeContent);
 	}
+
+	private static final String _PORTAL_COMMON_CSS_DIR_NAME =
+		"build/portal-common-css";
+
+	private static final String _PORTAL_COMMON_CSS_JAR_FILE_NAME =
+		"build/portal-common-css-jar/com.liferay.frontend.css.common.jar";
 
 	private static String _docrootDirName;
 

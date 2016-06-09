@@ -215,6 +215,11 @@ public abstract class BaseDB implements DB {
 	}
 
 	@Override
+	public long increment(String name, int size) {
+		return CounterLocalServiceUtil.increment(name, size);
+	}
+
+	@Override
 	public boolean isSupportsAlterColumnName() {
 		return _SUPPORTS_ALTER_COLUMN_NAME;
 	}
@@ -274,8 +279,8 @@ public abstract class BaseDB implements DB {
 					sql = sql.substring(0, sql.length() - 1);
 				}
 
-				if (sql.endsWith("go")) {
-					sql = sql.substring(0, sql.length() - 2);
+				if (sql.endsWith("\ngo")) {
+					sql = sql.substring(0, sql.length() - 3);
 				}
 
 				if (_log.isDebugEnabled()) {
@@ -376,7 +381,7 @@ public abstract class BaseDB implements DB {
 			String line = null;
 
 			while ((line = unsyncBufferedReader.readLine()) != null) {
-				if (line.startsWith("##")) {
+				if (line.isEmpty() || line.startsWith("##")) {
 					continue;
 				}
 
@@ -422,7 +427,7 @@ public abstract class BaseDB implements DB {
 						sb.setIndex(0);
 
 						try {
-							if (!sql.equals("COMMIT_TRANSACTION;")) {
+							if (!sql.equals("COMMIT_TRANSACTION;\n")) {
 								runSQL(connection, sql);
 							}
 							else {
@@ -927,8 +932,7 @@ public abstract class BaseDB implements DB {
 
 			while ((line = unsyncBufferedReader.readLine()) != null) {
 				if (!line.startsWith(comments)) {
-					line = StringUtil.replace(
-						line, new String[] {"\n", "\t"}, new String[] {"", ""});
+					line = StringUtil.removeChars(line, '\n', '\t');
 
 					if (line.endsWith(";")) {
 						sb.append(line.substring(0, line.length() - 1));

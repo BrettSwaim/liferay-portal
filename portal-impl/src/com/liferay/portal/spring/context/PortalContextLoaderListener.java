@@ -58,6 +58,7 @@ import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.module.framework.ModuleFrameworkUtilAdapter;
 import com.liferay.portal.security.lang.SecurityManagerUtil;
+import com.liferay.portal.spring.aop.DynamicProxyCreator;
 import com.liferay.portal.spring.bean.BeanReferenceRefreshUtil;
 import com.liferay.portal.util.InitUtil;
 import com.liferay.portal.util.PropsValues;
@@ -170,6 +171,9 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 				_log.error(e, e);
 			}
 
+			ModuleFrameworkUtilAdapter.unregisterContext(
+				_arrayApplicationContext);
+
 			_arrayApplicationContext.close();
 		}
 		finally {
@@ -209,6 +213,8 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 				PropsKeys.LIFERAY_LIB_PORTAL_DIR, portalLibDir);
 		}
 
+		ClassPathUtil.initializeClassPaths(servletContext);
+
 		InitUtil.init();
 
 		_portalServletContextName = servletContext.getServletContextName();
@@ -224,14 +230,6 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 		}
 
 		_portalServletContextPath = servletContext.getContextPath();
-
-		if (ServerDetector.isWebSphere() &&
-			_portalServletContextPath.isEmpty()) {
-
-			_portalServletContextName = StringPool.BLANK;
-		}
-
-		ClassPathUtil.initializeClassPaths(servletContext);
 
 		File tempDir = (File)servletContext.getAttribute(
 			JavaConstants.JAVAX_SERVLET_CONTEXT_TEMPDIR);
@@ -265,12 +263,12 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 			new ServiceDependencyListener() {
 
 				@Override
-				public void destroy() {
+				public void dependenciesFulfilled() {
+					_serviceWrapperRegistry = new ServiceWrapperRegistry();
 				}
 
 				@Override
-				public void dependenciesFulfilled() {
-					_serviceWrapperRegistry = new ServiceWrapperRegistry();
+				public void destroy() {
 				}
 
 			});
@@ -304,6 +302,8 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 			_log.error(e, e);
 		}
 
+		InitUtil.registerSpringInitialized();
+
 		if (PropsValues.CACHE_CLEAR_ON_CONTEXT_INITIALIZATION) {
 			CacheRegistryUtil.clear();
 			PortletContextBagPool.clear();
@@ -336,6 +336,11 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 			applicationContext.getAutowireCapableBeanFactory();
 
 		clearFilteredPropertyDescriptorsCache(autowireCapableBeanFactory);
+
+		DynamicProxyCreator dynamicProxyCreator =
+			DynamicProxyCreator.getDynamicProxyCreator();
+
+		dynamicProxyCreator.clear();
 
 		try {
 			ModuleFrameworkUtilAdapter.registerContext(applicationContext);

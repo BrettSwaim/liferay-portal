@@ -1,4 +1,5 @@
 <definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Navigation" />
 
 	<set-up>
@@ -77,9 +78,8 @@
 		</execute>
 
 		<execute macro="UserGroup#addPageCP">
-			<var name="page" value="Dashboard" />
-			<var name="sitePageName" value="Test User Group Private Page" />
-			<var name="sitePagePrivacy" value="Public" />
+			<var name="pageName" value="Test User Group Private Page" />
+			<var name="sitePagePrivacy" value="Private" />
 			<var name="userGroupName" value="UG UserGroup Name" />
 		</execute>
 
@@ -101,14 +101,11 @@
 
 		<execute macro="UserBar#gotoDashboard" />
 
-		<execute function="AssertTextNotPresent" locator1="Home#ERROR_MESSAGE_ALERT_ERROR" value1="Not Found" />
+		<execute macro="SitePageNavigator#gotoPages" />
 
 		<var name="key_pageName" value="Test User Group Private Page" />
 
 		<execute function="AssertTextEquals" locator1="ProductMenu#PRIVATE_PAGE_LINK" value1="Test User Group Private Page" />
-
-		<execute function="Pause" locator1="1073" />
-		<execute function="Pause" locator1="1073" />
 
 		<execute macro="User#logoutUserPG" />
 
@@ -129,7 +126,7 @@
 			<var name="portletName" value="Navigation Menu" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Navigation Display Test Page" />
 		</execute>
 
@@ -145,11 +142,11 @@
 		<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
 		<execute function="Select" locator1="Select#DISPLAY_TEMPLATE" value1="Bar minimally styled" />
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#SUCCESS" value1="You have successfully updated the setup." />
+		<execute macro="Button#clickSave" />
+		<execute macro="Alert#viewSuccessMessage" />
 		<execute function="SelectFrame" value1="relative=top" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Navigation Display Test Page" />
 		</execute>
 
@@ -161,7 +158,7 @@
 			<var name="pageName" value="Navigation Page" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Navigation Page" />
 		</execute>
 
@@ -169,14 +166,16 @@
 			<var name="pageName" value="Navigation Page" />
 		</execute>
 
-		<for list="CONTENT_PERMISSIONS_ADD_DISCUSSION_CHECKBOX,CONTENT_PERMISSIONS_CONFIGURE_APPLICATIONS_CHECKBOX,CONTENT_PERMISSIONS_CUSTOMIZE_CHECKBOX,CONTENT_PERMISSIONS_DELETE_CHECKBOX,CONTENT_PERMISSIONS_DELETE_DISCUSSION_CHECKBOX,CONTENT_PERMISSIONS_PERMISSIONS_CHECKBOX,CONTENT_PERMISSIONS_UPDATE_CHECKBOX,CONTENT_PERMISSIONS_UPDATE_DISCUSSION_CHECKBOX,CONTENT_PERMISSIONS_VIEW_CHECKBOX" param="permissionDefinitionKey">
-			<execute macro="Role#definePermissionPG">
-				<var name="permissionDefinitionKey" value="${permissionDefinitionKey}" />
-				<var name="roleName" value="Power User" />
-			</execute>
-		</for>
+		<execute macro="Role#definePermissionPG">
+			<var name="permissionsList" value="CONTENT_PERMISSIONS_ADD_DISCUSSION_CHECKBOX,CONTENT_PERMISSIONS_CONFIGURE_APPLICATIONS_CHECKBOX,CONTENT_PERMISSIONS_CUSTOMIZE_CHECKBOX,CONTENT_PERMISSIONS_DELETE_CHECKBOX,CONTENT_PERMISSIONS_DELETE_DISCUSSION_CHECKBOX,CONTENT_PERMISSIONS_PERMISSIONS_CHECKBOX,CONTENT_PERMISSIONS_UPDATE_CHECKBOX,CONTENT_PERMISSIONS_UPDATE_DISCUSSION_CHECKBOX,CONTENT_PERMISSIONS_VIEW_CHECKBOX" />
+			<var name="roleName" value="Power User" />
+		</execute>
 
 		<execute macro="IFrame#selectTopFrame" />
+
+		<execute macro="Navigator#gotoPage">
+			<var name="pageName" value="Navigation Page" />
+		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
@@ -204,7 +203,7 @@
 			<var name="userEmailAddress" value="userea@liferay.com" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Navigation Page" />
 		</execute>
 

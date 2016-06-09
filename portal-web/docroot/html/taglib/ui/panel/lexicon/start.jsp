@@ -27,6 +27,10 @@ if (accordion) {
 else if ((extended != null) && !extended) {
 	collapsed = true;
 }
+
+if (persistState) {
+	collapsed = GetterUtil.getBoolean(SessionClicks.get(request, id, null), collapsed);
+}
 %>
 
 <div class="panel panel-default <%= cssClass %>" id="<%= id %>">
@@ -44,6 +48,10 @@ else if ((extended != null) && !extended) {
 						<c:if test="<%= Validator.isNotNull(helpMessage) %>">
 							<liferay-ui:icon-help message="<%= helpMessage %>" />
 						</c:if>
+
+						<aui:icon cssClass="collapse-icon-closed" image="angle-right" markupView="lexicon" />
+
+						<aui:icon cssClass="collapse-icon-open" image="angle-down" markupView="lexicon" />
 					</a>
 				</c:when>
 				<c:otherwise>

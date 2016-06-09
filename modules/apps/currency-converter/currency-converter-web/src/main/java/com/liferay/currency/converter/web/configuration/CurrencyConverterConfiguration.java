@@ -16,7 +16,7 @@ package com.liferay.currency.converter.web.configuration;
 
 import aQute.bnd.annotation.metatype.Meta;
 
-import com.liferay.portal.metatype.annotations.ExtendedObjectClassDefinition;
+import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
 
 /**
  * @author Peter Fellwock
@@ -25,7 +25,7 @@ import com.liferay.portal.metatype.annotations.ExtendedObjectClassDefinition;
 @Meta.OCD(
 	id = "com.liferay.currency.converter.web.configuration.CurrencyConverterConfiguration",
 	localization = "content/Language",
-	name = "%currency.converter.configuration.name"
+	name = "currency.converter.configuration.name"
 )
 public interface CurrencyConverterConfiguration {
 

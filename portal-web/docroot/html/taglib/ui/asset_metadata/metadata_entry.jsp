@@ -22,7 +22,7 @@ AssetRenderer<?> assetRenderer = (AssetRenderer<?>)request.getAttribute("liferay
 boolean filterByMetadata = GetterUtil.getBoolean(request.getAttribute("liferay-ui:asset-metadata:filterByMetadata"));
 String metadataField = (String)request.getAttribute("liferay-ui:asset-metadata:metadataField");
 
-String label = LanguageUtil.get(request, metadataField);
+String label = LanguageUtil.get(resourceBundle, metadataField);
 String metadataFieldCssClass = "metadata-" + metadataField;
 boolean showLabel = true;
 String value = null;
@@ -55,7 +55,7 @@ else if (metadataField.equals("modified-date")) {
 	value = dateFormatDate.format(assetEntry.getModifiedDate());
 }
 else if (metadataField.equals("priority")) {
-	value = LanguageUtil.get(request, "priority") + StringPool.COLON + StringPool.SPACE + assetEntry.getPriority();
+	value = LanguageUtil.get(resourceBundle, "priority") + StringPool.COLON + StringPool.SPACE + assetEntry.getPriority();
 }
 else if (metadataField.equals("publish-date")) {
 	if (assetEntry.getPublishDate() == null) {
@@ -77,12 +77,12 @@ else if (metadataField.equals("tags")) {
 else if (metadataField.equals("view-count")) {
 	int viewCount = assetEntry.getViewCount();
 
-	value = viewCount + StringPool.SPACE + LanguageUtil.get(request, (viewCount == 1) ? "view" : "views");
+	value = viewCount + StringPool.SPACE + LanguageUtil.get(resourceBundle, (viewCount == 1) ? "view" : "views");
 }
 %>
 
 <c:choose>
-	<c:when test='<%= Validator.equals(value, "author") %>'>
+	<c:when test='<%= Objects.equals(value, "author") %>'>
 
 		<%
 		User assetRendererUser = UserLocalServiceUtil.getUser(assetRenderer.getUserId());
@@ -105,7 +105,7 @@ else if (metadataField.equals("view-count")) {
 			</div>
 
 			<div class="asset-user-info">
-				<span class="user-info"><%= assetRendererUser.getFullName() %></span>
+				<span class="user-info"><%= HtmlUtil.escape(assetRendererUser.getFullName()) %></span>
 
 				<span class="date-info"><%= displayDate %></span>
 			</div>

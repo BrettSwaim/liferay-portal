@@ -48,14 +48,14 @@ public class GitHubJobMessageUtil {
 		String result = jsonObject.getString("result");
 
 		if (result.equals("ABORTED")) {
-			sb.append("<pre>Build was aborted</pre>");
+			sb.append("<pre><code>Build was aborted</code></pre>");
 		}
 		else if (result.equals("FAILURE")) {
 			if (jsonObject.has("runs")) {
 				JSONArray runsJSONArray = jsonObject.getJSONArray("runs");
 
-				List<String> runBuildURLs = new ArrayList<>();
 				List<String> failureBuildURLs = new ArrayList<>();
+				List<String> successBuildURLs = new ArrayList<>();
 
 				for (int i = 0; i < runsJSONArray.length(); i++) {
 					JSONObject runsJSONObject = runsJSONArray.getJSONObject(i);
@@ -76,19 +76,21 @@ public class GitHubJobMessageUtil {
 					String runBuildURLResult = runBuildURLJSONObject.getString(
 						"result");
 
-					if (!runBuildURLResult.equals("SUCCESS")) {
-						failureBuildURLs.add(runBuildURL);
+					if (runBuildURLResult.equals("SUCCESS")) {
+						successBuildURLs.add(runBuildURL);
+
+						continue;
 					}
 
-					runBuildURLs.add(runBuildURL);
+					failureBuildURLs.add(runBuildURL);
 				}
 
 				sb.append("<h6>Job Results:</h6>");
 				sb.append("<p>");
-				sb.append(runBuildURLs.size());
+				sb.append(successBuildURLs.size());
 				sb.append(" Test");
 
-				if (runBuildURLs.size() != 1) {
+				if (successBuildURLs.size() != 1) {
 					sb.append("s");
 				}
 
@@ -111,9 +113,9 @@ public class GitHubJobMessageUtil {
 							JenkinsResultsParserUtil.getLocalURL(
 								failureBuildURL + "api/json"));
 
-					sb.append("<li><strong><a href=\\\"");
+					sb.append("<li><strong><a href=\"");
 					sb.append(failureBuildURL);
-					sb.append("\\\">");
+					sb.append("\">");
 					sb.append(
 						JenkinsResultsParserUtil.fixJSON(
 							failureJSONObject.getString("fullDisplayName")));
@@ -141,7 +143,7 @@ public class GitHubJobMessageUtil {
 		else if (javacOutputFile.exists()) {
 			sb.append("<h6>Job Results:</h6>");
 			sb.append("<p>0 Tests Passed.<br />1 Test Failed.</p>");
-			sb.append("<pre>");
+			sb.append("<pre><code>");
 
 			String javacOutputFileContent = JenkinsResultsParserUtil.read(
 				javacOutputFile);
@@ -151,8 +153,8 @@ public class GitHubJobMessageUtil {
 					javacOutputFileContent.length() - 5000);
 			}
 
-			sb.append(JenkinsResultsParserUtil.fixJSON(javacOutputFileContent));
-			sb.append("</pre>");
+			sb.append(javacOutputFileContent);
+			sb.append("</code></pre>");
 		}
 
 		project.setProperty("report.html.content", sb.toString());

@@ -19,6 +19,9 @@ import com.liferay.dynamic.data.mapping.kernel.DDMTemplate;
 import com.liferay.dynamic.data.mapping.kernel.DDMTemplateManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
 import com.liferay.portal.kernel.template.DDMTemplateResource;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
@@ -27,13 +30,18 @@ import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.service.GroupLocalServiceUtil;
 
 /**
  * @author Tina Tian
  * @author Juan Fernández
  */
+@OSGiBeanProperties(
+	property = {
+		"lang.type=" + TemplateConstants.LANG_TYPE_FTL,
+		"lang.type=" + TemplateConstants.LANG_TYPE_VM
+	},
+	service = TemplateResourceParser.class
+)
 public class DDMTemplateResourceParser implements TemplateResourceParser {
 
 	@Override
@@ -70,9 +78,9 @@ public class DDMTemplateResourceParser implements TemplateResourceParser {
 
 			if (_log.isDebugEnabled()) {
 				_log.debug(
-					"Loading {companyId=" + companyId + ", groupId=" +
-						groupId + ", classNameId=" + classNameId +
-							", ddmTemplateKey=" + ddmTemplateKey + "}");
+					"Loading {companyId=" + companyId + ", groupId=" + groupId +
+						", classNameId=" + classNameId + ", ddmTemplateKey=" +
+							ddmTemplateKey + "}");
 			}
 
 			DDMTemplate ddmTemplate = DDMTemplateManagerUtil.fetchTemplate(
@@ -111,6 +119,18 @@ public class DDMTemplateResourceParser implements TemplateResourceParser {
 			throw new TemplateException(
 				"Unable to find template " + templateId, e);
 		}
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public boolean isTemplateResourceValid(String templateId, String langType) {
+		if (templateId.contains(TemplateConstants.JOURNAL_SEPARATOR) ||
+			templateId.contains(TemplateConstants.TEMPLATE_SEPARATOR)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(

@@ -8,6 +8,7 @@ buildCSS {
 }
 
 dependencies {
+	compile group: "com.deque", name: "axe-selenium", version: "1.1"
 	compile group: "com.google.guava", name: "guava", version: "16.0.1"
 	compile group: "com.jayway.jsonpath", name: "json-path", version: "2.1.0"
 	compile group: "com.liferay", name: "net.jsourcerer.webdriver.JSErrorCollector", version: "0.6"
@@ -18,6 +19,8 @@ dependencies {
 	compile group: "javax.mail", name: "mail", version: "1.4"
 	compile group: "junit", name: "junit", version: "4.12"
 	compile group: "org.apache.ant", name: "ant", version: "1.9.4"
+	compile group: "org.apache.ivy", name: "ivy", version: "2.4.0"
+	compile group: "org.codehaus.groovy", name: "groovy", version: "2.4.5"
 	compile group: "org.jsoup", name: "jsoup", version: "1.8.3"
 	compile group: "org.seleniumhq.selenium", name: "selenium-java", version: "2.47.1"
 	compile group: "org.sikuli", name: "sikuli-api", version: "1.2.0"
@@ -29,5 +32,5 @@ deploy {
 }
 
 liferay {
-	deployDir = "../../../tools/sdk/tmp/portal-tools/poshi-runner"
+	deployDir = "../../../tools/sdk/dependencies/com.liferay.poshi.runner/lib"
 }

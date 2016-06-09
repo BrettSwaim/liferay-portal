@@ -10,12 +10,12 @@
 <tbody>
 <tr>
 	<td>ADVANCED_SEARCH</td>
-	<td>//button[contains(@class,'toggle-advanced') and span[@class='caret']]</td>
+	<td>//button[contains(@class,'toggle-advanced') and span[@class='caret']] | //a[contains(@id,'searchtoggleAdvanced')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>ANGLE_LEFT_BACK</td>
-	<td>//div[contains(@class,'toolbar-group-content')]//span[contains(@class,'icon-angle-left')]</td>
+	<td>//div[contains(@class,'taglib-header')]//span[contains(.,'Back')]/a | //div[contains(@class,'toolbar-group-content')]//span[contains(@class,'icon-angle-left')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -70,7 +70,7 @@
 </tr>
 <tr>
 	<td>DELETE</td>
-	<td>//*[@data-qa-id='deleteButton'] | //a[contains(@title,'Delete')]/span[contains(@class,'icon-monospaced')]</td>
+	<td>//*[contains(@data-qa-id,'deleteButton')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -110,12 +110,22 @@
 </tr>
 <tr>
 	<td>EDIT</td>
-	<td>//span/*[name()='svg'][contains(@class,'icon-pencil')]</td>
+	<td>//span[contains(.,'${key_assetTitle}')]//*[name()='svg'][contains(@class,'icon-pencil')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>CUSTOM_EDIT</td>
+	<td>//a[contains(@class,'taglib-icon')]/i[contains(@class,'icon-edit')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>EDIT_CONTROLS</td>
 	<td>//li[contains(@id,'toggleControls')]/a[i[contains(@class,'icon-eye-close') or contains(@class,'icon-eye-open')]]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EDIT_PENCIL</td>
+	<td>//*[name()='svg'][contains(@class,'lexicon-icon-pencil')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -144,6 +154,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>INFO_ACTIVE</td>
+	<td>//*[contains(@class,'active') and contains(@class,'open') and @data-qa-id='infoButton']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>INFO_ALL_ENTRIES</td>
 	<td>//div[contains(@class,'management-bar-no-collapse on')]//a[contains(@class,'infoPanelToggler')]</td>
 	<td></td>
@@ -161,6 +176,11 @@
 <tr>
 	<td>MOVE</td>
 	<td>//*[@data-qa-id='moveButton'] | //a[contains(@href,'editEntry')]/span[contains(@class,'icon-move')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>MOVE_TO_RECYCLE_BIN</td>
+	<td>//a[contains(@data-qa-id,'recycle-binButton')]/span[contains(@class,'icon-monospaced')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -190,7 +210,12 @@
 </tr>
 <tr>
 	<td>TOOLTIP</td>
-	<td>//span[@class='taglib-icon-help']</td>
+	<td>//span/*[name()='svg'][contains(@class,'icon-question')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>INHERIT_CHANGES_TOOLTIP</td>
+	<td>//label[contains(.,'Inherit Changes')]//span/*[name()='svg'][contains(@class,'icon-question')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -221,7 +246,7 @@
 </tr>
 <tr>
 	<td>HEADER_VERTICAL_ELLIPSIS</td>
-	<td>//*[@data-qa-id='headerOptions']//a</td>
+	<td>//*[@data-qa-id='header']//*[name()='svg'][contains(@class,'icon-ellipsis')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -237,6 +262,11 @@
 <tr>
 	<td>ROW_VERTICAL_ELLIPSIS_N</td>
 	<td>xpath=(//*[@data-qa-id='row']//span/*[name()='svg'][contains(@class,'icon-ellipsis')])[${key_rowIndexNumber}]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>STAGING_BAR_VERTICAL_ELLIPSIS</td>
+	<td>//li[contains(@class,'control-menu-nav-item')]//*[contains(@class,'lexicon-icon-ellipsis-v')]</td>
 	<td></td>
 </tr>
 </tbody>

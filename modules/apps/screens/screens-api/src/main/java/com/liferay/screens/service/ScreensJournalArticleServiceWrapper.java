@@ -16,7 +16,7 @@ package com.liferay.screens.service;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.service.ServiceWrapper;
+import com.liferay.portal.kernel.service.ServiceWrapper;
 
 /**
  * Provides a wrapper for {@link ScreensJournalArticleService}.
@@ -36,18 +36,18 @@ public class ScreensJournalArticleServiceWrapper
 
 	@Override
 	public java.lang.String getJournalArticleContent(long classPK,
-		long ddmTemplateId, java.util.Locale locale)
-		throws com.liferay.portal.kernel.exception.PortalException {
-		return _screensJournalArticleService.getJournalArticleContent(classPK,
-			ddmTemplateId, locale);
-	}
-
-	@Override
-	public java.lang.String getJournalArticleContent(long classPK,
 		java.util.Locale locale)
 		throws com.liferay.portal.kernel.exception.PortalException {
 		return _screensJournalArticleService.getJournalArticleContent(classPK,
 			locale);
+	}
+
+	@Override
+	public java.lang.String getJournalArticleContent(long classPK,
+		long ddmTemplateId, java.util.Locale locale)
+		throws com.liferay.portal.kernel.exception.PortalException {
+		return _screensJournalArticleService.getJournalArticleContent(classPK,
+			ddmTemplateId, locale);
 	}
 
 	@Override

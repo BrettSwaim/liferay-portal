@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.StringBundler;
@@ -25,8 +27,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.taglib.util.IncludeTag;
 import com.liferay.taglib.util.LexiconUtil;
 import com.liferay.taglib.util.TagResourceBundleUtil;
@@ -145,9 +145,9 @@ public class UserPortraitTag extends IncludeTag {
 	private static final Log _log = LogFactoryUtil.getLog(
 		UserPortraitTag.class);
 
-	private String _cssClass;
-	private String _imageCssClass;
+	private String _cssClass = StringPool.BLANK;
+	private String _imageCssClass = StringPool.BLANK;
 	private long _userId;
-	private String _userName;
+	private String _userName = StringPool.BLANK;
 
 }

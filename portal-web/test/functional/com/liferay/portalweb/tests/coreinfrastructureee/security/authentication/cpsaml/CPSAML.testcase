@@ -1,4 +1,5 @@
 <definition component-name="portal-authentication-ee">
+	<property name="portal.release" value="true" />
 	<property name="app.server.bundles.size" value="1" />
 	<property name="databases.size" value="1" />
 	<property name="portlet.plugins.includes" value="saml-portlet" />
@@ -148,7 +149,6 @@
 		<!-- Verify SP is logged in -->
 
 		<execute macro="SAML#executeSPInitiatedSSO">
-			<var name="loginViaDockbar" value="true" />
 			<var name="password" value="test" />
 			<var name="specificURL" value="http://www.able.com:9080" />
 			<var name="spURL" value="http://www.able.com:9080/" />

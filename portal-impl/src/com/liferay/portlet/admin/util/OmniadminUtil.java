@@ -15,7 +15,7 @@
 package com.liferay.portlet.admin.util;
 
 import com.liferay.admin.kernel.util.Omniadmin;
-import com.liferay.portal.model.User;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceTracker;
@@ -37,14 +37,14 @@ import com.liferay.registry.ServiceTracker;
 public class OmniadminUtil {
 
 	public static boolean isOmniadmin(long userId) {
-		return getInstance().isOmniadmin(userId);
+		return _getInstance().isOmniadmin(userId);
 	}
 
 	public static boolean isOmniadmin(User user) {
-		return getInstance().isOmniadmin(user);
+		return _getInstance().isOmniadmin(user);
 	}
 
-	private static Omniadmin getInstance() {
+	private static Omniadmin _getInstance() {
 		return _instance._serviceTracker.getService();
 	}
 

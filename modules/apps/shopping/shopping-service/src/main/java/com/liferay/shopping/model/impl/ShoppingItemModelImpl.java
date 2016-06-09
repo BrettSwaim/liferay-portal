@@ -22,15 +22,15 @@ import com.liferay.expando.kernel.util.ExpandoBridgeFactoryUtil;
 import com.liferay.portal.kernel.bean.AutoEscapeBeanHandler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSON;
+import com.liferay.portal.kernel.model.CacheModel;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.impl.BaseModelImpl;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.UserLocalServiceUtil;
 
 import com.liferay.shopping.model.ShoppingItem;
 import com.liferay.shopping.model.ShoppingItemModel;
@@ -762,6 +762,7 @@ public class ShoppingItemModelImpl extends BaseModelImpl<ShoppingItem>
 		return _fields;
 	}
 
+	@JSON
 	@Override
 	public boolean isFields() {
 		return _fields;
@@ -838,6 +839,7 @@ public class ShoppingItemModelImpl extends BaseModelImpl<ShoppingItem>
 		return _taxable;
 	}
 
+	@JSON
 	@Override
 	public boolean isTaxable() {
 		return _taxable;
@@ -865,6 +867,7 @@ public class ShoppingItemModelImpl extends BaseModelImpl<ShoppingItem>
 		return _useShippingFormula;
 	}
 
+	@JSON
 	@Override
 	public boolean isUseShippingFormula() {
 		return _useShippingFormula;
@@ -881,6 +884,7 @@ public class ShoppingItemModelImpl extends BaseModelImpl<ShoppingItem>
 		return _requiresShipping;
 	}
 
+	@JSON
 	@Override
 	public boolean isRequiresShipping() {
 		return _requiresShipping;
@@ -908,6 +912,7 @@ public class ShoppingItemModelImpl extends BaseModelImpl<ShoppingItem>
 		return _featured;
 	}
 
+	@JSON
 	@Override
 	public boolean isFeatured() {
 		return _featured;
@@ -924,6 +929,7 @@ public class ShoppingItemModelImpl extends BaseModelImpl<ShoppingItem>
 		return _sale;
 	}
 
+	@JSON
 	@Override
 	public boolean isSale() {
 		return _sale;
@@ -940,6 +946,7 @@ public class ShoppingItemModelImpl extends BaseModelImpl<ShoppingItem>
 		return _smallImage;
 	}
 
+	@JSON
 	@Override
 	public boolean isSmallImage() {
 		return _smallImage;
@@ -995,6 +1002,7 @@ public class ShoppingItemModelImpl extends BaseModelImpl<ShoppingItem>
 		return _mediumImage;
 	}
 
+	@JSON
 	@Override
 	public boolean isMediumImage() {
 		return _mediumImage;
@@ -1050,6 +1058,7 @@ public class ShoppingItemModelImpl extends BaseModelImpl<ShoppingItem>
 		return _largeImage;
 	}
 
+	@JSON
 	@Override
 	public boolean isLargeImage() {
 		return _largeImage;

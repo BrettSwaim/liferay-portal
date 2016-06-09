@@ -34,6 +34,11 @@
 	<td></td>
 </tr>
 <tr>
+	<td>H3_MODAL_TITLE</td>
+	<td>//h3[@class='modal-title']</td>
+	<td></td>
+</tr>
+<tr>
 	<td>H3_HEADER_2</td>
 	<td>xpath=(//h3[@class='header-title']/span)[2]</td>
 	<td></td>
@@ -45,7 +50,12 @@
 </tr>
 <tr>
 	<td>ICON_PLUS_SIGN</td>
-	<td>//i[contains(@class,'icon-plus-sign')]</td>
+	<td>//*[@data-qa-id='addButton']//a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>LOADED</td>
+	<td>//div[@data-qa-id='app-loaded']//span[contains(.,'${key_portletName}')]</td>
 	<td></td>
 </tr>
 <tr>

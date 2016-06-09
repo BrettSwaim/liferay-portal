@@ -25,10 +25,16 @@ import com.liferay.message.boards.kernel.service.MBMessageLocalServiceUtil;
 import com.liferay.portal.kernel.dao.orm.QueryDefinition;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.ModelHintsUtil;
+import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.Folder;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.taglib.ui.ImageSelector;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -47,12 +53,6 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.ModelHintsUtil;
-import com.liferay.portal.model.Organization;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portlet.blogs.constants.BlogsConstants;
 import com.liferay.portlet.blogs.util.test.BlogsTestUtil;
@@ -107,7 +107,7 @@ public class BlogsEntryLocalServiceTest {
 		int maxLength = ModelHintsUtil.getMaxLength(
 			BlogsEntry.class.getName(), "content");
 
-		String content = repeat("0", maxLength + 1);
+		String content = _repeat("0", maxLength + 1);
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group, _user.getUserId());
@@ -122,7 +122,7 @@ public class BlogsEntryLocalServiceTest {
 		int maxLength = ModelHintsUtil.getMaxLength(
 			BlogsEntry.class.getName(), "title");
 
-		String title = repeat("0", maxLength + 1);
+		String title = _repeat("0", maxLength + 1);
 
 		ServiceContext serviceContext =
 			ServiceContextTestUtil.getServiceContext(_group, _user.getUserId());
@@ -229,8 +229,8 @@ public class BlogsEntryLocalServiceTest {
 				" should be " + nextEntry.getEntryId() + " but is null",
 			entries[2]);
 		Assert.assertEquals(
-			"The previous entry relative to entry" +
-				currentEntry.getEntryId() + " should be " +
+			"The previous entry relative to entry" + currentEntry.getEntryId() +
+				" should be " +
 					previousEntry.getEntryId(),
 			entries[0].getEntryId(), previousEntry.getEntryId());
 		Assert.assertEquals(
@@ -816,7 +816,7 @@ public class BlogsEntryLocalServiceTest {
 		Assert.assertEquals(initialCount + 1, actualCount);
 	}
 
-	private static String repeat(String string, int times) {
+	private static String _repeat(String string, int times) {
 		StringBundler sb = new StringBundler(times);
 
 		for (int i = 0; i < times; i++) {

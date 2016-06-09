@@ -16,7 +16,6 @@ package com.liferay.portal.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.exception.NoSuchImageException;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -27,21 +26,20 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.exception.NoSuchImageException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Image;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
+import com.liferay.portal.kernel.service.persistence.ImagePersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.Image;
-import com.liferay.portal.model.MVCCModel;
 import com.liferay.portal.model.impl.ImageImpl;
 import com.liferay.portal.model.impl.ImageModelImpl;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
-import com.liferay.portal.service.persistence.ImagePersistence;
 
 import java.io.Serializable;
 
@@ -62,7 +60,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see ImagePersistence
- * @see com.liferay.portal.service.persistence.ImageUtil
+ * @see com.liferay.portal.kernel.service.persistence.ImageUtil
  * @generated
  */
 @ProviderType
@@ -694,8 +692,8 @@ public class ImagePersistenceImpl extends BasePersistenceImpl<Image>
 			Image image = (Image)session.get(ImageImpl.class, primaryKey);
 
 			if (image == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchImageException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -811,7 +809,7 @@ public class ImagePersistenceImpl extends BasePersistenceImpl<Image>
 	}
 
 	/**
-	 * Returns the image with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the image with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the image
 	 * @return the image
@@ -823,8 +821,8 @@ public class ImagePersistenceImpl extends BasePersistenceImpl<Image>
 		Image image = fetchByPrimaryKey(primaryKey);
 
 		if (image == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchImageException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -854,12 +852,14 @@ public class ImagePersistenceImpl extends BasePersistenceImpl<Image>
 	 */
 	@Override
 	public Image fetchByPrimaryKey(Serializable primaryKey) {
-		Image image = (Image)entityCache.getResult(ImageModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(ImageModelImpl.ENTITY_CACHE_ENABLED,
 				ImageImpl.class, primaryKey);
 
-		if (image == _nullImage) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		Image image = (Image)serializable;
 
 		if (image == null) {
 			Session session = null;
@@ -874,7 +874,7 @@ public class ImagePersistenceImpl extends BasePersistenceImpl<Image>
 				}
 				else {
 					entityCache.putResult(ImageModelImpl.ENTITY_CACHE_ENABLED,
-						ImageImpl.class, primaryKey, _nullImage);
+						ImageImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -928,18 +928,20 @@ public class ImagePersistenceImpl extends BasePersistenceImpl<Image>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Image image = (Image)entityCache.getResult(ImageModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(ImageModelImpl.ENTITY_CACHE_ENABLED,
 					ImageImpl.class, primaryKey);
 
-			if (image == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, image);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (Image)serializable);
+				}
 			}
 		}
 
@@ -981,7 +983,7 @@ public class ImagePersistenceImpl extends BasePersistenceImpl<Image>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(ImageModelImpl.ENTITY_CACHE_ENABLED,
-					ImageImpl.class, primaryKey, _nullImage);
+					ImageImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -1223,33 +1225,4 @@ public class ImagePersistenceImpl extends BasePersistenceImpl<Image>
 	private static final Set<String> _badColumnNames = SetUtil.fromArray(new String[] {
 				"type", "size"
 			});
-	private static final Image _nullImage = new ImageImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<Image> toCacheModel() {
-				return _nullImageCacheModel;
-			}
-		};
-
-	private static final CacheModel<Image> _nullImageCacheModel = new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<Image>, MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public Image toEntityModel() {
-			return _nullImage;
-		}
-	}
 }

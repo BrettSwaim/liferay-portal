@@ -25,8 +25,8 @@ import com.liferay.portal.kernel.search.Hits;
 import com.liferay.portal.kernel.search.Query;
 import com.liferay.portal.kernel.search.SearchContext;
 import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.OrderByComparator;
-import com.liferay.portal.service.ServiceContext;
 
 import java.io.File;
 import java.io.InputStream;
@@ -100,16 +100,6 @@ public class InitializedRepository
 
 		documentRepository.checkInFileEntry(
 			fileEntryId, major, changeLog, serviceContext);
-	}
-
-	@Deprecated
-	@Override
-	public void checkInFileEntry(long fileEntryId, String lockUuid)
-		throws PortalException {
-
-		checkDocumentRepository();
-
-		documentRepository.checkInFileEntry(fileEntryId, lockUuid);
 	}
 
 	@Deprecated

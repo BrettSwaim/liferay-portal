@@ -16,7 +16,6 @@ package com.liferay.portal.service.persistence.impl;
 
 import aQute.bnd.annotation.ProviderType;
 
-import com.liferay.portal.exception.NoSuchContactException;
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.dao.orm.EntityCache;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
@@ -27,22 +26,21 @@ import com.liferay.portal.kernel.dao.orm.Query;
 import com.liferay.portal.kernel.dao.orm.QueryPos;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.Session;
+import com.liferay.portal.kernel.exception.NoSuchContactException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Contact;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.service.persistence.CompanyProvider;
+import com.liferay.portal.kernel.service.persistence.CompanyProviderWrapper;
+import com.liferay.portal.kernel.service.persistence.ContactPersistence;
 import com.liferay.portal.kernel.service.persistence.impl.BasePersistenceImpl;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.model.CacheModel;
-import com.liferay.portal.model.Contact;
-import com.liferay.portal.model.MVCCModel;
 import com.liferay.portal.model.impl.ContactImpl;
 import com.liferay.portal.model.impl.ContactModelImpl;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.ServiceContextThreadLocal;
-import com.liferay.portal.service.persistence.CompanyProvider;
-import com.liferay.portal.service.persistence.CompanyProviderWrapper;
-import com.liferay.portal.service.persistence.ContactPersistence;
 
 import java.io.Serializable;
 
@@ -64,7 +62,7 @@ import java.util.Set;
  *
  * @author Brian Wing Shun Chan
  * @see ContactPersistence
- * @see com.liferay.portal.service.persistence.ContactUtil
+ * @see com.liferay.portal.kernel.service.persistence.ContactUtil
  * @generated
  */
 @ProviderType
@@ -1759,8 +1757,8 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 			Contact contact = (Contact)session.get(ContactImpl.class, primaryKey);
 
 			if (contact == null) {
-				if (_log.isWarnEnabled()) {
-					_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+				if (_log.isDebugEnabled()) {
+					_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 				}
 
 				throw new NoSuchContactException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -1978,7 +1976,7 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 	}
 
 	/**
-	 * Returns the contact with the primary key or throws a {@link com.liferay.portal.exception.NoSuchModelException} if it could not be found.
+	 * Returns the contact with the primary key or throws a {@link com.liferay.portal.kernel.exception.NoSuchModelException} if it could not be found.
 	 *
 	 * @param primaryKey the primary key of the contact
 	 * @return the contact
@@ -1990,8 +1988,8 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 		Contact contact = fetchByPrimaryKey(primaryKey);
 
 		if (contact == null) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
+			if (_log.isDebugEnabled()) {
+				_log.debug(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY + primaryKey);
 			}
 
 			throw new NoSuchContactException(_NO_SUCH_ENTITY_WITH_PRIMARY_KEY +
@@ -2022,12 +2020,14 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 	 */
 	@Override
 	public Contact fetchByPrimaryKey(Serializable primaryKey) {
-		Contact contact = (Contact)entityCache.getResult(ContactModelImpl.ENTITY_CACHE_ENABLED,
+		Serializable serializable = entityCache.getResult(ContactModelImpl.ENTITY_CACHE_ENABLED,
 				ContactImpl.class, primaryKey);
 
-		if (contact == _nullContact) {
+		if (serializable == nullModel) {
 			return null;
 		}
+
+		Contact contact = (Contact)serializable;
 
 		if (contact == null) {
 			Session session = null;
@@ -2042,7 +2042,7 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 				}
 				else {
 					entityCache.putResult(ContactModelImpl.ENTITY_CACHE_ENABLED,
-						ContactImpl.class, primaryKey, _nullContact);
+						ContactImpl.class, primaryKey, nullModel);
 				}
 			}
 			catch (Exception e) {
@@ -2096,18 +2096,20 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 		Set<Serializable> uncachedPrimaryKeys = null;
 
 		for (Serializable primaryKey : primaryKeys) {
-			Contact contact = (Contact)entityCache.getResult(ContactModelImpl.ENTITY_CACHE_ENABLED,
+			Serializable serializable = entityCache.getResult(ContactModelImpl.ENTITY_CACHE_ENABLED,
 					ContactImpl.class, primaryKey);
 
-			if (contact == null) {
-				if (uncachedPrimaryKeys == null) {
-					uncachedPrimaryKeys = new HashSet<Serializable>();
-				}
+			if (serializable != nullModel) {
+				if (serializable == null) {
+					if (uncachedPrimaryKeys == null) {
+						uncachedPrimaryKeys = new HashSet<Serializable>();
+					}
 
-				uncachedPrimaryKeys.add(primaryKey);
-			}
-			else {
-				map.put(primaryKey, contact);
+					uncachedPrimaryKeys.add(primaryKey);
+				}
+				else {
+					map.put(primaryKey, (Contact)serializable);
+				}
 			}
 		}
 
@@ -2149,7 +2151,7 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 
 			for (Serializable primaryKey : uncachedPrimaryKeys) {
 				entityCache.putResult(ContactModelImpl.ENTITY_CACHE_ENABLED,
-					ContactImpl.class, primaryKey, _nullContact);
+					ContactImpl.class, primaryKey, nullModel);
 			}
 		}
 		catch (Exception e) {
@@ -2383,34 +2385,4 @@ public class ContactPersistenceImpl extends BasePersistenceImpl<Contact>
 	private static final String _NO_SUCH_ENTITY_WITH_PRIMARY_KEY = "No Contact exists with the primary key ";
 	private static final String _NO_SUCH_ENTITY_WITH_KEY = "No Contact exists with the key {";
 	private static final Log _log = LogFactoryUtil.getLog(ContactPersistenceImpl.class);
-	private static final Contact _nullContact = new ContactImpl() {
-			@Override
-			public Object clone() {
-				return this;
-			}
-
-			@Override
-			public CacheModel<Contact> toCacheModel() {
-				return _nullContactCacheModel;
-			}
-		};
-
-	private static final CacheModel<Contact> _nullContactCacheModel = new NullCacheModel();
-
-	private static class NullCacheModel implements CacheModel<Contact>,
-		MVCCModel {
-		@Override
-		public long getMvccVersion() {
-			return -1;
-		}
-
-		@Override
-		public void setMvccVersion(long mvccVersion) {
-		}
-
-		@Override
-		public Contact toEntityModel() {
-			return _nullContact;
-		}
-	}
 }

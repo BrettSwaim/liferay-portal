@@ -20,7 +20,9 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.mobile.device.Device;
 import com.liferay.portal.kernel.mobile.device.UnknownDevice;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
 import com.liferay.portal.kernel.template.StringTemplateResource;
 import com.liferay.portal.kernel.template.Template;
 import com.liferay.portal.kernel.template.TemplateConstants;
@@ -38,8 +40,6 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Company;
-import com.liferay.portal.service.CompanyLocalServiceUtil;
 import com.liferay.portal.util.PropsUtil;
 
 import java.net.URL;
@@ -109,16 +109,10 @@ public class Transformer {
 		try {
 			prepareTemplate(themeDisplay, template);
 
-			long classNameId = 0;
+			template.putAll(contextObjects);
 
-			if (contextObjects != null) {
-				for (String key : contextObjects.keySet()) {
-					template.put(key, contextObjects.get(key));
-				}
-
-				classNameId = GetterUtil.getLong(
-					contextObjects.get(TemplateConstants.CLASS_NAME_ID));
-			}
+			long classNameId = GetterUtil.getLong(
+				contextObjects.get(TemplateConstants.CLASS_NAME_ID));
 
 			template.put("company", getCompany(themeDisplay, companyId));
 			template.put("companyId", companyId);

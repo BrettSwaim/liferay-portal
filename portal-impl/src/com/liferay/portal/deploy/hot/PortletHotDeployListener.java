@@ -21,15 +21,21 @@ import com.liferay.portal.kernel.deploy.hot.BaseHotDeployListener;
 import com.liferay.portal.kernel.deploy.hot.HotDeployEvent;
 import com.liferay.portal.kernel.deploy.hot.HotDeployException;
 import com.liferay.portal.kernel.javadoc.JavadocManagerUtil;
-import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletApp;
+import com.liferay.portal.kernel.model.PortletCategory;
+import com.liferay.portal.kernel.model.PortletFilter;
+import com.liferay.portal.kernel.model.PortletURLListener;
 import com.liferay.portal.kernel.portlet.CustomUserAttributes;
 import com.liferay.portal.kernel.portlet.InvokerPortlet;
 import com.liferay.portal.kernel.portlet.PortletBag;
 import com.liferay.portal.kernel.portlet.PortletBagPool;
 import com.liferay.portal.kernel.portlet.PortletInstanceFactoryUtil;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
+import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
+import com.liferay.portal.kernel.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.DirectServletRegistryUtil;
 import com.liferay.portal.kernel.servlet.FileTimestampUtil;
 import com.liferay.portal.kernel.servlet.PortletServlet;
@@ -38,23 +44,13 @@ import com.liferay.portal.kernel.servlet.ServletContextProvider;
 import com.liferay.portal.kernel.util.ClassUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.InfrastructureUtil;
-import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
-import com.liferay.portal.kernel.util.ServerDetector;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.language.LanguageResources;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.PortletApp;
-import com.liferay.portal.model.PortletCategory;
-import com.liferay.portal.model.PortletFilter;
-import com.liferay.portal.model.PortletURLListener;
-import com.liferay.portal.service.PortletLocalServiceUtil;
-import com.liferay.portal.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.util.PortalInstances;
 import com.liferay.portal.util.WebAppPool;
 import com.liferay.portlet.PortletContextBag;
@@ -64,19 +60,13 @@ import com.liferay.portlet.PortletURLListenerFactory;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistration;
-import com.liferay.registry.collections.ServiceRegistrationMap;
-import com.liferay.registry.collections.ServiceRegistrationMapImpl;
-import com.liferay.util.bridges.php.PHPPortlet;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import javax.naming.Context;
@@ -86,8 +76,6 @@ import javax.naming.NamingException;
 import javax.portlet.PortletURLGenerationListener;
 
 import javax.servlet.ServletContext;
-
-import javax.sql.DataSource;
 
 import org.apache.portals.bridges.struts.StrutsPortlet;
 
@@ -125,55 +113,6 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 		}
 	}
 
-	protected void bindDataSource(String servletContextName) throws Exception {
-		if (ServerDetector.isGlassfish() || ServerDetector.isJOnAS()) {
-			return;
-		}
-
-		if (_log.isDebugEnabled()) {
-			_log.debug("Dynamically binding the Liferay data source");
-		}
-
-		DataSource dataSource = InfrastructureUtil.getDataSource();
-
-		if (dataSource == null) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(
-					"Abort dynamically binding the Liferay data source " +
-						"because it is not available");
-			}
-
-			return;
-		}
-
-		Context context = new InitialContext();
-
-		try {
-			try {
-				context.lookup(_JNDI_JDBC);
-			}
-			catch (NamingException ne) {
-				context.createSubcontext(_JNDI_JDBC);
-			}
-
-			try {
-				context.lookup(_JNDI_JDBC_LIFERAY_POOL);
-			}
-			catch (NamingException ne) {
-				context.bind(_JNDI_JDBC_LIFERAY_POOL, dataSource);
-			}
-
-			_dataSourceBindStates.put(servletContextName, true);
-		}
-		catch (Exception e) {
-			if (_log.isWarnEnabled()) {
-				_log.warn(
-					"Unable to dynamically bind the Liferay data source: " +
-						e.getMessage());
-			}
-		}
-	}
-
 	protected void checkResourceBundles(
 		ClassLoader classLoader, Portlet portlet) {
 
@@ -183,46 +122,21 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 
 		Registry registry = RegistryUtil.getRegistry();
 
-		for (Locale locale : LanguageUtil.getAvailableLocales()) {
-			try {
-				ResourceBundle resourceBundle = ResourceBundleUtil.getBundle(
-					portlet.getResourceBundle(), locale, classLoader);
+		ResourceBundleLoader resourceBundleLoader =
+			ResourceBundleUtil.getResourceBundleLoader(
+				portlet.getResourceBundle(), classLoader);
 
-				Map<String, Object> properties = new HashMap<>();
+		Map<String, Object> properties = new HashMap<>();
 
-				properties.put("language.id", LocaleUtil.toLanguageId(locale));
-				properties.put("javax.portlet.name", portlet.getPortletId());
+		properties.put(
+			"resource.bundle.base.name", portlet.getResourceBundle());
+		properties.put("service.ranking", Integer.MIN_VALUE);
+		properties.put("servlet.context.name", portlet.getContextName());
 
-				ServiceRegistration<ResourceBundle> serviceRegistration =
-					registry.registerService(
-						ResourceBundle.class, resourceBundle, properties);
-
-				_serviceRegistrations.put(resourceBundle, serviceRegistration);
-			}
-			catch (MissingResourceException mre) {
-				if (_log.isInfoEnabled()) {
-					_log.info(
-						"Portlet " + portlet.getPortletName() + " does " +
-							"not have translations for available locale " +
-								locale);
-				}
-			}
-
-			Map<String, Object> properties = new HashMap<>();
-
-			properties.put("language.id", LocaleUtil.toLanguageId(locale));
-			properties.put("javax.portlet.name", portlet.getPortletId());
-			properties.put("service.ranking", Integer.MIN_VALUE);
-
-			ResourceBundle resourceBundle = LanguageResources.getResourceBundle(
-				locale);
-
-			ServiceRegistration<ResourceBundle> serviceRegistration =
-				registry.registerService(
-					ResourceBundle.class, resourceBundle, properties);
-
-			_serviceRegistrations.put(resourceBundle, serviceRegistration);
-		}
+		_resourceBundleLoaderServiceRegistrations.put(
+			portlet.getPortletId(),
+			registry.registerService(
+				ResourceBundleLoader.class, resourceBundleLoader, properties));
 	}
 
 	protected void destroyPortlet(Portlet portlet, Set<String> portletIds)
@@ -247,13 +161,13 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 
 		portletIds.add(portlet.getPortletId());
 
-		for (ResourceBundle resourceBundle : _serviceRegistrations.keySet()) {
-			ServiceRegistration<ResourceBundle> serviceRegistration =
-				_serviceRegistrations.remove(resourceBundle);
+		ServiceRegistration<ResourceBundleLoader>
+			resourceBundleLoaderServiceRegistration =
+				_resourceBundleLoaderServiceRegistrations.remove(
+					portlet.getPortletId());
 
-			if (serviceRegistration != null) {
-				serviceRegistration.unregister();
-			}
+		if (resourceBundleLoaderServiceRegistration != null) {
+			resourceBundleLoaderServiceRegistration.unregister();
 		}
 	}
 
@@ -299,7 +213,6 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 
 		boolean portletAppInitialized = false;
 
-		boolean phpPortlet = false;
 		boolean strutsBridges = false;
 
 		ClassLoader classLoader = hotDeployEvent.getContextClassLoader();
@@ -323,21 +236,11 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 				portletBag.getPortletInstance();
 
 			if (ClassUtil.isSubclass(
-					portletInstance.getClass(), PHPPortlet.class.getName())) {
-
-				phpPortlet = true;
-			}
-
-			if (ClassUtil.isSubclass(
 					portletInstance.getClass(),
 					StrutsPortlet.class.getName())) {
 
 				strutsBridges = true;
 			}
-		}
-
-		if (phpPortlet) {
-			bindDataSource(servletContextName);
 		}
 
 		if (!strutsBridges) {
@@ -414,8 +317,6 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 			portlet.setReady(ready);
 		}
 
-		registerClpMessageListeners(servletContext, classLoader);
-
 		JavadocManagerUtil.load(servletContextName, classLoader);
 
 		DirectServletRegistryUtil.clearServlets();
@@ -483,10 +384,6 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 		}
 
 		PortletContextBagPool.remove(servletContextName);
-
-		unbindDataSource(servletContextName);
-
-		unregisterClpMessageListeners(servletContext);
 
 		JavadocManagerUtil.unload(servletContextName);
 
@@ -663,7 +560,7 @@ public class PortletHotDeployListener extends BaseHotDeployListener {
 		new HashMap<>();
 	private static final Map<String, List<Portlet>> _portlets = new HashMap<>();
 
-	private final ServiceRegistrationMap<ResourceBundle>
-		_serviceRegistrations = new ServiceRegistrationMapImpl<>();
+	private final Map<String, ServiceRegistration<ResourceBundleLoader>>
+		_resourceBundleLoaderServiceRegistrations = new HashMap<>();
 
 }

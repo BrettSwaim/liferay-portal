@@ -51,6 +51,23 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testDuplicateConstructors() throws Exception {
+		test(
+			"DuplicateConstructors.testjava",
+			"Duplicate DuplicateConstructors:");
+	}
+
+	@Test
+	public void testDuplicateMethods() throws Exception {
+		test("DuplicateMethods.testjava", "Duplicate method:");
+	}
+
+	@Test
+	public void testDuplicateVariables() throws Exception {
+		test("DuplicateVariables.testjava", "Duplicate _s2:");
+	}
+
+	@Test
 	public void testExceedMaxLineLength() throws Exception {
 		test("ExceedMaxLineLength.testjava", "> 80:", 37);
 	}
@@ -66,8 +83,23 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 	}
 
 	@Test
+	public void testFormatBooleanStatements() throws Exception {
+		test("FormatBooleanStatements.testjava");
+	}
+
+	@Test
 	public void testFormatImports() throws Exception {
 		test("FormatImports.testjava");
+	}
+
+	@Test
+	public void testFormatJSONObject() throws Exception {
+		test("FormatJSONObject.testjava");
+	}
+
+	@Test
+	public void testFormatReturnStatements() throws Exception {
+		test("FormatReturnStatements.testjava");
 	}
 
 	@Test
@@ -83,9 +115,9 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 				"missing parentheses:", "missing parentheses:",
 				"missing parentheses:", "missing parentheses:",
 				"missing parentheses:", "redundant parentheses:",
-				"redundant parentheses:", "redundant parentheses:"
+				"redundant parentheses:"
 			},
-			new Integer[] {25, 29, 33, 39, 43, 43, 47, 51});
+			new Integer[] {25, 29, 33, 39, 43, 47, 51});
 	}
 
 	@Test
@@ -96,6 +128,16 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 	@Test
 	public void testIncorrectClose() throws Exception {
 		test("IncorrectClose.testjava");
+	}
+
+	@Test
+	public void testIncorrectCopyright() throws Exception {
+		test("IncorrectCopyright.testjava", "File must start with copyright:");
+	}
+
+	@Test
+	public void testIncorrectIfStatement() throws Exception {
+		test("IncorrectIfStatement.testjava", "Incorrect if statement:", 23);
 	}
 
 	@Test
@@ -118,13 +160,24 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 				"line break:", "line break:", "line break:", "line break:",
 				"line break:", "line break:", "line break:", "line break:",
 				"line break:", "line break:", "line break:", "line break:",
-				"line break:", "line break:"
+				"line break:", "line break:", "line break:"
 			},
 			new Integer[] {
 				31, 35, 43, 47, 49, 52, 55, 59, 62, 67, 71, 77, 81, 87, 98, 111,
-				115, 125
+				116, 122, 132
 			});
 		test("IncorrectLineBreaks2.testjava");
+	}
+
+	@Test
+	public void testIncorrectParameterNames() throws Exception {
+		test(
+			"IncorrectParameterNames.testjava",
+			new String[] {
+				"Parameter StringMap should not start with uppercase:",
+				"Parameter TestString should not start with uppercase:"
+			},
+			new Integer[] {24, 28});
 	}
 
 	@Test
@@ -143,11 +196,20 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 		test(
 			"IncorrectVariableNames1.testjava",
 			new String[] {
-				"Only private var should start with underscore:",
-				"Only private var should start with underscore:"
+				"Only private method or variable should start with underscore:",
+				"Only private method or variable should start with underscore:"
 			},
 			new Integer[] {22, 28});
 		test("IncorrectVariableNames2.testjava");
+		test(
+			"IncorrectVariableNames3.testjava",
+			new String[] {
+				"Variable TestMapWithARatherLongName should not start with " +
+					"uppercase:",
+				"Variable TestString should not start with uppercase:"
+			},
+			new Integer[] {26, 29});
+
 	}
 
 	@Test
@@ -176,11 +238,12 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 		test(
 			"Levels.testjava",
 			new String[] {
+				"Do not use _log.isErrorEnabled():",
 				"Use _log.isDebugEnabled():", "Use _log.isDebugEnabled():",
 				"Use _log.isInfoEnabled():", "Use _log.isTraceEnabled():",
 				"Use _log.isWarnEnabled():"
 			},
-			new Integer[] {26, 31, 43, 48, 58});
+			new Integer[] {27, 36, 41, 53, 58, 68});
 	}
 
 	@Test
@@ -203,6 +266,11 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 		test(
 			"MissingSerialVersionUID.testjava",
 			"Assign ProcessCallable implementation a serialVersionUID:");
+	}
+
+	@Test
+	public void testNullVariable() throws Exception {
+		test("NullVariable.testjava");
 	}
 
 	@Test
@@ -248,6 +316,7 @@ public class JavaSourceProcessorTest extends BaseSourceProcessorTestCase {
 		test("SortJavaTerms1.testjava");
 		test("SortJavaTerms2.testjava");
 		test("SortJavaTerms3.testjava");
+		test("SortJavaTerms4.testjava");
 	}
 
 	@Test

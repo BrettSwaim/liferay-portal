@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -133,6 +134,27 @@ public class PatcherImpl implements Patcher {
 	}
 
 	@Override
+	public String getPatchingToolVersionDisplayName() {
+		if (_patchingToolVersionDisplayName != null) {
+			return _patchingToolVersionDisplayName;
+		}
+
+		Properties properties = getProperties();
+
+		if (properties.containsKey(
+				PROPERTY_PATCHING_TOOL_VERSION_DISPLAY_NAME)) {
+
+			_patchingToolVersionDisplayName = properties.getProperty(
+				PROPERTY_PATCHING_TOOL_VERSION_DISPLAY_NAME);
+		}
+		else {
+			_patchingToolVersionDisplayName = "1.0." + getPatchingToolVersion();
+		}
+
+		return _patchingToolVersionDisplayName;
+	}
+
+	@Override
 	public String[] getPatchLevels() {
 		if (_patchLevels != null) {
 			return _patchLevels;
@@ -198,11 +220,11 @@ public class PatcherImpl implements Patcher {
 
 				if (ArrayUtil.isEmpty(serviceJARPatches)) {
 					_log.warn(
-						"There are no patches installed on portal-service.jar");
+						"There are no patches installed on portal-kernel.jar");
 				}
 				else {
 					_log.warn(
-						"Patch level on portal-service.jar: " +
+						"Patch level on portal-kernel.jar: " +
 							Arrays.toString(serviceJARPatches));
 				}
 			}
@@ -233,7 +255,7 @@ public class PatcherImpl implements Patcher {
 
 		Class<?> clazz = getClass();
 
-		if (Validator.equals(fileName, PATCHER_SERVICE_PROPERTIES)) {
+		if (Objects.equals(fileName, PATCHER_SERVICE_PROPERTIES)) {
 			clazz = clazz.getInterfaces()[0];
 		}
 
@@ -273,6 +295,7 @@ public class PatcherImpl implements Patcher {
 	private String[] _installedPatchNames;
 	private File _patchDirectory;
 	private int _patchingToolVersion;
+	private String _patchingToolVersionDisplayName;
 	private String[] _patchLevels;
 	private Properties _properties;
 

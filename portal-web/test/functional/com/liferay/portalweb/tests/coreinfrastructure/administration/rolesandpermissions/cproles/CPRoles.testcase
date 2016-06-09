@@ -1,4 +1,5 @@
 <definition component-name="portal-user-management-and-portal-configuration">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Roles" />
 
 	<set-up>
@@ -53,7 +54,7 @@
 		</execute>
 
 		<execute macro="Role#addCP">
-			<var name="roleName" value="Roles Orgrole Name" />
+			<var name="roleName" value="Roles Regrole Name" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
@@ -61,7 +62,7 @@
 		</execute>
 
 		<execute macro="Role#viewCP">
-			<var name="roleName" value="Roles Orgrole Name" />
+			<var name="roleName" value="Roles Regrole Name" />
 			<var name="roleType" value="Regular" />
 		</execute>
 	</command>

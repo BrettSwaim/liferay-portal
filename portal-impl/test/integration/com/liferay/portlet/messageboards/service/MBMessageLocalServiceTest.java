@@ -21,9 +21,11 @@ import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.model.MBMessageConstants;
 import com.liferay.message.boards.kernel.model.MBThread;
 import com.liferay.message.boards.kernel.service.MBMessageLocalServiceUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.kernel.repository.capabilities.WorkflowCapability;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
@@ -35,8 +37,6 @@ import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.messageboards.util.test.MBTestUtil;
@@ -82,6 +82,50 @@ public class MBMessageLocalServiceTest {
 			_attachmentFile, "image/png");
 
 		Assert.assertEquals(1, message.getAttachmentsFileEntriesCount());
+	}
+
+	@Test
+	public void testAddXSSMessageWithInvalidFormat() throws Exception {
+		String subject = "<script>alert(1)</script>";
+		String body = "<script>alert(2)</script>";
+		String format = "text/plain";
+		List<ObjectValuePair<String, InputStream>> inputStreamOVPs =
+			Collections.emptyList();
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		MBMessage message = MBMessageLocalServiceUtil.addMessage(
+			TestPropsValues.getUserId(), RandomTestUtil.randomString(),
+			_group.getGroupId(), MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
+			subject, body, format, inputStreamOVPs, false, 0.0, false,
+			serviceContext);
+
+		Assert.assertEquals(subject, message.getSubject());
+		Assert.assertEquals(StringPool.BLANK, message.getBody());
+		Assert.assertEquals("html", message.getFormat());
+	}
+
+	@Test
+	public void testAddXSSSubjectWithEmptyBodyMessage() throws Exception {
+		String subject = "<script>alert(1)</script>";
+		String body = StringPool.BLANK;
+		List<ObjectValuePair<String, InputStream>> inputStreamOVPs =
+			Collections.emptyList();
+
+		ServiceContext serviceContext =
+			ServiceContextTestUtil.getServiceContext(
+				_group.getGroupId(), TestPropsValues.getUserId());
+
+		MBMessage message = MBMessageLocalServiceUtil.addMessage(
+			TestPropsValues.getUserId(), RandomTestUtil.randomString(),
+			_group.getGroupId(), MBCategoryConstants.DEFAULT_PARENT_CATEGORY_ID,
+			subject, body, "html", inputStreamOVPs, false, 0.0, false,
+			serviceContext);
+
+		Assert.assertEquals(subject, message.getSubject());
+		Assert.assertEquals(StringPool.BLANK, message.getBody());
 	}
 
 	@Test

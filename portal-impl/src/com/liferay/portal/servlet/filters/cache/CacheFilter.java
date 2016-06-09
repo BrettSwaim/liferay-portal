@@ -14,12 +14,17 @@
 
 package com.liferay.portal.servlet.filters.cache;
 
-import com.liferay.portal.exception.NoSuchLayoutException;
+import com.liferay.portal.kernel.exception.NoSuchLayoutException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.security.auth.AuthTokenUtil;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
+import com.liferay.portal.kernel.service.LayoutLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.BrowserSnifferUtil;
 import com.liferay.portal.kernel.servlet.BufferCacheServletResponse;
 import com.liferay.portal.kernel.servlet.HttpHeaders;
@@ -36,11 +41,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.Layout;
-import com.liferay.portal.model.LayoutTypePortlet;
-import com.liferay.portal.service.GroupLocalServiceUtil;
-import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.servlet.filters.BasePortalFilter;
 import com.liferay.portal.util.PortalInstances;
 import com.liferay.portal.util.PropsValues;
@@ -97,6 +97,11 @@ public class CacheFilter extends BasePortalFilter {
 
 		sb.append(HttpUtil.getProtocol(request));
 		sb.append(Http.PROTOCOL_DELIMITER);
+
+		String url = PortalUtil.getCurrentCompleteURL(request);
+
+		sb.append(HttpUtil.getDomain(url));
+
 		sb.append(request.getContextPath());
 		sb.append(request.getServletPath());
 		sb.append(request.getPathInfo());
@@ -109,9 +114,7 @@ public class CacheFilter extends BasePortalFilter {
 				JavaConstants.JAVAX_SERVLET_FORWARD_QUERY_STRING);
 
 			if (queryString == null) {
-				String url = PortalUtil.getCurrentCompleteURL(request);
-
-				int pos = url.indexOf(StringPool.QUESTION);
+				int pos = url.indexOf(CharPool.QUESTION);
 
 				if (pos > -1) {
 					queryString = url.substring(pos + 1);
@@ -453,11 +456,9 @@ public class CacheFilter extends BasePortalFilter {
 				bufferCacheServletResponse.getHeader(
 					HttpHeaders.CACHE_CONTROL));
 
-			if ((bufferCacheServletResponse.getStatus() ==
-					HttpServletResponse.SC_OK) &&
+			if (isCacheableResponse(bufferCacheServletResponse) &&
 				!cacheControl.contains(HttpHeaders.PRAGMA_NO_CACHE_VALUE) &&
-				isCacheableRequest(request) &&
-				isCacheableResponse(bufferCacheServletResponse)) {
+				isCacheableRequest(request)) {
 
 				CacheUtil.putCacheResponseData(
 					companyId, key, cacheResponseData);

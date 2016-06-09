@@ -4,6 +4,10 @@
 	<var name="userPasswordReminderAnswer" value="test" />
 
 	<command name="_signIn">
+		<execute function="AssertClick" locator1="UserBar#USER_SIGN_IN" value1="Sign In" />
+
+		<execute function="AssertVisible" locator1="Modal#BODY" />
+
 		<execute function="Type" locator1="TextInput#EMAIL_ADDRESS" value1="${userEmailAddress}" />
 		<execute function="Type" locator1="TextInput#PASSWORD" value1="${userPassword}" />
 
@@ -33,16 +37,6 @@
 		<execute function="AssertClick" locator1="Button#SIGN_IN" value1="Sign In" />
 	</command>
 
-	<command name="_signInViaDockbar">
-		<execute function="AssertClick" locator1="UserBar#USER_SIGN_IN" value1="Sign In" />
-
-		<execute macro="SignIn#_signIn">
-			<var name="rememberMe" value="${rememberMe}" />
-			<var name="userEmailAddress" value="${userEmailAddress}" />
-			<var name="userPassword" value="${userPassword}" />
-		</execute>
-	</command>
-
 	<command name="agreeToTermsOfUse" summary="Agree to Liferay Portal Terms of Use">
 		<execute function="AssertClick" locator1="Button#I_AGREE" value1="I Agree" />
 
@@ -53,7 +47,7 @@
 		<execute function="Type" locator1="TextInput#NEW_PASSWORD" value1="${userNewPassword}" />
 		<execute function="Type" locator1="TextInput#ENTER_AGAIN" value1="${userNewPassword}" />
 
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
+		<execute macro="Button#clickSave" />
 
 		<execute function="AssertElementNotPresent" locator1="Button#SAVE" value1="Save" />
 	</command>
@@ -61,7 +55,7 @@
 	<command name="setPasswordReminder" summary="Enter '${userPasswordReminderAnswer}' as password reminder">
 		<execute function="Type" locator1="TextInput#ANSWER" value1="${userPasswordReminderAnswer}" />
 
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
+		<execute macro="Button#clickSave" />
 	</command>
 
 	<command name="signIn" summary="Sign in to Liferay Portal as '${userEmailAddress}' using the password '${userPassword}'">
@@ -127,6 +121,16 @@
 			<var name="portlet" value="Virtual Instances" />
 		</execute>
 
+		<while>
+			<condition function="IsElementPresent" locator1="PortalInstances#INSTANCE_TABLE_ACTIONS_GENERIC_2" />
+			<then>
+				<execute function="Click#waitForMenuToggleJSClick" locator1="PortalInstances#INSTANCE_TABLE_ACTIONS_GENERIC_2" />
+				<execute function="AssertClickNoError" locator1="MenuItem#DELETE" value1="Delete" />
+				<execute function="Confirm" value1="Are you sure you want to delete this? It will be deleted immediately." />
+				<execute macro="Alert#viewSuccessMessage" />
+			</then>
+		</while>
+
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
 		<var method="StringUtil#replace('${portalURL}', 'http://', '')" name="portalURL" />
@@ -168,6 +172,18 @@
 
 		<execute macro="SignIn#signIn" />
 
+		<var method="TestPropsUtil#get('browser.type')" name="browserType" />
+
+		<if>
+			<or>
+				<equals arg1="${browserType}" arg2="edge" />
+				<equals arg1="${browserType}" arg2="internetexplorer" />
+			</or>
+			<then>
+				<execute function="Open" locator1="/web/guest/home" />
+			</then>
+		</if>
+
 		<if>
 			<condition function="IsElementPresent" locator1="Button#I_AGREE" />
 			<then>
@@ -183,16 +199,6 @@
 		</if>
 	</command>
 
-	<command name="signInViaDockbar">
-		<execute macro="Navigator#openURL" />
-
-		<execute macro="SignIn#_signInViaDockbar">
-			<var name="rememberMe" value="${rememberMe}" />
-			<var name="userEmailAddress" value="${userEmailAddress}" />
-			<var name="userPassword" value="${userPassword}" />
-		</execute>
-	</command>
-
 	<command name="signInViaGoogle">
 		<execute macro="Navigator#openURL" />
 
@@ -206,5 +212,39 @@
 		</execute>
 
 		<execute macro="GoogleLogin#acceptConditions" />
+	</command>
+
+	<command name="viewSignInError">
+		<if>
+			<isset var="nodePort" />
+			<then>
+				<execute function="Open" locator1="http://localhost:${nodePort}" />
+			</then>
+			<elseif>
+				<isset var="specificURL" />
+				<then>
+					<execute macro="Navigator#openSpecificURL">
+						<var name="url" value="${specificURL}" />
+					</execute>
+				</then>
+			</elseif>
+			<else>
+				<execute macro="Navigator#openURL" />
+			</else>
+		</if>
+
+		<execute macro="SignIn#_signIn">
+			<var name="rememberMe" value="${rememberMe}" />
+			<var name="userEmailAddress" value="${userEmailAddress}" />
+			<var name="userPassword" value="${userPassword}" />
+		</execute>
+
+		<if>
+			<equals arg1="${error}" arg2="internalServerError" />
+			<then>
+				<execute function="AssertTextEquals" locator1="Home#ERROR_MESSAGE_ALERT_ERROR" value1="Internal Server Error" />
+				<execute function="AssertTextEquals#assertPartialText" locator1="Message#URL_ERROR" value1="${urlErrorMessage}" />
+			</then>
+		</if>
 	</command>
 </definition>

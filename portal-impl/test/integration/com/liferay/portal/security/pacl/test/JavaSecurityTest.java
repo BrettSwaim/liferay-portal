@@ -81,8 +81,7 @@ public class JavaSecurityTest {
 					}
 
 				},
-				accessControlContext
-			);
+				accessControlContext);
 
 			Assert.fail();
 		}
@@ -132,15 +131,13 @@ public class JavaSecurityTest {
 								}
 
 							},
-							accessControlContext
-						);
+							accessControlContext);
 
 						return null;
 					}
 
 				},
-				accessControlContext
-			);
+				accessControlContext);
 
 			Assert.fail();
 		}
@@ -174,8 +171,7 @@ public class JavaSecurityTest {
 						return assignedDomains;
 					}
 
-				}
-			);
+				});
 
 			AccessController.doPrivileged(
 				new PrivilegedAction<Void>() {
@@ -188,8 +184,7 @@ public class JavaSecurityTest {
 					}
 
 				},
-				accessControlContext
-			);
+				accessControlContext);
 
 			Assert.fail();
 		}
@@ -327,7 +322,9 @@ public class JavaSecurityTest {
 	@Test
 	public void testProtectionDomain2() throws Exception {
 		try {
-			getClass().getProtectionDomain();
+			Class<?> clazz = getClass();
+
+			clazz.getProtectionDomain();
 
 			Assert.fail();
 		}

@@ -23,36 +23,63 @@ import com.liferay.exportimport.kernel.lar.PortletDataHandlerKeys;
 import com.liferay.exportimport.kernel.model.ExportImportConfiguration;
 import com.liferay.exportimport.kernel.staging.StagingConstants;
 import com.liferay.exportimport.kernel.staging.StagingUtil;
-import com.liferay.portal.LocaleException;
-import com.liferay.portal.exception.DuplicateGroupException;
-import com.liferay.portal.exception.GroupFriendlyURLException;
-import com.liferay.portal.exception.GroupInheritContentException;
-import com.liferay.portal.exception.GroupKeyException;
-import com.liferay.portal.exception.GroupParentException;
-import com.liferay.portal.exception.NoSuchGroupException;
-import com.liferay.portal.exception.NoSuchLayoutSetException;
-import com.liferay.portal.exception.PendingBackgroundTaskException;
-import com.liferay.portal.exception.RequiredGroupException;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTask;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskConstants;
 import com.liferay.portal.kernel.backgroundtask.BackgroundTaskManagerUtil;
 import com.liferay.portal.kernel.cache.thread.local.ThreadLocalCachable;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.DuplicateGroupException;
+import com.liferay.portal.kernel.exception.GroupFriendlyURLException;
+import com.liferay.portal.kernel.exception.GroupInheritContentException;
+import com.liferay.portal.kernel.exception.GroupKeyException;
+import com.liferay.portal.kernel.exception.GroupParentException;
+import com.liferay.portal.kernel.exception.LocaleException;
+import com.liferay.portal.kernel.exception.NoSuchGroupException;
+import com.liferay.portal.kernel.exception.NoSuchLayoutSetException;
+import com.liferay.portal.kernel.exception.PendingBackgroundTaskException;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.RequiredGroupException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.DestinationNames;
+import com.liferay.portal.kernel.model.Account;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutConstants;
+import com.liferay.portal.kernel.model.LayoutPrototype;
+import com.liferay.portal.kernel.model.LayoutSet;
+import com.liferay.portal.kernel.model.LayoutSetPrototype;
+import com.liferay.portal.kernel.model.LayoutTemplate;
+import com.liferay.portal.kernel.model.LayoutTypePortlet;
+import com.liferay.portal.kernel.model.Organization;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.ResourceAction;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.ResourcePermission;
+import com.liferay.portal.kernel.model.ResourceTypePermission;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.RoleConstants;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.UserGroup;
+import com.liferay.portal.kernel.model.UserGroupRole;
+import com.liferay.portal.kernel.model.UserPersonalSite;
+import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
 import com.liferay.portal.kernel.scheduler.SchedulerEngineHelperUtil;
 import com.liferay.portal.kernel.scheduler.StorageType;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
 import com.liferay.portal.kernel.security.permission.RolePermissions;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
+import com.liferay.portal.kernel.tree.TreeModelTasksAdapter;
+import com.liferay.portal.kernel.tree.TreePathUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -70,41 +97,14 @@ import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.kernel.util.TreeModelTasksAdapter;
-import com.liferay.portal.kernel.util.TreePathUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.comparator.GroupIdComparator;
 import com.liferay.portal.kernel.util.comparator.GroupNameComparator;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
-import com.liferay.portal.model.Account;
-import com.liferay.portal.model.Company;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.GroupConstants;
-import com.liferay.portal.model.Layout;
-import com.liferay.portal.model.LayoutConstants;
-import com.liferay.portal.model.LayoutPrototype;
-import com.liferay.portal.model.LayoutSet;
-import com.liferay.portal.model.LayoutSetPrototype;
-import com.liferay.portal.model.LayoutTemplate;
-import com.liferay.portal.model.LayoutTypePortlet;
-import com.liferay.portal.model.Organization;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.ResourceAction;
-import com.liferay.portal.model.ResourceConstants;
-import com.liferay.portal.model.ResourcePermission;
-import com.liferay.portal.model.ResourceTypePermission;
-import com.liferay.portal.model.Role;
-import com.liferay.portal.model.RoleConstants;
-import com.liferay.portal.model.User;
-import com.liferay.portal.model.UserGroup;
-import com.liferay.portal.model.UserGroupRole;
-import com.liferay.portal.model.UserPersonalSite;
-import com.liferay.portal.model.WorkflowDefinitionLink;
 import com.liferay.portal.model.impl.LayoutImpl;
 import com.liferay.portal.security.permission.PermissionCacheUtil;
-import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.base.GroupLocalServiceBaseImpl;
 import com.liferay.portal.theme.ThemeLoader;
 import com.liferay.portal.theme.ThemeLoaderFactory;
@@ -126,6 +126,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -287,14 +288,15 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		if (staging) {
 			groupKey = groupKey.concat("-staging");
 
-			for (Locale locale : nameMap.keySet()) {
-				String name = nameMap.get(locale);
+			for (Map.Entry<Locale, String> entry : nameMap.entrySet()) {
+				String name = entry.getValue();
 
 				if (Validator.isNull(name)) {
 					continue;
 				}
 
-				nameMap.put(locale, name.concat(ORGANIZATION_STAGING_SUFFIX));
+				nameMap.put(
+					entry.getKey(), name.concat(ORGANIZATION_STAGING_SUFFIX));
 			}
 
 			friendlyURL = getFriendlyURL(friendlyURL.concat("-staging"));
@@ -315,7 +317,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		}
 		else if (!className.equals(Company.class.getName()) &&
 				 !className.equals(Organization.class.getName()) &&
-				 className.startsWith("com.liferay.portal.model.")) {
+				 className.startsWith("com.liferay.portal.kernel.model.")) {
 
 			if (site) {
 				throw new IllegalArgumentException();
@@ -800,20 +802,13 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			// Resources
 
 			List<ResourcePermission> resourcePermissions =
-				resourcePermissionPersistence.findByC_LikeP(
-					group.getCompanyId(), String.valueOf(group.getGroupId()));
+				resourcePermissionPersistence.findByC_S_P(
+					group.getCompanyId(), ResourceConstants.SCOPE_GROUP,
+					String.valueOf(group.getGroupId()));
 
 			for (ResourcePermission resourcePermission : resourcePermissions) {
 				resourcePermissionLocalService.deleteResourcePermission(
 					resourcePermission);
-			}
-
-			if (!group.isStagingGroup() &&
-				(group.isOrganization() || group.isRegularSite())) {
-
-				resourceLocalService.deleteResource(
-					group.getCompanyId(), Group.class.getName(),
-					ResourceConstants.SCOPE_INDIVIDUAL, group.getGroupId());
 			}
 
 			// Trash
@@ -839,7 +834,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 							scopeableWorkflowHandler.getClassName(), 0, 0,
 							true);
 
-				if (workflowDefinitionLink == null) {
+				if ((workflowDefinitionLink == null) ||
+					(workflowDefinitionLink.getGroupId() ==
+						group.getLiveGroupId())) {
+
 					continue;
 				}
 
@@ -867,7 +865,6 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 					group.getGroupId(), RoleConstants.TYPE_SITE);
 			}
 			else {
-				groupPersistence.remove(group);
 
 				// Group roles
 
@@ -878,6 +875,23 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 				userGroupGroupRoleLocalService.
 					deleteUserGroupGroupRolesByGroupId(group.getGroupId());
+
+				// Resources
+
+				try {
+					resourceLocalService.deleteResource(
+						group.getCompanyId(), Group.class.getName(),
+						ResourceConstants.SCOPE_INDIVIDUAL, group.getGroupId());
+				}
+				catch (Exception e) {
+					if (_log.isWarnEnabled()) {
+						_log.warn(
+							"No resources found for group " +
+								group.getGroupId());
+					}
+				}
+
+				groupPersistence.remove(group);
 			}
 
 			// Permission cache
@@ -1569,6 +1583,11 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		return group.getAncestors();
 	}
 
+	@Override
+	public List<Group> getStagedSites() {
+		return groupFinder.findByL_TS_S_RSGC(0, "staged=true", true, 0);
+	}
+
 	/**
 	 * Returns the staging group.
 	 *
@@ -1940,6 +1959,9 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 */
 	@Override
 	public void rebuildTree(long companyId) throws PortalException {
+		final long classNameId = classNameLocalService.getClassNameId(
+			Group.class);
+
 		TreePathUtil.rebuildTree(
 			companyId, GroupConstants.DEFAULT_PARENT_GROUP_ID, StringPool.SLASH,
 			new TreeModelTasksAdapter<Group>() {
@@ -1949,13 +1971,12 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 					long previousId, long companyId, long parentPrimaryKey,
 					int size) {
 
-					return groupPersistence.findByG_C_P(
-						previousId, companyId, parentPrimaryKey,
+					return groupPersistence.findByG_C_C_P(
+						previousId, companyId, classNameId, parentPrimaryKey,
 						QueryUtil.ALL_POS, size, new GroupIdComparator(true));
 				}
 
-			}
-		);
+			});
 	}
 
 	/**
@@ -1979,7 +2000,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         &quot;usersGroups&quot; mapped to the user's ID and an entry with
 	 *         key &quot;inherit&quot; mapped to a non-<code>null</code> object.
 	 *         For more information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  start the lower bound of the range of groups to return
 	 * @param  end the upper bound of the range of groups to return (not
 	 *         inclusive)
@@ -2018,7 +2039,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  start the lower bound of the range of groups to return
 	 * @param  end the upper bound of the range of groups to return (not
 	 *         inclusive)
@@ -2058,7 +2079,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  start the lower bound of the range of groups to return
 	 * @param  end the upper bound of the range of groups to return (not
 	 *         inclusive)
@@ -2102,7 +2123,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @param  start the lower bound of the range of groups to return
@@ -2146,7 +2167,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @param  start the lower bound of the range of groups to return
@@ -2194,7 +2215,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         &quot;usersGroups&quot; mapped to the user's ID and an entry with
 	 *         key &quot;inherit&quot; mapped to a non-<code>null</code> object.
 	 *         For more information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  start the lower bound of the range of groups to return
 	 * @param  end the upper bound of the range of groups to return (not
 	 *         inclusive)
@@ -2238,7 +2259,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         &quot;usersGroups&quot; mapped to the user's ID and an entry with
 	 *         key &quot;inherit&quot; mapped to a non-<code>null</code> object.
 	 *         For more information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  start the lower bound of the range of groups to return
 	 * @param  end the upper bound of the range of groups to return (not
 	 *         inclusive)
@@ -2301,7 +2322,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         &quot;usersGroups&quot; mapped to the user's ID and an entry with
 	 *         key &quot;inherit&quot; mapped to a non-<code>null</code> object.
 	 *         For more information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @param  start the lower bound of the range of groups to return
@@ -2348,7 +2369,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         &quot;usersGroups&quot; mapped to the user's ID and an entry with
 	 *         key &quot;inherit&quot; mapped to a non-<code>null</code> object.
 	 *         For more information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @param  start the lower bound of the range of groups to return
@@ -2405,7 +2426,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         &quot;usersGroups&quot; mapped to the user's ID and an entry with
 	 *         key &quot;inherit&quot; mapped to a non-<code>null</code> object.
 	 *         For more information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  start the lower bound of the range of groups to return
 	 * @param  end the upper bound of the range of groups to return (not
 	 *         inclusive)
@@ -2446,7 +2467,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         &quot;usersGroups&quot; mapped to the user's ID and an entry with
 	 *         key &quot;inherit&quot; mapped to a non-<code>null</code> object.
 	 *         For more information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  start the lower bound of the range of groups to return
 	 * @param  end the upper bound of the range of groups to return (not
 	 *         inclusive)
@@ -2492,7 +2513,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         &quot;usersGroups&quot; mapped to the user's ID and an entry with
 	 *         key &quot;inherit&quot; mapped to a non-<code>null</code> object.
 	 *         For more information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @param  start the lower bound of the range of groups to return
@@ -2538,7 +2559,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         &quot;usersGroups&quot; mapped to the user's ID and an entry with
 	 *         key &quot;inherit&quot; mapped to a non-<code>null</code> object.
 	 *         For more information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @param  start the lower bound of the range of groups to return
@@ -2581,7 +2602,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  start the lower bound of the range of groups to return
 	 * @param  end the upper bound of the range of groups to return (not
 	 *         inclusive)
@@ -2620,7 +2641,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  start the lower bound of the range of groups to return
 	 * @param  end the upper bound of the range of groups to return (not
 	 *         inclusive)
@@ -2662,7 +2683,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @param  start the lower bound of the range of groups to return
@@ -2705,7 +2726,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @param  start the lower bound of the range of groups to return
@@ -2740,7 +2761,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         in the search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @return the number of matching groups
 	 */
 	@Override
@@ -2769,7 +2790,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         in the search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @return the number of matching groups
@@ -2802,7 +2823,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         in the search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @return the number of matching groups
 	 */
 	@Override
@@ -2850,7 +2871,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         in the search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @return the number of matching groups
@@ -2893,7 +2914,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         in the search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @return the number of matching groups
 	 */
 	@Override
@@ -2923,7 +2944,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         in the search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @return the number of matching groups
@@ -2952,7 +2973,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         in the search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @return the number of matching groups
 	 */
 	@Override
@@ -2980,7 +3001,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	 *         in the search, add entries having &quot;usersGroups&quot; and
 	 *         &quot;inherit&quot; as keys mapped to the the user's ID. For more
 	 *         information see {@link
-	 *         com.liferay.portal.service.persistence.GroupFinder}.
+	 *         com.liferay.portal.kernel.service.persistence.GroupFinder}.
 	 * @param  andOperator whether every field must match its keywords, or just
 	 *         one field.
 	 * @return the number of matching groups
@@ -3064,9 +3085,9 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		assetEntryLocalService.updateEntry(
 			userId, companyGroup.getGroupId(), null, null,
 			Group.class.getName(), group.getGroupId(), null, 0,
-			assetCategoryIds, assetTagNames, false, null, null, null, null,
-			group.getDescriptiveName(), group.getDescription(), null, null,
-			null, 0, 0, null);
+			assetCategoryIds, assetTagNames, true, false, null, null, null,
+			null, null, group.getDescriptiveName(), group.getDescription(),
+			null, null, null, 0, 0, null);
 	}
 
 	/**
@@ -3288,7 +3309,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 			validateLanguageIds(defaultLanguageId, newLanguageIds);
 
-			if (!Validator.equals(oldLanguageIds, newLanguageIds)) {
+			if (!Objects.equals(oldLanguageIds, newLanguageIds)) {
 				LanguageUtil.resetAvailableGroupLocales(groupId);
 			}
 		}
@@ -3722,7 +3743,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 
 						if ((resourceTypePermission.getCompanyId() ==
 								companyId) &&
-							Validator.equals(
+							Objects.equals(
 								rolePermissions.getName(),
 								resourceTypePermission.getName()) &&
 							resourceTypePermission.hasAction(resourceAction)) {
@@ -4275,7 +4296,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			}
 		}
 
-		if (StringUtil.count(friendlyURL, StringPool.SLASH) > 1) {
+		if (StringUtil.count(friendlyURL, CharPool.SLASH) > 1) {
 			throw new GroupFriendlyURLException(
 				GroupFriendlyURLException.TOO_DEEP);
 		}

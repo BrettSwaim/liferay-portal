@@ -17,8 +17,8 @@ package com.liferay.shopping.model;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.annotation.ImplementationClassName;
+import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.util.Accessor;
-import com.liferay.portal.model.PersistedModel;
 
 /**
  * The extended model interface for the ShoppingCart service. Represents a row in the &quot;ShoppingCart&quot; database table, with each column mapped to a property of this class.
@@ -56,10 +56,10 @@ public interface ShoppingCart extends ShoppingCartModel, PersistedModel {
 
 	public void addItemId(long itemId, java.lang.String fields);
 
-	public com.liferay.shopping.model.ShoppingCoupon getCoupon()
+	public ShoppingCoupon getCoupon()
 		throws com.liferay.portal.kernel.exception.PortalException;
 
-	public java.util.Map<com.liferay.shopping.model.ShoppingCartItem, java.lang.Integer> getItems();
+	public java.util.Map<ShoppingCartItem, java.lang.Integer> getItems();
 
 	public int getItemsSize();
 }

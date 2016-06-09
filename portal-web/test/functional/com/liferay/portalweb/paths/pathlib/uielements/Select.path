@@ -9,8 +9,8 @@
 </thead>
 <tbody>
 <tr>
-	<td>ANYONE</td>
-	<td>//select[contains(.,'Anyone')]</td>
+	<td>PERMISSIONS_VIEW_ROLE</td>
+	<td>//select[contains(.,'${key_permissionsViewRole}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -46,6 +46,11 @@
 <tr>
 	<td>DOCUMENT_TYPE</td>
 	<td>//select[contains(@id,'fileEntryTypeId')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>EXPORT_IMPORT_CONTENT</td>
+	<td>//select[contains(@id,'PORTLET_DATA')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -135,7 +140,7 @@
 </tr>
 <tr>
 	<td>SCOPE</td>
-	<td>//div[label[contains(.,'Scope')]]/select</td>
+	<td>//div[label[contains(.,'Scope')]]/select | //div/select[@title='Scope']</td>
 	<td></td>
 </tr>
 <tr>

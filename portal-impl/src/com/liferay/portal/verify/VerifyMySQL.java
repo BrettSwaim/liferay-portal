@@ -20,6 +20,7 @@ import com.liferay.portal.kernel.dao.db.DBType;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.PropsValues;
@@ -44,11 +45,8 @@ public class VerifyMySQL extends VerifyProcess {
 			return;
 		}
 
-		Statement statement = connection.createStatement();
-
-		verifyTableEngine(statement);
-
-		verifyDatetimePrecision(connection.getMetaData(), statement);
+		verifyTableEngine();
+		verifyDatetimePrecision();
 	}
 
 	protected String getActualColumnType(
@@ -74,11 +72,12 @@ public class VerifyMySQL extends VerifyProcess {
 		}
 	}
 
-	protected void verifyDatetimePrecision(
-			DatabaseMetaData databaseMetaData, Statement statement)
-		throws Exception {
+	protected void verifyDatetimePrecision() throws Exception {
+		DatabaseMetaData databaseMetaData = connection.getMetaData();
 
-		try (ResultSet rs = databaseMetaData.getTables(
+		try (LoggingTimer loggingTimer = new LoggingTimer();
+			Statement statement = connection.createStatement();
+			ResultSet rs = databaseMetaData.getTables(
 				null, null, null, null)) {
 
 			while (rs.next()) {
@@ -132,8 +131,11 @@ public class VerifyMySQL extends VerifyProcess {
 		}
 	}
 
-	protected void verifyTableEngine(Statement statement) throws Exception {
-		try (ResultSet rs = statement.executeQuery("show table status")) {
+	protected void verifyTableEngine() throws Exception {
+		try (LoggingTimer loggingTimer = new LoggingTimer();
+			Statement statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery("show table status")) {
+
 			while (rs.next()) {
 				String tableName = rs.getString("Name");
 

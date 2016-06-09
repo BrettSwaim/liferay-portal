@@ -1,5 +1,6 @@
 <definition component-name="extra-apps-content-targeting">
 	<property name="custom.properties" value="layout.parallel.render.enable=false" />
+	<property name="extraapps.plugins.includes" value="content-targeting" />
 	<property name="ignore.errors" value="IX_DC6100CC" />
 	<property name="testray.main.component.name" value="Content Targeting" />
 
@@ -7,10 +8,6 @@
 		<execute macro="TestCase#setUpPortalInstance" />
 
 		<execute macro="User#firstLoginPG" />
-
-		<execute macro="Portlet#shutdownServer" />
-
-		<execute macro="Portlet#startServer" />
 
 		<execute macro="ProductMenu#gotoControlPanelSites">
 			<var name="portlet" value="Sites" />
@@ -25,7 +22,6 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
 		</execute>
@@ -68,7 +64,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -85,7 +81,7 @@
 
 		<execute macro="ContentTargetingUserSegment#addUserAttributesUserSignedInRuleCP" />
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -98,14 +94,14 @@
 		<execute macro="WebContentNavigator#gotoAddCP" />
 
 		<execute macro="WebContent#addCP">
-			<var name="webContentContent" value="Web Content Content" />
-			<var name="webContentTitle" value="Web Content Title" />
+			<var name="webContentContent" value="Web Content Content Low Priority" />
+			<var name="webContentTitle" value="Low Priority Web Content Title" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
-			<var name="webContentTitle" value="Web Content Title" />
+			<var name="webContentTitle" value="Low Priority Web Content Title" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSite">
@@ -120,13 +116,13 @@
 
 		<execute macro="WebContent#addCP">
 			<var name="webContentContent" value="Web Content Content Higher Priority" />
-			<var name="webContentTitle" value="Web Content Title Higher Priority" />
+			<var name="webContentTitle" value="Higher Priority Web Content Title" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
-			<var name="webContentTitle" value="Web Content Title Higher Priority" />
+			<var name="webContentTitle" value="Higher Priority Web Content Title" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSite">
@@ -141,11 +137,30 @@
 			<var name="campaignDescription" value="Campaign Description" />
 			<var name="campaignEndDate" value="1/1/2099" />
 			<var name="campaignEndTime" value="12:00 PM" />
-			<var name="campaignName" value="Campaign Name" />
+			<var name="campaignName" value="Low Priority Campaign Name" />
 			<var name="campaignPriorityField" value="3" />
 			<var name="campaignStartDate" value="1/1/2015" />
 			<var name="campaignStartTime" value="12:00 AM" />
 			<var name="userSegmentSelect" value="User Segment Name Gender" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Low Priority Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
 		</execute>
 
 		<execute macro="ContentTargetingCampaign#addTrackingActionPageCP">
@@ -153,7 +168,7 @@
 			<var name="pageFriendlyURL" value="/test-page-name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -167,11 +182,30 @@
 			<var name="campaignDescription" value="Campaign Description High Priority" />
 			<var name="campaignEndDate" value="1/1/2099" />
 			<var name="campaignEndTime" value="12:00 PM" />
-			<var name="campaignName" value="Campaign Name Higher Priority" />
+			<var name="campaignName" value="Higher Priority Campaign Name" />
 			<var name="campaignPriorityField" value="2" />
 			<var name="campaignStartDate" value="1/1/2015" />
 			<var name="campaignStartTime" value="12:00 AM" />
 			<var name="userSegmentSelect" value="User Segment Name Signed In" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Higher Priority Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
 		</execute>
 
 		<execute macro="ContentTargetingCampaign#addTrackingActionPageCP">
@@ -179,56 +213,53 @@
 			<var name="pageFriendlyURL" value="/test-page-name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Campaign Content Display" />
 		</execute>
 
-		<execute function="Refresh" />
-
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#configureCampaignRule">
-			<var name="campaignName" value="Campaign Name" />
-			<var name="contentTitle" value="Web Content Title" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="campaignName" value="Low Priority Campaign Name" />
+			<var name="contentTitle" value="Low Priority Web Content Title" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#configureCampaignRule">
-			<var name="campaignName" value="Campaign Name Higher Priority" />
-			<var name="contentTitle" value="Web Content Title Higher Priority" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="campaignName" value="Higher Priority Campaign Name" />
+			<var name="contentTitle" value="Higher Priority Web Content Title" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="2" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#viewPG">
 			<var name="entryContentText" value="Web Content Content Higher Priority" />
-			<var name="preview1Text" value="Campaign Name Higher Priority" />
-			<var name="preview2Text" value="Campaign Name" />
-			<var name="preview3Text" value="Default" />
-			<var name="viewUserSegmentSelected" value="Campaign Name Higher Priority" />
+			<var name="viewCampaignSelected" value="Higher Priority Campaign Name" />
+		</execute>
+
+		<execute macro="CampaignDisplayPortlet#viewPG">
+			<var name="previewCampaignList" value="Higher Priority Campaign Name,Low Priority Campaign Name,default" />
 		</execute>
 	</command>
 
-	<command name="CampaignAddViaCampaignContentDisplayPortlet" priority="4">
+	<command name="CampaignAddViaCampaignContentDisplayPortlet" priority="5">
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
 		</execute>
@@ -246,7 +277,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -263,7 +294,7 @@
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title" />
@@ -288,24 +319,40 @@
 			<var name="userSegmentSelect" value="User Segment Name" />
 		</execute>
 
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
 		<execute macro="ContentTargetingCampaign#addTrackingActionPageCP">
 			<var name="pageAlias" value="Page Alias" />
 			<var name="pageFriendlyURL" value="/test-page-name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Campaign Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -314,23 +361,21 @@
 		<execute macro="CampaignDisplayPortlet#configureCampaignRule">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="Web Content Title" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#viewPG">
 			<var name="entryContentText" value="Web Content Content" />
-			<var name="preview1Text" value="Campaign Name" />
-			<var name="preview2Text" value="Default" />
-			<var name="viewUserSegmentSelected" value="Campaign Name" />
+			<var name="previewCampaignList" value="Campaign Name,default" />
+			<var name="viewCampaignSelected" value="Campaign Name" />
 		</execute>
 	</command>
 
@@ -353,7 +398,7 @@
 			<var name="campaignStartTime" value="12:00 AM" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -373,7 +418,7 @@
 			<var name="campaignStartTime" value="12:00 AM" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -393,7 +438,7 @@
 			<var name="campaignStartTime" value="12:00 AM" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -424,7 +469,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -459,14 +504,7 @@
 			<var name="userSegmentSelect" value="User Segment Name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#addTrackingActionContentCP">
-			<var name="contentAlias" value="Content Alias" />
-			<var name="contentTitle" value="DM Document Title" />
-			<var name="linkId" value="Content id" />
-			<var name="menulistContent" value="Document" />
-		</execute>
-
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -476,9 +514,40 @@
 			<var name="portlet" value="Audience Targeting" />
 		</execute>
 
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addTrackingActionContentCP">
+			<var name="contentMetricName" value="Content Metric Name" />
+			<var name="contentTitle" value="DM Document Title" />
+			<var name="linkId" value="Content id" />
+			<var name="menulistContent" value="Basic Document" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoEditReport">
+			<var name="campaignName" value="Campaign Name" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
 		<execute macro="ContentTargetingCampaign#viewTrackingActionsCP">
 			<var name="campaignName" value="Campaign Name" />
-			<var name="contentAlias" value="Content Alias" />
+			<var name="contentMetricName" value="Content Metric Name" />
 			<var name="contentTitle" value="DM Document Title" />
 			<var name="viewTrackingActionsList" value="Content" />
 		</execute>
@@ -491,7 +560,7 @@
 			<var name="portlet" value="Audience Targeting" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#updateReportCP">
+		<execute macro="ContentTargetingCampaign#updateReport">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="DM Document Title" />
 			<var name="contentViewsDescription" value="true" />
@@ -500,17 +569,14 @@
 			<var name="viewReportType" value="Content Views" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Campaign Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -519,16 +585,15 @@
 		<execute macro="CampaignDisplayPortlet#configureCampaignRule">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="DM Document Title" />
-			<var name="contentType" value="Document" />
+			<var name="contentType" value="Basic Document" />
 			<var name="rowNumber" value="1" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSite">
@@ -539,21 +604,20 @@
 			<var name="portlet" value="Audience Targeting" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#updateReportCP">
+		<execute macro="ContentTargetingCampaign#updateReport">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="DM Document Title" />
 			<var name="viewReportType" value="Content Views" />
 		</execute>
 
 		<execute macro="ContentTargetingCampaign#viewContentReportCP">
-			<var name="contentEvent" value="View" />
-			<var name="contentEventCount" value="4" />
-			<var name="contentTitle" value="DM Document Title" />
-			<var name="contentType" value="Document" />
+			<var name="reportsContentTableList" value="DM Document Title,Document,View,8" />
+			<var name="reportTitle" value="DM Document Title" />
 		</execute>
 	</command>
 
-	<command name="CampaignViewInSimulatorPG" priority="4">
+	<!-- LRQA-24692
+	<command name="CampaignViewInSimulatorPG" priority="5">
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
 		</execute>
@@ -571,7 +635,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -590,7 +654,7 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -638,13 +702,16 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ContentTargetingSimulator#gotoPG" />
+		<execute macro="MobileDevice#previewPG">
+			<var name="deviceType" value="desktop" />
+		</execute>
 
 		<execute macro="ContentTargetingSimulator#viewCampaignsViaSimulatorPG">
 			<var name="viewCampaignMatched" value="Campaign Name Male" />
 			<var name="viewCampaignOther" value="Campaign Name Female" />
 		</execute>
 	</command>
+	-->
 
 	<command name="CampaignViewOtherwiseDisplayContentViaCampaignDisplayPortlet" priority="4">
 		<execute macro="ProductMenu#gotoSite">
@@ -664,7 +731,7 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -681,7 +748,7 @@
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title" />
@@ -702,7 +769,7 @@
 			<var name="webContentTitle" value="Web Content Title Otherwise" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title Otherwise" />
@@ -727,24 +794,40 @@
 			<var name="userSegmentSelect" value="User Segment Name" />
 		</execute>
 
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
 		<execute macro="ContentTargetingCampaign#addTrackingActionPageCP">
 			<var name="pageAlias" value="Page Alias" />
 			<var name="pageFriendlyURL" value="/test-page-name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Campaign Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -753,28 +836,26 @@
 		<execute macro="CampaignDisplayPortlet#configureCampaignRule">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="Web Content Title" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#configureOtherwiseRule">
 			<var name="contentTitle" value="Web Content Title Otherwise" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#viewPG">
 			<var name="entryContentText" value="Web Content Content Otherwise" />
-			<var name="preview1Text" value="Campaign Name" />
-			<var name="preview2Text" value="Default" />
-			<var name="viewUserSegmentSelected" value="Default" />
+			<var name="previewCampaignList" value="Campaign Name,default" />
+			<var name="viewUserSegmentSelected" value="default" />
 		</execute>
 	</command>
 
@@ -796,7 +877,7 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -813,7 +894,7 @@
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title" />
@@ -838,24 +919,40 @@
 			<var name="userSegmentSelect" value="User Segment Name" />
 		</execute>
 
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
 		<execute macro="ContentTargetingCampaign#addTrackingActionPageCP">
 			<var name="pageAlias" value="Page Alias" />
 			<var name="pageFriendlyURL" value="/test-page-name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Campaign Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -864,23 +961,21 @@
 		<execute macro="CampaignDisplayPortlet#configureCampaignRule">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="Web Content Title" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#viewPG">
-			<var name="preview1Text" value="Campaign Name" />
-			<var name="preview2Text" value="Default" />
-			<var name="viewDontDisplay" value="PREVIEW_2" />
-			<var name="viewUserSegmentSelected" value="Default" />
+			<var name="previewCampaignList" value="Campaign Name,default" />
+			<var name="viewDontDisplay" value="true" />
+			<var name="viewUserSegmentSelected" value="default" />
 		</execute>
 	</command>
 
@@ -903,12 +998,31 @@
 			<var name="campaignStartTime" value="12:00 AM" />
 		</execute>
 
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name Started" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
 		<execute macro="ContentTargetingCampaign#addTrackingActionPageCP">
 			<var name="pageAlias" value="Page Alias" />
 			<var name="pageFriendlyURL" value="/test-page-name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -928,12 +1042,31 @@
 			<var name="campaignStartTime" value="12:00 AM" />
 		</execute>
 
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name Finished" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
 		<execute macro="ContentTargetingCampaign#addTrackingActionPageCP">
 			<var name="pageAlias" value="Page Alias" />
 			<var name="pageFriendlyURL" value="/test-page-name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -984,7 +1117,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -1019,14 +1152,7 @@
 			<var name="userSegmentSelect" value="User Segment Name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#addTrackingActionContentCP">
-			<var name="contentAlias" value="Content Alias" />
-			<var name="contentTitle" value="DM Document Title" />
-			<var name="linkId" value="Content id" />
-			<var name="menulistContent" value="Document" />
-		</execute>
-
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -1036,9 +1162,40 @@
 			<var name="portlet" value="Audience Targeting" />
 		</execute>
 
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addTrackingActionContentCP">
+			<var name="contentMetricName" value="Content Metric Name" />
+			<var name="contentTitle" value="DM Document Title" />
+			<var name="linkId" value="Content id" />
+			<var name="menulistContent" value="Basic Document" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoEditReport">
+			<var name="campaignName" value="Campaign Name" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
 		<execute macro="ContentTargetingCampaign#viewTrackingActionsCP">
 			<var name="campaignName" value="Campaign Name" />
-			<var name="contentAlias" value="Content Alias" />
+			<var name="contentMetricName" value="Content Metric Name" />
 			<var name="contentTitle" value="DM Document Title" />
 			<var name="viewTrackingActionsList" value="Content" />
 		</execute>
@@ -1051,24 +1208,21 @@
 			<var name="portlet" value="Audience Targeting" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#updateReportCP">
+		<execute macro="ContentTargetingCampaign#updateReport">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="DM Document Title" />
 			<var name="notEnoughInfoTrackingAction" value="true" />
-			<var name="viewReportType" value="Tracking Actions" />
+			<var name="viewReportType" value="Content Report Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Campaign Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -1077,16 +1231,15 @@
 		<execute macro="CampaignDisplayPortlet#configureCampaignRule">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="DM Document Title" />
-			<var name="contentType" value="Document" />
+			<var name="contentType" value="Basic Document" />
 			<var name="rowNumber" value="1" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSite">
@@ -1097,35 +1250,29 @@
 			<var name="portlet" value="Audience Targeting" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#updateReportCP">
+		<execute macro="ContentTargetingCampaign#updateReport">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="DM Document Title" />
-			<var name="viewReportType" value="Tracking Actions" />
+			<var name="viewReportType" value="Content Report Name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#viewTrackingReportCP">
-			<var name="trackingAlias" value="Content Alias" />
-			<var name="trackingCount" value="2" />
-			<var name="trackingEvent" value="View" />
-			<var name="userSegmentName" value="User Segment Name" />
+		<execute macro="ContentTargetingCampaign#viewMetricReport">
+			<var name="metricName" value="Content Metric Name" />
+			<var name="metricReportsTableList" value="Content Metric Name,View,4" />
 		</execute>
 	</command>
 
-	<command name="ClusteringWithContentTargeting" priority="4">
+	<command name="ClusteringWithContentTargeting" priority="3">
 		<property name="app.server.bundles.size" value="1" />
 		<property name="cluster.enabled" value="true" />
 
-		<execute macro="Page#gotoPG">
-			<var name="nodePort" value="8080" />
-			<var name="pageName" value="Welcome" />
-		</execute>
+		<execute macro="Navigator#openURL" />
 
 		<execute macro="Page#add">
 			<var name="pageName" value="Test Page Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
-			<var name="nodePort" value="8080" />
+		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Test Page Name" />
 		</execute>
 
@@ -1144,7 +1291,7 @@
 			<var name="userSegmentName" value="Male Users" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="User#logoutPG">
 			<var name="password" value="test" />
@@ -1187,16 +1334,14 @@
 			<var name="vocabularyName" value="User Segment" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
-			<var name="nodePort" value="9080" />
+		<execute macro="Navigator#gotoSpecificURLPage">
 			<var name="pageName" value="Test Page Name" />
+			<var name="url" value="http://localhost:9080" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -1205,7 +1350,7 @@
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="Targeted Web Content Title" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 			<var name="toAll" value="true" />
 			<var name="userSegmentName" value="Male Users" />
@@ -1213,9 +1358,9 @@
 
 		<execute macro="UserSegmentContentDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
-			<var name="nodePort" value="9080" />
+		<execute macro="Navigator#gotoSpecificURLPage">
 			<var name="pageName" value="Test Page Name" />
+			<var name="url" value="http://localhost:9080" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
@@ -1238,7 +1383,7 @@
 			<var name="userSegmentName" value="User Segment Name" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -1260,9 +1405,11 @@
 
 		<execute macro="ContentTargetingCampaign#saveCP" />
 
-		<execute macro="LAR#_gotoExportSite">
+		<execute macro="LAR#gotoExport">
 			<var name="siteScopeName" value="Site Name" />
 		</execute>
+
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute function="AssertClick" locator1="SitePagesExport#EXPORT_BUTTON" value1="Export" />
 
@@ -1270,13 +1417,21 @@
 
 		<execute function="AssertTextEquals" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_STATUS" value1="Successful" />
 
-		<var method="selenium#getElementText('//tr/td[5]/span/a')" name="valueName" />
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="list" />
+		</execute>
+
+		<var method="selenium#getText('//span/span/a')" name="valueName" />
 
 		<echo message="value name ${valueName}" />
 
-		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9k)]*" />
+		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9KB)]*" />
 
 		<echo message="lar file name ${larFileName}" />
+
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="descriptive" />
+		</execute>
 
 		<execute function="Click" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_DOWNLOAD" />
 		<execute function="DownloadTempFile" />
@@ -1315,9 +1470,11 @@
 
 		<execute macro="ContentTargetingCampaign#deleteAllCP" />
 
-		<execute macro="LAR#_gotoExportSite">
+		<execute macro="LAR#gotoExport">
 			<var name="siteScopeName" value="Site Name" />
 		</execute>
+
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="LAR#configureExportSiteOptions">
 			<var name="checkContentNameList" value="Audience Targeting" />
@@ -1330,24 +1487,32 @@
 
 		<execute function="AssertTextEquals" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_STATUS" value1="Successful" />
 
-		<var method="selenium#getElementText('//tr/td[5]/span/a')" name="valueName" />
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="list" />
+		</execute>
+
+		<var method="selenium#getText('//span/span/a')" name="valueName" />
 
 		<echo message="value name ${valueName}" />
 
-		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9k)]*" />
+		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9KB)]*" />
 
 		<echo message="lar file name ${larFileName}" />
+
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="descriptive" />
+		</execute>
 
 		<execute function="Click" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_DOWNLOAD" />
 		<execute function="DownloadTempFile" />
 		<execute function="SelectFrame" value1="relative=top" />
 
-		<execute macro="ProductMenu#gotoSitesPages">
+		<execute macro="SitePageNavigator#gotoPages">
 			<var name="page" value="Public Pages" />
 			<var name="siteName" value="Import Site" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesPublishingTools">
+		<execute macro="ProductMenu#gotoSitesPublishing">
 			<var name="portlet" value="Import" />
 		</execute>
 
@@ -1383,12 +1548,14 @@
 		</execute>
 	</command>
 
-	<command name="ExportImportSmoke" priority="4">
+	<command name="ExportImportSmoke" priority="5">
 		<execute macro="LAR#setupContentTargeting" />
 
-		<execute macro="LAR#_gotoExportSite">
+		<execute macro="LAR#gotoExport">
 			<var name="siteScopeName" value="Site Name" />
 		</execute>
+
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute function="AssertClick" locator1="SitePagesExport#EXPORT_BUTTON" value1="Export" />
 
@@ -1396,13 +1563,21 @@
 
 		<execute function="AssertTextEquals" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_STATUS" value1="Successful" />
 
-		<var method="selenium#getElementText('//tr/td[5]/span/a')" name="valueName" />
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="list" />
+		</execute>
+
+		<var method="selenium#getText('//span/span/a')" name="valueName" />
 
 		<echo message="value name ${valueName}" />
 
-		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9k)]*" />
+		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9KB)]*" />
 
 		<echo message="lar file name ${larFileName}" />
+
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="descriptive" />
+		</execute>
 
 		<execute function="Click" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_DOWNLOAD" />
 		<execute function="DownloadTempFile" />
@@ -1421,37 +1596,29 @@
 			<var name="siteName" value="Import Site" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Import Site" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContent">
 			<var name="viewEntryContentList" value="Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
 			<var name="entryContentText" value="Web Content Content" />
-			<var name="preview1Text" value="User Segment Name" />
-			<var name="preview2Text" value="Default" />
+			<var name="previewUserSegmentList" value="User Segment Name,default" />
 			<var name="viewUserSegmentSelected" value="User Segment Name" />
 		</execute>
 
-		<execute function="Refresh" />
-
 		<execute macro="CampaignDisplayPortlet#viewPG">
 			<var name="entryContentText" value="Web Content Content" />
-			<var name="preview1Text" value="Campaign Name" />
-			<var name="preview2Text" value="Default" />
+			<var name="previewCampaignList" value="Campaign Name,default" />
 			<var name="viewCampaignSelected" value="Campaign Name" />
 		</execute>
 	</command>
 
-	<command name="ExportImportUncheckAppAllAndContentCTRefAllAndWC" priority="4">
+	<command name="ExportImportValidationUncheckAllCTContentRefAndWC" priority="4">
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
 		</execute>
@@ -1467,7 +1634,7 @@
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title" />
@@ -1487,11 +1654,11 @@
 		</execute>
 
 		<execute macro="ContentTargetingUserSegment#addBehaviorContentVisitedRuleCP">
-			<var name="contentVisitedContent" value="Web Content Article" />
+			<var name="contentVisitedContent" value="Basic Web Content" />
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -1511,17 +1678,38 @@
 			<var name="campaignStartTime" value="12:00 AM" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#addTrackingActionContentCP">
-			<var name="contentAlias" value="Content Alias" />
-			<var name="contentTitle" value="Web Content Title" />
-			<var name="menulistContent" value="Web Content Article" />
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
 
-		<execute macro="LAR#_gotoExportSite">
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addTrackingActionContentCP">
+			<var name="contentMetricName" value="Content Alias" />
+			<var name="contentTitle" value="Web Content Title" />
+			<var name="menulistContent" value="Basic Web Content" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="LAR#gotoExport">
 			<var name="siteScopeName" value="Site Name" />
 		</execute>
+
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="LAR#configureExportSiteOptions">
 			<var name="contentName" value="Audience Targeting" />
@@ -1545,13 +1733,21 @@
 
 		<execute function="AssertTextEquals" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_STATUS" value1="Successful" />
 
-		<var method="selenium#getElementText('//tr/td[5]/span/a')" name="valueName" />
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="list" />
+		</execute>
+
+		<var method="selenium#getText('//span/span/a')" name="valueName" />
 
 		<echo message="value name ${valueName}" />
 
-		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9k)]*" />
+		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9KB)]*" />
 
 		<echo message="lar file name ${larFileName}" />
+
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="descriptive" />
+		</execute>
 
 		<execute function="Click" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_DOWNLOAD" />
 		<execute function="DownloadTempFile" />
@@ -1608,172 +1804,6 @@
 		</execute>
 	</command>
 
-	<command name="ExportImportUncheckAppCTRefAllAndContentAll" priority="4">
-		<execute macro="LAR#setupContentTargeting" />
-
-		<execute macro="LAR#_gotoExportSite">
-			<var name="siteScopeName" value="Site Name" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="mainApplication" value="User Segment Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced User Segments,Referenced Content" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="mainApplication" value="Campaign Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced Campaigns,Referenced Content" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="uncheckContentNameList" value="Audience Targeting" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="uncheckContentNameList" value="Web Content" />
-		</execute>
-
-		<execute function="AssertClick" locator1="SitePagesExport#EXPORT_BUTTON" value1="Export" />
-
-		<var name="key_larFileName" value="${larFileName}" />
-
-		<execute function="AssertTextEquals" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_STATUS" value1="Successful" />
-
-		<var method="selenium#getElementText('//tr/td[5]/span/a')" name="valueName" />
-
-		<echo message="value name ${valueName}" />
-
-		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9k)]*" />
-
-		<echo message="lar file name ${larFileName}" />
-
-		<execute function="Click" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_DOWNLOAD" />
-		<execute function="DownloadTempFile" />
-		<execute function="SelectFrame" value1="relative=top" />
-
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
-		</execute>
-
-		<execute macro="Site#addBlankCP">
-			<var name="siteName" value="Import Site" />
-		</execute>
-
-		<execute macro="LAR#importSiteCP">
-			<var name="importFail" value="true" />
-			<var name="larFileName" value="${larFileName}" />
-			<var name="siteName" value="Import Site" />
-		</execute>
-	</command>
-
-	<command name="ExportImportUncheckAppCTRefAllAndContentAT" priority="4">
-		<execute macro="LAR#setupContentTargeting" />
-
-		<execute macro="LAR#_gotoExportSite">
-			<var name="siteScopeName" value="Site Name" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="mainApplication" value="User Segment Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced User Segments,Referenced Content" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="mainApplication" value="Campaign Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced Campaigns,Referenced Content" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="uncheckContentNameList" value="Audience Targeting" />
-		</execute>
-
-		<execute function="AssertClick" locator1="SitePagesExport#EXPORT_BUTTON" value1="Export" />
-
-		<var name="key_larFileName" value="${larFileName}" />
-
-		<execute function="AssertTextEquals" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_STATUS" value1="Successful" />
-
-		<var method="selenium#getElementText('//tr/td[5]/span/a')" name="valueName" />
-
-		<echo message="value name ${valueName}" />
-
-		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9k)]*" />
-
-		<echo message="lar file name ${larFileName}" />
-
-		<execute function="Click" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_DOWNLOAD" />
-		<execute function="DownloadTempFile" />
-		<execute function="SelectFrame" value1="relative=top" />
-
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
-		</execute>
-
-		<execute macro="Site#addBlankCP">
-			<var name="siteName" value="Import Site" />
-		</execute>
-
-		<execute macro="LAR#importSiteCP">
-			<var name="importFail" value="true" />
-			<var name="larFileName" value="${larFileName}" />
-			<var name="siteName" value="Import Site" />
-		</execute>
-	</command>
-
-	<command name="ExportImportUncheckAppCTRefAllAndContentWC" priority="4">
-		<execute macro="LAR#setupContentTargeting" />
-
-		<execute macro="LAR#_gotoExportSite">
-			<var name="siteScopeName" value="Site Name" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="mainApplication" value="User Segment Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced User Segments,Referenced Content" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="mainApplication" value="Campaign Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced Campaigns,Referenced Content" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="uncheckContentNameList" value="Web Content" />
-		</execute>
-
-		<execute function="AssertClick" locator1="SitePagesExport#EXPORT_BUTTON" value1="Export" />
-
-		<var name="key_larFileName" value="${larFileName}" />
-
-		<execute function="AssertTextEquals" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_STATUS" value1="Successful" />
-
-		<var method="selenium#getElementText('//tr/td[5]/span/a')" name="valueName" />
-
-		<echo message="value name ${valueName}" />
-
-		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9k)]*" />
-
-		<echo message="lar file name ${larFileName}" />
-
-		<execute function="Click" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_DOWNLOAD" />
-		<execute function="DownloadTempFile" />
-		<execute function="SelectFrame" value1="relative=top" />
-
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
-		</execute>
-
-		<execute macro="Site#addBlankCP">
-			<var name="siteName" value="Import Site" />
-		</execute>
-
-		<execute macro="LAR#importSiteCP">
-			<var name="importFail" value="true" />
-			<var name="larFileName" value="${larFileName}" />
-			<var name="siteName" value="Import Site" />
-		</execute>
-	</command>
-
 	<command name="ExportImportViewOnlyContentCTWithReferencedWCImported" priority="4">
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -1790,7 +1820,7 @@
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title" />
@@ -1811,7 +1841,7 @@
 			<var name="webContentTitle" value="WC Title Unreferenced" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="WC Title Unreferenced" />
@@ -1831,11 +1861,11 @@
 		</execute>
 
 		<execute macro="ContentTargetingUserSegment#addBehaviorContentVisitedRuleCP">
-			<var name="contentVisitedContent" value="Web Content Article" />
+			<var name="contentVisitedContent" value="Basic Web Content" />
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -1855,17 +1885,38 @@
 			<var name="campaignStartTime" value="12:00 AM" />
 		</execute>
 
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="ProductMenu#gotoSite">
+			<var name="site" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
 		<execute macro="ContentTargetingCampaign#addTrackingActionContentCP">
 			<var name="contentAlias" value="Content Alias" />
 			<var name="contentTitle" value="Web Content Title" />
-			<var name="menulistContent" value="Web Content Article" />
+			<var name="menulistContent" value="Basic Web Content" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="LAR#_gotoExportSite">
+		<execute macro="LAR#gotoExport">
 			<var name="siteScopeName" value="Site Name" />
 		</execute>
+
+		<execute macro="LexiconEntry#gotoAdd" />
 
 		<execute macro="LAR#configureExportSiteOptions">
 			<var name="checkContentNameList" value="Audience Targeting" />
@@ -1881,13 +1932,21 @@
 
 		<execute function="AssertTextEquals" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_STATUS" value1="Successful" />
 
-		<var method="selenium#getElementText('//tr/td[5]/span/a')" name="valueName" />
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="list" />
+		</execute>
+
+		<var method="selenium#getText('//span/span/a')" name="valueName" />
 
 		<echo message="value name ${valueName}" />
 
-		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9k)]*" />
+		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9KB)]*" />
 
 		<echo message="lar file name ${larFileName}" />
+
+		<execute macro="Portlet#changeDisplayStyle">
+			<var name="displayStyle" value="descriptive" />
+		</execute>
 
 		<execute function="Click" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_DOWNLOAD" />
 		<execute function="DownloadTempFile" />
@@ -1915,7 +1974,7 @@
 		</execute>
 
 		<execute macro="WebContentNavigator#gotoEditCP">
-			<var name="webContentTitle" value="WC WebContent Title" />
+			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
 		<execute macro="WebContent#viewCP">
@@ -1936,117 +1995,12 @@
 		</execute>
 	</command>
 
-	<command name="ExportImportViewOnlyReferencedContentImported" priority="4">
-		<execute macro="LAR#setupContentTargeting" />
-
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoSitesConfiguration">
-			<var name="portlet" value="Audience Targeting" />
-		</execute>
-
-		<execute macro="ContentTargetingUserSegment#addCP">
-			<var name="userSegmentDescription" value="User Segment Description Unreferenced" />
-			<var name="userSegmentName" value="User Segment Name Unreferenced" />
-		</execute>
-
-		<execute macro="ContentTargetingUserSegment#saveCP" />
-
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoSitesConfiguration">
-			<var name="portlet" value="Audience Targeting" />
-		</execute>
-
-		<execute macro="ContentTargetingCampaign#addCP">
-			<var name="campaignDescription" value="Campaign Description Unreferenced" />
-			<var name="campaignEndDate" value="1/1/2099" />
-			<var name="campaignEndTime" value="12:00 PM" />
-			<var name="campaignName" value="Campaign Name Unreferenced" />
-			<var name="campaignPriorityField" value="3" />
-			<var name="campaignStartDate" value="1/1/2015" />
-			<var name="campaignStartTime" value="12:00 AM" />
-		</execute>
-
-		<execute macro="ContentTargetingCampaign#saveCP" />
-
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoSitesContent">
-			<var name="portlet" value="Web Content" />
-		</execute>
-
-		<execute macro="WebContentNavigator#gotoAddCP" />
-
-		<execute macro="WebContent#addCP">
-			<var name="webContentContent" value="WC Content Unreferenced" />
-			<var name="webContentTitle" value="WC Title Unreferenced" />
-		</execute>
-
-		<execute macro="WebContent#publish" />
-
-		<execute macro="WebContent#viewTitle">
-			<var name="webContentTitle" value="WC Title Unreferenced" />
-		</execute>
-
-		<execute macro="LAR#_gotoExportSite">
-			<var name="siteScopeName" value="Site Name" />
-		</execute>
-
-		<execute macro="LAR#configureExportSiteOptions">
-			<var name="uncheckContentNameList" value="Audience Targeting,Web Content" />
-		</execute>
-
-		<execute function="AssertClick" locator1="SitePagesExport#EXPORT_BUTTON" value1="Export" />
-
-		<var name="key_larFileName" value="${larFileName}" />
-
-		<execute function="AssertTextEquals" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_STATUS" value1="Successful" />
-
-		<var method="selenium#getElementText('//tr/td[5]/span/a')" name="valueName" />
-
-		<echo message="value name ${valueName}" />
-
-		<var group="1" input="${valueName}" name="larFileName" pattern="([a-zA-z0-9_.-]*)[(0-9k)]*" />
-
-		<echo message="lar file name ${larFileName}" />
-
-		<execute function="Click" locator1="SitePagesExport#CURRENT_AND_PREVIOUS_DOWNLOAD" />
-		<execute function="DownloadTempFile" />
-		<execute function="SelectFrame" value1="relative=top" />
-
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
-		</execute>
-
-		<execute macro="Site#addBlankCP">
-			<var name="siteName" value="Import Site" />
-		</execute>
-
-		<execute macro="LAR#importSiteCP">
-			<var name="larFileName" value="${larFileName}" />
-			<var name="siteName" value="Import Site" />
-		</execute>
-
-		<execute macro="LAR#importSiteCP">
-			<var name="importFail" value="true" />
-			<var name="larFileName" value="${larFileName}" />
-			<var name="siteName" value="Import Site" />
-		</execute>
-	</command>
-
 	<command name="StagingContentTargeting" priority="4">
 		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesPublishingTools">
+		<execute macro="ProductMenu#gotoSitesPublishing">
 			<var name="portlet" value="Staging" />
 		</execute>
 
@@ -2057,6 +2011,8 @@
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
 		</execute>
+
+		<execute macro="Navigator#gotoStagedView" />
 
 		<execute macro="ProductMenu#gotoSitesConfiguration">
 			<var name="portlet" value="Audience Targeting" />
@@ -2071,11 +2027,13 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
 		</execute>
+
+		<execute macro="Navigator#gotoStagedView" />
 
 		<execute macro="ProductMenu#gotoSitesContent">
 			<var name="portlet" value="Web Content" />
@@ -2086,21 +2044,15 @@
 		<execute macro="WebContent#addWithCategoryCP">
 			<var name="categoryName" value="Male Users" />
 			<var name="vocabularyName" value="User Segment" />
-			<var name="webContentContent" value="Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content" />
+			<var name="webContentContent" value="Web Content Content" />
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
 		</execute>
+
+		<execute macro="Navigator#gotoStagedView" />
 
 		<execute macro="ProductMenu#gotoSitesConfiguration">
 			<var name="portlet" value="Audience Targeting" />
@@ -2117,6 +2069,35 @@
 			<var name="userSegmentSelect" value="Male Users" />
 		</execute>
 
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Staging#gotoPublishToLive" />
+
+		<execute macro="Staging#publishToLive" />
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
 		<execute macro="ContentTargetingCampaign#addTrackingActionPageCP">
 			<var name="pageAlias" value="Page Alias" />
 			<var name="pageFriendlyURL" value="/test-page-name" />
@@ -2124,27 +2105,36 @@
 
 		<execute macro="ContentTargetingCampaign#saveCP" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Campaign Content Display" />
 		</execute>
 
-		<execute function="Refresh" />
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
+		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content Display" />
 		</execute>
 
-		<execute function="Refresh" />
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
+		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content List" />
+		</execute>
+
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="Portlet#gotoPortletOptions">
@@ -2155,17 +2145,15 @@
 		<execute macro="CampaignDisplayPortlet#configureCampaignRule">
 			<var name="campaignName" value="Campaign Name" />
 			<var name="contentTitle" value="Web Content Title" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 		</execute>
 
 		<execute macro="CampaignDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#gotoPortletOptions">
@@ -2173,14 +2161,10 @@
 			<var name="portletOption" value="Configuration" />
 		</execute>
 
-		<execute macro="Portlet#gotoPortletOptions">
-			<var name="portletOption" value="Configuration" />
-		</execute>
-
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="Web Content Title" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 			<var name="toAll" value="true" />
 			<var name="userSegmentName" value="Male Users" />
@@ -2188,128 +2172,66 @@
 
 		<execute macro="UserSegmentContentDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#configureDisplayFilter">
 			<var name="assetTypeFilter" value="Web Content Article" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContent">
-			<var name="viewEntryContentList" value="Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
+			<var name="viewEntryContentList" value="Web Content Content" />
 		</execute>
-
-		<execute function="Refresh" />
-
-		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
-			<var name="entryContentText" value="Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content" />
-			<var name="preview1Text" value="Male Users" />
-			<var name="preview2Text" value="Default" />
-			<var name="viewUserSegmentSelected" value="Male Users" />
-		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="CampaignDisplayPortlet#viewPG">
-			<var name="entryContentText" value="Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content" />
-			<var name="preview1Text" value="Campaign Name" />
-			<var name="preview2Text" value="Default" />
+			<var name="entryContentText" value="Web Content Content" />
+			<var name="previewCampaignList" value="Campaign Name,default" />
 			<var name="viewCampaignSelected" value="Campaign Name" />
 		</execute>
 
-		<execute function="Refresh" />
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
+			<var name="entryContentText" value="Web Content Content" />
+			<var name="previewUserSegmentList" value="Male Users,default" />
+			<var name="viewUserSegmentSelected" value="Male Users" />
+		</execute>
 
 		<execute macro="Staging#gotoPublishToLive" />
 
 		<execute macro="Staging#publishToLive" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContent">
-			<var name="viewEntryContentList" value="Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
+			<var name="viewEntryContentList" value="Web Content Content" />
 		</execute>
 
-		<execute function="Refresh" />
-
-		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
-			<var name="entryContentText" value="Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content" />
-			<var name="preview1Text" value="Male Users" />
-			<var name="preview2Text" value="Default" />
-			<var name="viewUserSegmentSelected" value="Male Users" />
+		<execute macro="ContentTargeting#viewEntryOnStagingLiveMode">
+			<var name="entryContentText" value="Web Content Content" />
+			<var name="portletName" value="User Segment Content Display" />
+			<var name="previewContentList" value="Male Users,default" />
+			<var name="viewSelectedContent" value="Male Users" />
 		</execute>
 
-		<execute function="Refresh" />
-
-		<execute macro="CampaignDisplayPortlet#viewPG">
-			<var name="entryContentText" value="Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content
-
-				Web Content Content" />
-			<var name="preview1Text" value="Campaign Name" />
-			<var name="preview2Text" value="Default" />
-			<var name="viewCampaignSelected" value="Campaign Name" />
+		<execute macro="ContentTargeting#viewEntryOnStagingLiveMode">
+			<var name="entryContentText" value="Web Content Content" />
+			<var name="portletName" value="Campaign Content Display" />
+			<var name="previewContentList" value="Campaign Name,default" />
+			<var name="viewSelectedContent" value="Campaign Name" />
 		</execute>
 	</command>
 
@@ -2318,7 +2240,7 @@
 			<var name="site" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesPublishingTools">
+		<execute macro="ProductMenu#gotoSitesPublishing">
 			<var name="portlet" value="Staging" />
 		</execute>
 
@@ -2330,11 +2252,9 @@
 			<var name="stagingSetup" value="true" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Staging#gotoPublishToLive" />
@@ -2344,6 +2264,8 @@
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
 		</execute>
+
+		<execute macro="Navigator#gotoStagedView" />
 
 		<execute macro="ProductMenu#gotoSitesConfiguration">
 			<var name="portlet" value="Audience Targeting" />
@@ -2355,35 +2277,33 @@
 			<var name="site" value="Site Name" />
 		</execute>
 
+		<execute macro="Navigator#gotoStagedView" />
+
 		<execute macro="ProductMenu#gotoSitesConfiguration">
 			<var name="portlet" value="Audience Targeting" />
 		</execute>
 
 		<execute macro="ContentTargetingCampaign#deleteAllCP" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Staging#gotoPublishToLive" />
 
 		<execute macro="Staging#publishToLive" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute macro="CampaignDisplayPortlet#viewNoContentPG" />
+		<execute macro="CampaignDisplayPortlet#viewContentNoLongerExistsAfterDeletion" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewNoContentPG" />
@@ -2394,7 +2314,7 @@
 			<var name="site" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesPublishingTools">
+		<execute macro="ProductMenu#gotoSitesPublishing">
 			<var name="portlet" value="Staging" />
 		</execute>
 
@@ -2420,11 +2340,13 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
 		</execute>
+
+		<execute macro="Navigator#gotoStagedView" />
 
 		<execute macro="ProductMenu#gotoSitesContent">
 			<var name="portlet" value="Web Content" />
@@ -2448,49 +2370,40 @@
 			<var name="vocabularyName" value="User Segment" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content List" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Staging#gotoPublishToLive" />
 
 		<execute macro="Staging#publishToLive" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContent">
 			<var name="viewEntryContentList" value="Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContent">
 			<var name="viewEntryContentList" value="Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSite">
@@ -2506,21 +2419,18 @@
 			<var name="userSegmentName" value="User Segment Name" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContentNotPresent" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContentNotPresent" />
@@ -2531,7 +2441,7 @@
 			<var name="site" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesPublishingTools">
+		<execute macro="ProductMenu#gotoSitesPublishing">
 			<var name="portlet" value="Staging" />
 		</execute>
 
@@ -2539,8 +2449,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSitesConfiguration">
@@ -2556,10 +2467,11 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSitesContent">
@@ -2584,55 +2496,45 @@
 			<var name="vocabularyName" value="User Segment" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content List" />
 		</execute>
 
-		<execute function="Refresh" />
-
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Staging#gotoPublishToLive" />
 
 		<execute macro="Staging#publishToLive" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContent">
 			<var name="viewEntryContentList" value="Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContent">
 			<var name="viewEntryContentList" value="Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSitesConfiguration">
@@ -2644,54 +2546,47 @@
 			<var name="userSegmentName" value="User Segment Name" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContentNotPresent" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContent">
 			<var name="viewEntryContentList" value="Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoStagedSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Staging#gotoPublishToLive" />
 
 		<execute macro="Staging#publishToLive" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContentNotPresent" />
 	</command>
 
-	<command name="StagingUncheckAppAllAndContentCTRefAllAndWC" priority="4">
+	<command name="StagingValidationUncheckAllCTContentRefAndWC" priority="4">
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesPublishingTools">
+		<execute macro="ProductMenu#gotoSitesPublishing">
 			<var name="portlet" value="Staging" />
 		</execute>
 
@@ -2699,8 +2594,9 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSitesContent">
@@ -2714,14 +2610,15 @@
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSitesConfiguration">
@@ -2734,14 +2631,15 @@
 		</execute>
 
 		<execute macro="ContentTargetingUserSegment#addBehaviorContentVisitedRuleCP">
-			<var name="contentVisitedContent" value="Web Content Article" />
+			<var name="contentVisitedContent" value="Basic Web Content" />
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoSitesConfiguration">
@@ -2758,20 +2656,47 @@
 			<var name="campaignStartTime" value="12:00 AM" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#addTrackingActionContentCP">
-			<var name="contentAlias" value="Content Alias" />
-			<var name="contentTitle" value="Web Content Title" />
-			<var name="contentTrackingActionSelect" value="View" />
-			<var name="menulistContent" value="Web Content Article" />
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ContentTargetingCampaign#saveCP" />
+		<execute macro="Staging#gotoPublishToLive" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Staging#publishToLive" />
+
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoSitesConfiguration">
+			<var name="portlet" value="Audience Targeting" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#gotoAddReport">
+			<var name="campaignName" value="Campaign Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addReportName">
+			<var name="reportDescription" value="Content Report Description" />
+			<var name="reportName" value="Content Report Name" />
+		</execute>
+
+		<execute macro="ContentTargetingCampaign#addTrackingActionContentCP">
+			<var name="contentMetricName" value="Content Metric Name" />
+			<var name="contentTitle" value="Web Content Title" />
+			<var name="contentTrackingActionSelect" value="View" />
+			<var name="menulistContent" value="Basic Web Content" />
+		</execute>
+
+		<execute macro="PortletEntry#save" />
+
+		<execute macro="Navigator#gotoStagedSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
 		<execute macro="Staging#gotoPublishToLive" />
@@ -2794,151 +2719,8 @@
 		</execute>
 
 		<execute macro="Staging#publishToLive">
-			<var name="publishValidation" value="true" />
-		</execute>
-
-		<execute macro="Staging#gotoPublishToLive" />
-
-		<execute macro="Staging#viewValidationError">
-			<var name="validateErrorMessage" value="The original Referenced Asset does not exist in the current environment." />
-		</execute>
-	</command>
-
-	<command name="StagingUncheckAppCTRefAllAndContentAll" priority="4">
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoSitesPublishingTools">
-			<var name="portlet" value="Staging" />
-		</execute>
-
-		<execute macro="Staging#activateStagingCP">
-			<var name="siteName" value="Site Name" />
-		</execute>
-
-		<execute macro="LAR#setupContentTargeting">
-			<var name="stagingSetup" value="true" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
-			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Staging#gotoPublishToLive" />
-
-		<execute macro="Staging#configurePublishToLive">
-			<var name="mainApplication" value="Campaign Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced Campaigns,Referenced Content" />
-		</execute>
-
-		<execute macro="Staging#configurePublishToLive">
-			<var name="mainApplication" value="User Segment Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced User Segments,Referenced Content" />
-		</execute>
-
-		<execute macro="Staging#configurePublishToLive">
-			<var name="contentDateRange" value="All" />
-			<var name="uncheckContentNameList" value="Audience Targeting,Web Content" />
-		</execute>
-
-		<execute macro="Staging#publishToLive">
-			<var name="publishValidation" value="true" />
-		</execute>
-	</command>
-
-	<command name="StagingUncheckAppCTRefAllAndContentAT" priority="4">
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoSitesPublishingTools">
-			<var name="portlet" value="Staging" />
-		</execute>
-
-		<execute macro="Staging#activateStagingCP">
-			<var name="siteName" value="Site Name" />
-		</execute>
-
-		<execute macro="LAR#setupContentTargeting">
-			<var name="stagingSetup" value="true" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
-			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Staging#gotoPublishToLive" />
-
-		<execute macro="Staging#configurePublishToLive">
-			<var name="mainApplication" value="Campaign Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced Campaigns,Referenced Content" />
-		</execute>
-
-		<execute macro="Staging#configurePublishToLive">
-			<var name="mainApplication" value="User Segment Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced User Segments,Referenced Content" />
-		</execute>
-
-		<execute macro="Staging#configurePublishToLive">
-			<var name="contentDateRange" value="All" />
-			<var name="uncheckContentNameList" value="Audience Targeting" />
-		</execute>
-
-		<execute macro="Staging#publishToLive">
-			<var name="publishValidation" value="true" />
-		</execute>
-	</command>
-
-	<command name="StagingUncheckAppCTRefAllAndContentWC" priority="4">
-		<execute macro="ProductMenu#gotoSite">
-			<var name="site" value="Site Name" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoSitesPublishingTools">
-			<var name="portlet" value="Staging" />
-		</execute>
-
-		<execute macro="Staging#activateStagingCP">
-			<var name="siteName" value="Site Name" />
-		</execute>
-
-		<execute macro="LAR#setupContentTargeting">
-			<var name="stagingSetup" value="true" />
-		</execute>
-
-		<execute macro="Page#gotoPG">
-			<var name="pageName" value="Test Page Name" />
-			<var name="pageStaging" value="true" />
-			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
-		</execute>
-
-		<execute macro="Staging#gotoPublishToLive" />
-
-		<execute macro="Staging#configurePublishToLive">
-			<var name="mainApplication" value="Campaign Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced Campaigns,Referenced Content" />
-		</execute>
-
-		<execute macro="Staging#configurePublishToLive">
-			<var name="mainApplication" value="User Segment Content Display" />
-			<var name="uncheckSubApplicationList" value="Referenced User Segments,Referenced Content" />
-		</execute>
-
-		<execute macro="Staging#configurePublishToLive">
-			<var name="contentDateRange" value="All" />
-			<var name="uncheckContentNameList" value="Web Content" />
-		</execute>
-
-		<execute macro="Staging#publishToLive">
-			<var name="publishValidation" value="true" />
+			<var name="failureExpected" value="true" />
+			<var name="validateErrorMessage" value="An unexpected error occurred with the publication process. Please check your portal and publishing configuration." />
 		</execute>
 	</command>
 
@@ -2960,7 +2742,7 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -3007,7 +2789,7 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -3025,7 +2807,7 @@
 			<var name="campaignPriorityField" value="3" />
 			<var name="campaignStartDate" value="1/1/2015" />
 			<var name="campaignStartTime" value="12:00 AM" />
-			<var name="userSegmentSelect" value="User Segment Name (Global)" />
+			<var name="userSegmentSelect" value="User Segment Name" />
 		</execute>
 
 		<execute macro="ContentTargetingCampaign#saveCP" />
@@ -3043,7 +2825,7 @@
 			<var name="campaignName" value="Campaign Name" />
 			<var name="campaignPriority" value="3" />
 			<var name="campaignStatus" value="Started" />
-			<var name="userSegmentSelect" value="User Segment Name (Global)" />
+			<var name="userSegmentSelect" value="User Segment Name" />
 		</execute>
 	</command>
 
@@ -3065,7 +2847,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoControlPanelSites">
 			<var name="portlet" value="Sites" />
@@ -3080,8 +2862,11 @@
 			<var name="portlet" value="Sites" />
 		</execute>
 
+		<execute macro="Site#searchInputCP">
+			<var name="siteName" value="Child SiteName" />
+		</execute>
+
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="Page Name" />
 			<var name="siteName" value="Child SiteName" />
 		</execute>
@@ -3102,7 +2887,7 @@
 			<var name="campaignPriorityField" value="2" />
 			<var name="campaignStartDate" value="1/1/2015" />
 			<var name="campaignStartTime" value="12:00 AM" />
-			<var name="userSegmentSelect" value="User Segment Name (Site Name)" />
+			<var name="userSegmentSelect" value="User Segment Name" />
 		</execute>
 
 		<execute macro="ContentTargetingCampaign#saveCP" />
@@ -3120,7 +2905,7 @@
 			<var name="campaignName" value="Campaign Name" />
 			<var name="campaignPriority" value="2" />
 			<var name="campaignStatus" value="Started" />
-			<var name="userSegmentSelect" value="User Segment Name (Site Name)" />
+			<var name="userSegmentSelect" value="User Segment Name" />
 		</execute>
 	</command>
 
@@ -3142,7 +2927,7 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -3164,14 +2949,16 @@
 	</command>
 
 	<command name="UserSegmentAddMultipleViaUserContentDisplayPortletPG" priority="4">
-		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
-			<var name="pageName" value="Site Page Name" />
-			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
+		<execute macro="ProductMenu#gotoControlPanelSites">
+			<var name="portlet" value="Sites" />
 		</execute>
 
-		<for list="Admin,Page Visited,Male,Person" param="ruleName">
+		<execute macro="Page#add">
+			<var name="pageName" value="Site Page Name" />
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<for list="Admin,Page Visited,Male,Woman" param="ruleName">
 			<execute macro="ProductMenu#gotoSite">
 				<var name="site" value="Site Name" />
 			</execute>
@@ -3187,7 +2974,7 @@
 				<var name="webContentTitle" value="WC Title ${ruleName}" />
 			</execute>
 
-			<execute macro="WebContent#publish" />
+			<execute macro="PortletEntry#publish" />
 
 			<execute macro="WebContent#viewTitle">
 				<var name="webContentTitle" value="WC Title ${ruleName}" />
@@ -3212,7 +2999,7 @@
 			<var name="siteRoleSite" value="Site Name" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ContentTargetingUserSegment#addCP">
 			<var name="userSegmentDescription" value="User Segment Description" />
@@ -3223,7 +3010,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ContentTargetingUserSegment#addCP">
 			<var name="userSegmentDescription" value="User Segment Description" />
@@ -3234,17 +3021,17 @@
 			<var name="friendlyURL" value="/site-page-name" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
 			<var name="portlet" value="Users and Organizations" />
 		</execute>
 
 		<execute macro="User#addMultipleCP">
-			<var name="usersEmailsList" value="male@liferay.com,person@liferay.com,wcmuser@liferay.com" />
+			<var name="usersEmailsList" value="male@liferay.com,woman@liferay.com,wcmuser@liferay.com" />
 		</execute>
 
-		<for list="male,person,wcmuser" param="userScreenName">
+		<for list="male,woman,wcmuser" param="userScreenName">
 			<execute macro="ProductMenu#gotoControlPanelUsers">
 				<var name="portlet" value="Users and Organizations" />
 			</execute>
@@ -3258,7 +3045,7 @@
 				<var name="site" value="Site Name" />
 			</execute>
 
-			<execute macro="ProductMenu#gotoSitesUsers">
+			<execute macro="ProductMenu#gotoSitesMembers">
 				<var name="portlet" value="Site Memberships" />
 			</execute>
 
@@ -3275,7 +3062,7 @@
 
 		<execute macro="User#editUserGenderCP">
 			<var name="userGender" value="Female" />
-			<var name="userScreenName" value="person" />
+			<var name="userName" value="woman woman" />
 		</execute>
 
 		<execute macro="Navigator#openSiteURL">
@@ -3286,8 +3073,6 @@
 			<var name="portletName" value="User Segment Content Display" />
 		</execute>
 
-		<execute function="Refresh" />
-
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
 		</execute>
@@ -3295,7 +3080,7 @@
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="WC Title Admin" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 			<var name="toAny" value="true" />
 			<var name="userSegmentName" value="Site Role Admin User Segment" />
@@ -3304,7 +3089,7 @@
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="WC Title Page Visited" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="2" />
 			<var name="toAny" value="true" />
 			<var name="userSegmentName" value="Page Visited User Segment" />
@@ -3313,22 +3098,22 @@
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="WC Title Male" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="3" />
 			<var name="toAny" value="true" />
 			<var name="userSegmentName" value="Male User Segment" />
 		</execute>
 
-		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContenDisplayRule">
-			<var name="otherwiseContentTitle" value="WC Title Person" />
-			<var name="otherwiseContentType" value="Web Content Article" />
+		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContentDisplayRule">
+			<var name="otherwiseContentTitle" value="WC Title Woman" />
+			<var name="otherwiseContentType" value="Basic Web Content" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#savePG" />
 
 		<execute macro="User#logoutAndLoginPG">
 			<var name="userLoginEmailAddress" value="male@liferay.com" />
-			<var name="userLoginFullName" value="male male" />
+			<var name="userLoginFullName" value="male" />
 		</execute>
 
 		<execute macro="Navigator#openSiteURL">
@@ -3344,16 +3129,14 @@
 			<var name="userLoginFullName" value="WCM User" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
@@ -3361,18 +3144,17 @@
 		</execute>
 
 		<execute macro="User#logoutAndLoginPG">
-			<var name="userLoginEmailAddress" value="person@liferay.com" />
-			<var name="userLoginFullName" value="person person" />
+			<var name="userLoginEmailAddress" value="woman@liferay.com" />
+			<var name="userLoginFullName" value="woman" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
-			<var name="entryContentText" value="WC Content Person" />
+			<var name="entryContentText" value="WC Content Woman" />
 		</execute>
 	</command>
 
@@ -3403,7 +3185,7 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Child SiteName" />
@@ -3440,7 +3222,7 @@
 			<var name="webContentTitle" value="Web Content Title All" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title All" />
@@ -3461,7 +3243,7 @@
 			<var name="webContentTitle" value="Web Content Title Otherwise" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title Otherwise" />
@@ -3485,7 +3267,7 @@
 			<var name="youngerThanAge" value="99" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -3504,19 +3286,16 @@
 			<var name="regularRole" value="Guest" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -3525,30 +3304,28 @@
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="Web Content Title All" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 			<var name="toAll" value="true" />
 			<var name="userSegmentName" value="User Segment Name Age,User Segment Name Reg Role" />
 		</execute>
 
-		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContenDisplayRule">
+		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContentDisplayRule">
 			<var name="otherwiseContentTitle" value="Web Content Title Otherwise" />
-			<var name="otherwiseContentType" value="Web Content Article" />
+			<var name="otherwiseContentType" value="Basic Web Content" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
 			<var name="entryContentText" value="Web Content Content Otherwise" />
-			<var name="preview1Text" value="User Segment Name Age and User Segment Name Reg Role" />
-			<var name="preview2Text" value="Default" />
-			<var name="viewUserSegmentSelected" value="Default" />
+			<var name="previewUserSegmentList" value="User Segment Name Age and User Segment Name Reg Role,default" />
+			<var name="viewUserSegmentSelected" value="default" />
 		</execute>
 	</command>
 
@@ -3568,7 +3345,7 @@
 			<var name="webContentTitle" value="Web Content Title Any" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title Any" />
@@ -3589,7 +3366,7 @@
 			<var name="webContentTitle" value="Web Content Title Otherwise" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title Otherwise" />
@@ -3613,7 +3390,7 @@
 			<var name="youngerThanAge" value="99" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -3632,19 +3409,16 @@
 			<var name="regularRole" value="Guest" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -3653,29 +3427,27 @@
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="Web Content Title Any" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 			<var name="toAny" value="true" />
 			<var name="userSegmentName" value="User Segment Name Age,User Segment Name Reg Role" />
 		</execute>
 
-		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContenDisplayRule">
+		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContentDisplayRule">
 			<var name="otherwiseContentTitle" value="Web Content Title Otherwise" />
-			<var name="otherwiseContentType" value="Web Content Article" />
+			<var name="otherwiseContentType" value="Basic Web Content" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
 			<var name="entryContentText" value="Web Content Content Any" />
-			<var name="preview1Text" value="User Segment Name Age or User Segment Name Reg Role" />
-			<var name="preview2Text" value="Default" />
+			<var name="previewUserSegmentList" value="User Segment Name Age or User Segment Name Reg Role,default" />
 		</execute>
 	</command>
 
@@ -3697,7 +3469,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -3709,7 +3481,7 @@
 
 		<execute macro="DMDocument#addCP">
 			<var name="dmDocumentDescription" value="DM Document Description 1" />
-			<var name="dmDocumentFile" value="Document_1.jpg" />
+			<var name="dmDocumentFile" value="Document_1.png" />
 			<var name="dmDocumentTitle" value="DM Document Title 1" />
 		</execute>
 
@@ -3727,17 +3499,14 @@
 			<var name="dmDocumentTitle" value="DM Document Title 2" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -3746,28 +3515,26 @@
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="DM Document Title 1" />
-			<var name="contentType" value="Document" />
+			<var name="contentType" value="Basic Document" />
 			<var name="rowNumber" value="1" />
 			<var name="toAll" value="true" />
 			<var name="userSegmentName" value="User Segment Name" />
 		</execute>
 
-		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContenDisplayRule">
+		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContentDisplayRule">
 			<var name="otherwiseContentTitle" value="DM Document Title 2" />
-			<var name="otherwiseContentType" value="Document" />
+			<var name="otherwiseContentType" value="Basic Document" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
-			<var name="preview1Text" value="User Segment Name" />
-			<var name="preview2Text" value="Default" />
+			<var name="previewUserSegmentList" value="User Segment Name,default" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
@@ -3796,7 +3563,7 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesUsers">
+		<execute macro="ProductMenu#gotoSitesMembers">
 			<var name="portlet" value="Site Memberships" />
 		</execute>
 
@@ -3811,10 +3578,9 @@
 			<var name="userLoginFullName" value="female female" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute function="SikuliClick" locator1="UserSegmentContentDisplay#PREVIEW_DOCUMENT_1_PNG" />
@@ -3838,7 +3604,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -3855,7 +3621,7 @@
 			<var name="webContentTitle" value="Web Content Title Female" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title Female" />
@@ -3876,23 +3642,20 @@
 			<var name="webContentTitle" value="Web Content Title Male" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title Male" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -3900,30 +3663,28 @@
 
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="contentTitle" value="Web Content Title Female" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="doesNotBelong" value="true" />
 			<var name="rowNumber" value="1" />
 			<var name="toAll" value="true" />
 			<var name="userSegmentName" value="User Segment Name" />
 		</execute>
 
-		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContenDisplayRule">
+		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContentDisplayRule">
 			<var name="otherwiseContentTitle" value="Web Content Title Male" />
-			<var name="otherwiseContentType" value="Web Content Article" />
+			<var name="otherwiseContentType" value="Basic Web Content" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
 			<var name="entryContentText" value="Web Content Content Male" />
-			<var name="preview1Text" value="not User Segment Name" />
-			<var name="preview2Text" value="Default" />
+			<var name="previewUserSegmentList" value="not User Segment Name,default" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelUsers">
@@ -3952,7 +3713,7 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesUsers">
+		<execute macro="ProductMenu#gotoSitesMembers">
 			<var name="portlet" value="Site Memberships" />
 		</execute>
 
@@ -3967,13 +3728,12 @@
 			<var name="userLoginFullName" value="female female" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
+		<execute macro="UserSegmentContentDisplayPortlet#viewContentOnly">
 			<var name="entryContentText" value="Web Content Content Female" />
 		</execute>
 	</command>
@@ -3994,7 +3754,7 @@
 			<var name="webContentTitle" value="Web Content Title" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title" />
@@ -4017,19 +3777,16 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content Display" />
 		</execute>
-
-		<execute function="Refresh" />
 
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
@@ -4038,7 +3795,7 @@
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="Web Content Title" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 			<var name="toAll" value="true" />
 			<var name="userSegmentName" value="User Segment Name" />
@@ -4046,17 +3803,15 @@
 
 		<execute macro="UserSegmentContentDisplayPortlet#savePG" />
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
-			<var name="preview1Text" value="User Segment Name" />
-			<var name="preview2Text" value="Default" />
-			<var name="viewDontDisplay" value="PREVIEW_2" />
-			<var name="viewUserSegmentSelected" value="Default" />
+			<var name="previewUserSegmentList" value="User Segment Name,default" />
+			<var name="viewDontDisplay" value="true" />
+			<var name="viewUserSegmentSelected" value="default" />
 		</execute>
 	</command>
 
@@ -4074,7 +3829,7 @@
 			<var name="userSegmentName" value="User Segment Name" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -4089,7 +3844,7 @@
 			<var name="userSegmentName" value="User Segment Name 2" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -4104,7 +3859,7 @@
 			<var name="userSegmentName" value="User Segment Name 3" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -4133,7 +3888,7 @@
 			<var name="webContentTitle" value="Web Content Title Male" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title Male" />
@@ -4154,7 +3909,7 @@
 			<var name="webContentTitle" value="Web Content Title Female" />
 		</execute>
 
-		<execute macro="WebContent#publish" />
+		<execute macro="PortletEntry#publish" />
 
 		<execute macro="WebContent#viewTitle">
 			<var name="webContentTitle" value="Web Content Title Female" />
@@ -4177,7 +3932,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -4196,7 +3951,7 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Site Name" />
@@ -4206,8 +3961,6 @@
 			<var name="portletName" value="User Segment Content Display" />
 		</execute>
 
-		<execute function="Refresh" />
-
 		<execute macro="Portlet#gotoPortletOptions">
 			<var name="portletOption" value="Configuration" />
 		</execute>
@@ -4215,15 +3968,15 @@
 		<execute macro="UserSegmentContentDisplayPortlet#configureDisplayContent">
 			<var name="belongs" value="true" />
 			<var name="contentTitle" value="Web Content Title Male" />
-			<var name="contentType" value="Web Content Article" />
+			<var name="contentType" value="Basic Web Content" />
 			<var name="rowNumber" value="1" />
 			<var name="toAll" value="true" />
 			<var name="userSegmentName" value="Male User Segment Name" />
 		</execute>
 
-		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContenDisplayRule">
+		<execute macro="UserSegmentContentDisplayPortlet#configureOtherwiseContentDisplayRule">
 			<var name="otherwiseContentTitle" value="Web Content Title Female" />
-			<var name="otherwiseContentType" value="Web Content Article" />
+			<var name="otherwiseContentType" value="Basic Web Content" />
 		</execute>
 
 		<execute macro="UserSegmentContentDisplayPortlet#savePG" />
@@ -4237,47 +3990,17 @@
 			<var name="viewUserSegmentSelected" value="Male User Segment Name" />
 		</execute>
 
-		<execute macro="ContentTargetingSimulator#gotoPG" />
-
-		<execute macro="ContentTargetingSimulator#viewUserSegmentsViaSimulatorPG">
-			<var name="viewUserSegmentMatched" value="Male User Segment Name" />
-			<var name="viewUserSegmentOther" value="Female User Segment Name" />
+		<execute macro="MobileDevice#previewPG">
+			<var name="deviceType" value="desktop" />
 		</execute>
 
-		<execute macro="ContentTargetingSimulator#configureUserSegmentMatchedPG">
-			<var name="uncheckUserSegmentMatchedList" value="Male User Segment Name" />
+		<execute macro="ContentTargetingSimulator#configureUserSegmentSimulator">
+			<var name="configureUserSegmentMatched" value="Female User Segment Name" />
+			<var name="configureUserSegmentNotMatched" value="Male User Segment Name" />
 		</execute>
 
-		<execute macro="ContentTargetingSimulator#configureUserSegmentOtherPG">
-			<var name="checkUserSegmentOtherList" value="Female User Segment Name" />
-		</execute>
-
-		<execute macro="ContentTargetingSimulator#simulateUserSegmentPG">
-			<var name="simulationbutton" value="Simulate" />
-		</execute>
-
-		<execute macro="Navigator#openSiteURL">
-			<var name="siteName" value="Site Name" />
-		</execute>
-
-		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
+		<execute macro="UserSegmentContentDisplayPortlet#viewContentOnly">
 			<var name="entryContentText" value="Web Content Content Female" />
-			<var name="viewUserSegmentSelected" value="Default" />
-		</execute>
-
-		<execute macro="ContentTargetingSimulator#gotoPG" />
-
-		<execute macro="ContentTargetingSimulator#simulateUserSegmentPG">
-			<var name="simulationbutton" value="Stop Simulation" />
-		</execute>
-
-		<execute macro="Navigator#openSiteURL">
-			<var name="siteName" value="Site Name" />
-		</execute>
-
-		<execute macro="UserSegmentContentDisplayPortlet#viewEntryPG">
-			<var name="entryContentText" value="Web Content Content Male" />
-			<var name="viewUserSegmentSelected" value="Male User Segment Name" />
 		</execute>
 	</command>
 
@@ -4297,7 +4020,7 @@
 
 		<execute macro="ContentTargetingUserSegment#addUserAttributesUserSignedInRuleCP" />
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -4325,21 +4048,17 @@
 			<var name="vocabularyName" value="User Segment" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content List" />
 		</execute>
 
-		<execute function="Refresh" />
-
 		<execute macro="UserSegmentContentListPortlet#viewContent">
 			<var name="viewEntryContentList" value="Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
 		</execute>
 	</command>
 
@@ -4361,7 +4080,7 @@
 			<var name="genderRadio" value="Female" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ContentTargetingUserSegment#addCP">
 			<var name="userSegmentDescription" value="User Segment Description" />
@@ -4372,7 +4091,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ContentTargetingUserSegment#addCP">
 			<var name="userSegmentDescription" value="User Segment Description" />
@@ -4385,7 +4104,7 @@
 			<var name="youngerThanAge" value="25" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ContentTargetingUserSegment#addCP">
 			<var name="userSegmentDescription" value="User Segment Description" />
@@ -4397,7 +4116,7 @@
 			<var name="youngerThanAge" value="50" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ContentTargetingUserSegment#addCP">
 			<var name="userSegmentDescription" value="User Segment Description" />
@@ -4410,7 +4129,7 @@
 			<var name="youngerThanAge" value="100" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -4429,7 +4148,7 @@
 			<var name="selectSiteMemberSite" value="Site Name" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ContentTargetingUserSegment#addCP">
 			<var name="userSegmentDescription" value="User Segment Description" />
@@ -4441,17 +4160,16 @@
 			<var name="siteRoleSite" value="Site Name" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="ContentTargetingSimulator#gotoPG" />
+		<execute macro="MobileDevice#previewPG" />
 
-		<execute macro="ContentTargetingSimulator#viewUserSegmentsViaSimulatorPG">
-			<var name="viewUserSegmentMatched" value="Site Member Name,Male User Segment Name,Age 25 - 50" />
-			<var name="viewUserSegmentOther" value="Site Admin Role Name,Female User Segment Name,Age 50 - 100,Age 18 - 25" />
+		<execute macro="ContentTargetingSimulator#viewUserSegmentsViaSimulator">
+			<var name="userSegments" value="Site Member Name,Male User Segment Name,Age 25 - 50,Site Admin Role Name,Female User Segment Name,Age 50 - 100,Age 18 - 25" />
 		</execute>
 	</command>
 
@@ -4473,7 +4191,7 @@
 			<var name="genderRadio" value="Male" />
 		</execute>
 
-		<execute macro="ContentTargetingUserSegment#saveCP" />
+		<execute macro="PortletEntry#save" />
 
 		<execute macro="ProductMenu#gotoSite">
 			<var name="site" value="Site Name" />
@@ -4501,27 +4219,31 @@
 			<var name="vocabularyName" value="User Segment" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Test Page Name" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="User Segment Content List" />
 		</execute>
 
-		<execute function="Refresh" />
-
-		<execute macro="UserSegmentContentListPortlet#configureDisplayFilter">
-			<var name="assetTypeFilter" value="Web Content Article" />
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute function="Refresh" />
+		<execute macro="UserSegmentContentListPortlet#configureDisplayFilter">
+			<var name="assetTypeFilter" value="Basic Web Content" />
+		</execute>
+
+		<execute macro="Navigator#gotoSitePage">
+			<var name="pageName" value="Test Page Name" />
+			<var name="siteName" value="Site Name" />
+		</execute>
 
 		<execute macro="UserSegmentContentListPortlet#viewContent">
 			<var name="viewEntryContentList" value="Web Content Content" />
-			<var name="viewEntryTitleList" value="Web Content Title" />
 		</execute>
 	</command>
 </definition>

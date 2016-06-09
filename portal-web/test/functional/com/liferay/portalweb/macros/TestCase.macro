@@ -1,5 +1,6 @@
 <definition>
 	<command name="getSiteName" returns="siteName">
+		<var method="TestPropsUtil#get('test.name.skip.portal.instance')" name="testNameSkipPortalInstance" />
 		<var method="TestPropsUtil#get('test.portal.instance')" name="testPortalInstance" />
 
 		<if>
@@ -11,7 +12,12 @@
 			</or>
 			<then>
 				<if>
-					<equals arg1="${testPortalInstance}" arg2="true" />
+					<and>
+						<equals arg1="${testPortalInstance}" arg2="true" />
+						<not>
+							<condition function="IsTestName" locator1="" value1="${testNameSkipPortalInstance}" />
+						</not>
+					</and>
 					<then>
 						<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
@@ -21,7 +27,17 @@
 						<return name="siteName" value="${portalURL}" />
 					</then>
 					<else>
-						<return name="siteName" value="Liferay" />
+						<var method="TestPropsUtil#get('liferay.portal.branch')" name="testPortalBranch" />
+
+						<if>
+							<equals arg1="${testPortalBranch}" arg2="ee-7.0.x" />
+							<then>
+								<return name="siteName" value="Liferay DXP" />
+							</then>
+							<else>
+								<return name="siteName" value="Liferay" />
+							</else>
+						</if>
 					</else>
 				</if>
 			</then>
@@ -39,7 +55,7 @@
 			<and>
 				<equals arg1="${testPortalInstance}" arg2="true" />
 				<not>
-					<condition function="IsTestName" locator1="${testNameSkipPortalInstance}" />
+					<condition function="IsTestName" locator1="" value1="${testNameSkipPortalInstance}" />
 				</not>
 			</and>
 			<then>

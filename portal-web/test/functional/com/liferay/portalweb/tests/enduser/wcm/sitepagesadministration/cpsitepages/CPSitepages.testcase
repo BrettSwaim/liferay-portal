@@ -1,4 +1,5 @@
 <definition component-name="portal-wcm">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="Site Pages Administration" />
 
 	<set-up>
@@ -64,7 +65,6 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Site Name" />
 		</execute>
@@ -76,19 +76,22 @@
 
 			<execute macro="Page#addChild">
 				<var name="page" value="Public Pages" />
+				<var name="pageName" value="Site Page" />
 				<var name="siteChildPageName" value="${childPageName}" />
 				<var name="siteName" value="Site Name" />
-				<var name="sitePageName" value="Site Page" />
 			</execute>
 		</for>
 
-		<execute macro="SitePage#viewChildPG">
-			<var name="childPageCount" value="3" />
-			<var name="pageName" value="Site Page" />
-			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Site Page" />
-			<var name="siteURL" value="true" />
-		</execute>
+		<for list="Site Child Page 1,Site Child Page 2,Site Child Page 3" param="childPageName" >
+			<execute macro="Navigator#gotoSitePage">
+				<var name="pageName" value="Site Page" />
+				<var name="siteName" value="Site Name" />
+			</execute>
+
+			<execute macro="Page#viewChildPage">
+				<var name="pageName" value="${childPageName}" />
+			</execute>
+		</for>
 	</command>
 
 	<command name="AddSitePrivateChildPage" priority="4">
@@ -116,20 +119,20 @@
 
 		<execute macro="Page#addChild">
 			<var name="page" value="Private Pages" />
-			<var name="siteChildPageName" value="Site Child Page" />
-			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Site Page" />
-		</execute>
-
-		<execute macro="SitePage#viewChildPG">
-			<var name="childPageCount" value="1" />
-			<var name="pageAccess" value="Private" />
 			<var name="pageName" value="Site Page" />
 			<var name="siteChildPageName" value="Site Child Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Site Page" />
-			<var name="sitePageURL" value="http://localhost:8080/group/site-name/site-child-page" />
-			<var name="siteURL" value="true" />
+		</execute>
+
+		<execute macro="Navigator#gotoSpecificURLPage">
+			<var name="pageName" value="Site Page" />
+			<var name="url" value="http://localhost:8080/group/site-name/site-child-page" />
+		</execute>
+
+		<execute macro="ProductMenu#gotoPrivatePages" />
+
+		<execute macro="Page#viewChildPage">
+			<var name="pageName" value="Site Child Page" />
 		</execute>
 	</command>
 
@@ -152,13 +155,13 @@
 			<var name="sitePagePrivacy" value="Private" />
 		</execute>
 
-		<execute macro="SitePage#viewPG">
-			<var name="pageAccess" value="Private" />
+		<execute macro="Navigator#gotoSpecificURLPage">
 			<var name="pageName" value="Site Page" />
-			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Site Page" />
-			<var name="sitePageURL" value="http://localhost:8080/group/site-name/site-page" />
-			<var name="siteURL" value="true" />
+			<var name="url" value="http://localhost:8080/group/site-name/site-page" />
+		</execute>
+
+		<execute macro="Page#view">
+			<var name="pageName" value="Site Page" />
 		</execute>
 	</command>
 
@@ -169,16 +172,6 @@
 
 		<execute macro="Site#addBlankCP">
 			<var name="siteName" value="Site Name" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
-		</execute>
-
-		<execute macro="Page#add">
-			<var name="pageName" value="Site Page" />
-			<var name="siteName" value="Site Name" />
-			<var name="sitePagePrivacy" value="Private" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelSites">
@@ -221,10 +214,8 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="ProductMenu#gotoControlPanelSites">
@@ -233,21 +224,20 @@
 
 		<execute macro="Page#addChild">
 			<var name="page" value="Public Pages" />
+			<var name="pageName" value="Site Page" />
 			<var name="siteChildPageName" value="Site Child Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Site Page" />
 		</execute>
 
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
-		<execute macro="SitePage#viewChildPG">
-			<var name="childPageCount" value="1" />
+		<execute macro="Navigator#gotoSpecificURLPage">
 			<var name="pageName" value="Site Page" />
-			<var name="siteChildPageName" value="Site Child Page" />
-			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Site Page" />
-			<var name="sitePageURL" value="${portalURL}/web/site-name/site-child-page" />
-			<var name="siteURL" value="true" />
+			<var name="url" value="${portalURL}/web/site-name/site-child-page" />
+		</execute>
+
+		<execute macro="Page#viewChildPage">
+			<var name="pageName" value="Site Child Page" />
 		</execute>
 	</command>
 
@@ -267,20 +257,19 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
 
-		<execute macro="SitePage#viewPG">
+		<execute macro="Navigator#gotoSpecificURLPage">
 			<var name="pageName" value="Site Page" />
-			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="Site Page" />
-			<var name="sitePageURL" value="${portalURL}/web/site-name/site-page" />
-			<var name="siteURL" value="true" />
+			<var name="url" value="${portalURL}/web/site-name/site-page" />
+		</execute>
+
+		<execute macro="Page#view">
+			<var name="pageName" value="Site Page" />
 		</execute>
 	</command>
 
@@ -298,24 +287,13 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="pageName" value="Site Page" />
-			<var name="siteName" value="Site Name" />
-			<var name="sitePagePrivacy" value="Private" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoControlPanelSites">
-			<var name="portlet" value="Sites" />
-		</execute>
-
-		<execute macro="Page#add">
 			<var name="pageName" value="Blogs Page" />
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Blogs Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
@@ -332,19 +310,19 @@
 			<var name="portletName" value="Web Content Display" />
 		</execute>
 
-		<execute macro="SitePage#viewPageLayoutPG">
+		<execute macro="Page#viewPageLayout">
 			<var name="pageLayout" value="2 Column (30/70)" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoEditPage">
+		<execute macro="SitePageNavigator#gotoEditPage">
 			<var name="page" value="Site Page Name" />
 		</execute>
 
-		<execute macro="SitePage#changePageTypeLayoutPG">
-			<var name="columnName" value="1_column" />
+		<execute macro="Page#editPageTypeLayout">
+			<var name="columnName" value="1 Column" />
 		</execute>
 
-		<execute macro="SitePage#viewPageLayoutPG">
+		<execute macro="Page#viewPageLayout">
 			<var name="pageLayout" value="1 Column" />
 		</execute>
 	</command>
@@ -376,23 +354,22 @@
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Blog Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
 			<var name="portletName" value="Blogs" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoEditPage">
+		<execute macro="SitePageNavigator#gotoEditPage">
 			<var name="page" value="Blog Page" />
 		</execute>
 
-		<execute macro="SitePage#copyApplicationsFromPageToPagePG">
+		<execute macro="Page#copyApplicationsFromPageToPage">
 			<var name="pageName" value="Blog Page" />
-			<var name="sitePageName" value="Site Page" />
+			<var name="pageNameCopy" value="Site Page" />
 		</execute>
 	</command>
 
@@ -418,49 +395,39 @@
 				<var name="page" value="Public Pages" />
 				<var name="pageName" value="${pageName}" />
 				<var name="siteName" value="Site Name" />
-				<var name="siteURL" value="true" />
 			</execute>
 		</for>
 
-		<execute macro="ProductMenu#gotoSitesPages" >
-			<var name="page" value="Public Pages" />
-			<var name="site" value="Site Name" />
-		</execute>
-
-		<execute macro="SitePage#deleteSitepagesCP">
-			<var name="siteName" value="Site Name" />
-			<var name="sitePageName" value="${sitePageName2}" />
+		<execute macro="Page#deletePG">
+			<var name="pageName" value="Site Page 2" />
 		</execute>
 	</command>
 
 	<command name="EditSitePage" priority="5">
 		<property name="portal.acceptance" value="true" />
 
-		<execute macro="ProductMenu#gotoSitesPages" >
+		<execute macro="SitePageNavigator#gotoPages" >
 			<var name="page" value="Public Pages" />
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="Site Page" />
-			<var name="siteScopeSelected" value="Liferay" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesPages" >
+		<execute macro="SitePageNavigator#gotoEditPage">
+			<var name="page" value="Site Page" />
+		</execute>
+
+		<execute macro="Page#editName">
+			<var name="pageNameEdit" value="Site Page Edit" />
+		</execute>
+
+		<execute macro="SitePageNavigator#gotoPages" >
 			<var name="page" value="Public Pages" />
 		</execute>
 
-		<execute macro="SitePage#editCP">
-			<var name="sitePageName" value="Site Page" />
-			<var name="sitePageNameEdit" value="Site Page Edit" />
-		</execute>
-
-		<execute macro="ProductMenu#gotoSitesPages" >
-			<var name="page" value="Public Pages" />
-		</execute>
-
-		<execute macro="SitePage#viewCP">
-			<var name="sitePageName" value="Site Page Edit" />
+		<execute macro="Page#view">
+			<var name="pageName" value="Site Page Edit" />
 		</execute>
 	</command>
 
@@ -478,22 +445,23 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoEditPage">
+		<execute macro="SitePageNavigator#gotoEditPage">
 			<var name="page" value="Site Page" />
 		</execute>
 
-		<execute macro="SitePage#embeddedPageTypePG" />
+		<execute macro="Page#editSelectPageType">
+			<var name="page" value="Site Page" />
+			<var name="pageType" value="Embedded" />
+		</execute>
 
 		<execute macro="Navigator#gotoSpecificURLPage">
 			<var name="pageName" value="Site Page" />
@@ -517,16 +485,14 @@
 		</execute>
 
 		<execute macro="Page#add">
-			<var name="page" value="Public Pages" />
 			<var name="pageName" value="Site Page" />
 			<var name="pageTemplateName" value="Blog" />
 			<var name="siteName" value="Site Name" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Site Page" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Blogs#viewControlsPG" />
@@ -565,7 +531,7 @@
 			<var name="site" value="Site Name" />
 		</execute>
 
-		<execute macro="ProductMenu#gotoSitesUsers">
+		<execute macro="ProductMenu#gotoSitesMembers">
 			<var name="portlet" value="Site Memberships" />
 		</execute>
 
@@ -580,7 +546,11 @@
 			<var name="userEmailAddress" value="userea@liferay.com" />
 		</execute>
 
-		<execute macro="SitePage#viewDefaultSiteTemplatePagesPG">
+		<execute macro="Navigator#openSiteURL">
+			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute macro="Page#viewDefaultSiteTemplatePagesPG">
 			<var name="pageName" value="Home" />
 			<var name="siteName" value="Site Name" />
 			<var name="siteTemplate" value="Community" />
@@ -592,10 +562,9 @@
 			<var name="userEmailAddress" value="test@liferay.com" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Home" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="Portlet#addPG">
@@ -607,10 +576,9 @@
 			<var name="userEmailAddress" value="userea@liferay.com" />
 		</execute>
 
-		<execute macro="Page#gotoPG">
+		<execute macro="Navigator#gotoSitePage">
 			<var name="pageName" value="Home" />
 			<var name="siteName" value="Site Name" />
-			<var name="siteURL" value="true" />
 		</execute>
 
 		<execute macro="SiteTemplates#viewNoInfoMessage" />

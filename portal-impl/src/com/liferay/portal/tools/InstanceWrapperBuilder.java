@@ -103,9 +103,7 @@ public class InstanceWrapperBuilder {
 
 		sb.append("public static ");
 		sb.append(javaClass.getName());
-		sb.append("_IW getInstance() {");
-		sb.append("return _instance;");
-		sb.append("}\n");
+		sb.append("_IW getInstance() {return _instance;}\n");
 
 		for (JavaMethod javaMethod : javaMethods) {
 			String methodName = javaMethod.getName();
@@ -216,16 +214,14 @@ public class InstanceWrapperBuilder {
 				sb.setIndex(sb.index() - 1);
 			}
 
-			sb.append(");");
-			sb.append("}\n");
+			sb.append(");}\n");
 		}
 
 		// Private constructor
 
 		sb.append("private ");
 		sb.append(javaClass.getName());
-		sb.append("_IW() {");
-		sb.append("}");
+		sb.append("_IW() {}");
 
 		// Fields
 
@@ -243,7 +239,7 @@ public class InstanceWrapperBuilder {
 
 		File file = new File(
 			parentDir + "/" +
-				StringUtil.replace(javaClass.getPackage().getName(), ".", "/") +
+				StringUtil.replace(javaClass.getPackage().getName(), '.', '/') +
 					"/" + javaClass.getName() + "_IW.java");
 
 		ToolsUtil.writeFile(file, sb.toString(), null);
@@ -263,7 +259,7 @@ public class InstanceWrapperBuilder {
 		throws IOException {
 
 		String className = StringUtil.replace(
-			srcFile.substring(0, srcFile.length() - 5), "/", ".");
+			srcFile.substring(0, srcFile.length() - 5), '/', '.');
 
 		JavaDocBuilder builder = new JavaDocBuilder();
 

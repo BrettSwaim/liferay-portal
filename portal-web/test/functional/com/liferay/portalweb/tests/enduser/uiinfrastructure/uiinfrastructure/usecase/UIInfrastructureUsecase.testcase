@@ -1,4 +1,5 @@
 <definition component-name="portal-user-interface">
+	<property name="portal.release" value="true" />
 	<property name="testray.main.component.name" value="User Interface" />
 
 	<set-up>
@@ -30,7 +31,7 @@
 		</execute>
 
 		<task summary="Close the Add Panel">
-			<execute function="Click" locator1="Icon#CLOSE" />
+			<execute function="Click" locator1="ControlMenuAddPanel#CLOSE_ADD_PANEL" />
 		</task>
 
 		<task summary="Assert the 'Configuration' iframe of the Hello World portlet">
@@ -41,7 +42,7 @@
 
 			<execute function="SelectFrame" locator1="IFrame#CONFIGURATION" />
 
-			<execute function="AssertTextEquals" locator1="NavBar#PERMISSIONS" value1="Permissions" />
+			<execute function="AssertTextEquals" locator1="NavBar#SHARING" value1="Sharing" />
 
 			<execute function="SelectFrame" value1="relative=top" />
 
@@ -51,10 +52,10 @@
 		<task summary="Assert the 'Look and Feel' modal of the Hello World portlet">
 			<execute macro="Portlet#gotoPortletOptions">
 				<var name="portletName" value="Hello World" />
-				<var name="portletOption" value="Look and Feel" />
+				<var name="portletOption" value="Look and Feel Configuration" />
 			</execute>
 
-			<execute function="AssertTextEquals" locator1="NavTab#PORTLET_CONFIGURATION" value1="Portlet Configuration" />
+			<execute function="AssertTextEquals" locator1="NavTab#LOOK_AND_FEEL_GENERAL" value1="General" />
 
 			<execute function="Click" locator1="Icon#CLOSE" />
 		</task>
@@ -69,6 +70,25 @@
 			<var name="columnNumberFrom" value="2" />
 			<var name="columnNumberTo" value="1" />
 			<var name="portletName" value="Hello World" />
+		</execute>
+	</command>
+
+	<command name="ViewSuccessMessageText" priority="5">
+		<property name="portal.acceptance" value="true" />
+
+		<execute macro="ProductMenu#gotoSitesContent">
+			<var name="portlet" value="Blogs" />
+		</execute>
+
+		<execute macro="BlogsNavigator#gotoAddEntry" />
+
+		<execute macro="BlogsEntry#addEntryContent">
+			<var name="entryContent" value="Blogs Content" />
+			<var name="entryTitle" value="Blogs Title" />
+		</execute>
+
+		<execute macro="Alert#viewSuccessMessageText">
+			<var name="sucessMessage" value="Your request completed successfully." />
 		</execute>
 	</command>
 </definition>

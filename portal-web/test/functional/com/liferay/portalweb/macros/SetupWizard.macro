@@ -93,7 +93,9 @@
 			<var name="databaseType" value="${databaseType}" />
 		</execute>
 
-		<execute macro="User#firstLoginPG" />
+		<execute macro="User#firstLoginPG">
+			<var name="setupWizardEnabled" value="true" />
+		</execute>
 	</command>
 
 	<command name="configureSampleDataPG">
@@ -121,7 +123,7 @@
 	</command>
 
 	<command name="viewConfigurationSavedPG">
-		<execute function="AssertTextEquals#assertPartialText" locator1="Message#SUCCESS" value1="Your configuration was saved successfully." />
+		<execute function="AssertElementPresent" locator1="Message#SUCCESS" />
 		<execute function="AssertTextEquals#assertPartialText" locator1="SetupWizard#CONFIGURATION_SAVE_MESSAGE" value1="The configuration was saved in" />
 		<execute function="AssertTextEquals#assertPartialText" locator1="SetupWizard#CONFIGURATION_SAVE_LOCATION" value1="portal-setup-wizard.properties" />
 		<execute function="AssertTextEquals" locator1="Message#INFO" value1="Changes will take effect once the portal is restarted. Please restart the portal now." />
@@ -198,7 +200,17 @@
 	</command>
 
 	<command name="viewDefaultPortalNamePG">
-		<execute function="AssertTextEquals#assertValue" locator1="TextInput#PORTAL_NAME" value1="Liferay" />
+		<var method="TestPropsUtil#get('liferay.portal.branch')" name="testPortalBranch" />
+
+		<if>
+			<equals arg1="${testPortalBranch}" arg2="ee-7.0.x" />
+			<then>
+				<execute function="AssertTextEquals#assertValue" locator1="TextInput#PORTAL_NAME" value1="Liferay DXP" />
+			</then>
+			<else>
+				<execute function="AssertTextEquals#assertValue" locator1="TextInput#PORTAL_NAME" value1="Liferay" />
+			</else>
+		</if>
 	</command>
 
 	<command name="viewSampleDataAddedInConsole">

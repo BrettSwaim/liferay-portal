@@ -14,15 +14,12 @@
 
 package com.liferay.portlet.messageboards.service.permission;
 
-import com.liferay.exportimport.kernel.staging.permission.StagingPermissionUtil;
 import com.liferay.message.boards.kernel.model.MBDiscussion;
 import com.liferay.message.boards.kernel.model.MBMessage;
 import com.liferay.message.boards.kernel.service.MBBanLocalServiceUtil;
 import com.liferay.message.boards.kernel.service.MBDiscussionLocalServiceUtil;
 import com.liferay.message.boards.kernel.service.MBMessageLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.portlet.PortletProvider;
-import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.BaseModelPermissionChecker;
@@ -85,15 +82,11 @@ public class MBDiscussionPermission implements BaseModelPermissionChecker {
 			return false;
 		}
 
-		String portletId = PortletProviderUtil.getPortletId(
-			MBDiscussion.class.getName(), PortletProvider.Action.EDIT);
+		MBDiscussion mbDiscussion =
+			MBDiscussionLocalServiceUtil.fetchDiscussion(className, classPK);
 
-		Boolean hasPermission = StagingPermissionUtil.hasPermission(
-			permissionChecker, groupId, className, classPK, portletId,
-			actionId);
-
-		if (hasPermission != null) {
-			return hasPermission.booleanValue();
+		if (mbDiscussion == null) {
+			return false;
 		}
 
 		List<String> resourceActions = ResourceActionsUtil.getResourceActions(
@@ -101,13 +94,6 @@ public class MBDiscussionPermission implements BaseModelPermissionChecker {
 
 		if (!resourceActions.contains(actionId)) {
 			return true;
-		}
-
-		MBDiscussion mbDiscussion =
-			MBDiscussionLocalServiceUtil.fetchDiscussion(className, classPK);
-
-		if (mbDiscussion == null) {
-			return false;
 		}
 
 		if ((mbDiscussion.getUserId() > 0) &&
@@ -118,7 +104,7 @@ public class MBDiscussionPermission implements BaseModelPermissionChecker {
 			return true;
 		}
 
-		hasPermission =
+		Boolean hasPermission =
 			BaseModelPermissionCheckerUtil.containsBaseModelPermission(
 				permissionChecker, groupId, className, classPK, actionId);
 

@@ -1,0 +1,10 @@
+;
+; Do not manually edit this file. See
+; https://github.com/git-commands/git-subrepo#readme for more information.
+;
+[subrepo]
+	cmdver = liferay
+	commit = faeefa9066a7b01ee3cd594c94d09eb147951356
+	mode = push
+	parent = 2e4eb658217a5b388d815d35382ba66e285d17ee
+	remote = git@github.com:liferay/com-liferay-frontend-js.git

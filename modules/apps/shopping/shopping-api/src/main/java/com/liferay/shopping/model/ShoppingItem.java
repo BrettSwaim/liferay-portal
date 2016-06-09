@@ -17,8 +17,8 @@ package com.liferay.shopping.model;
 import aQute.bnd.annotation.ProviderType;
 
 import com.liferay.portal.kernel.annotation.ImplementationClassName;
+import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.util.Accessor;
-import com.liferay.portal.model.PersistedModel;
 
 /**
  * The extended model interface for the ShoppingItem service. Represents a row in the &quot;ShoppingItem&quot; database table, with each column mapped to a property of this class.
@@ -54,11 +54,11 @@ public interface ShoppingItem extends ShoppingItemModel, PersistedModel {
 			}
 		};
 
-	public com.liferay.shopping.model.ShoppingCategory getCategory();
+	public ShoppingCategory getCategory();
 
 	public java.lang.String[] getFieldsQuantitiesArray();
 
-	public java.util.List<com.liferay.shopping.model.ShoppingItemPrice> getItemPrices()
+	public java.util.List<ShoppingItemPrice> getItemPrices()
 		throws com.liferay.portal.kernel.exception.PortalException;
 
 	public java.lang.String getShoppingItemImageURL(

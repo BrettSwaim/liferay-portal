@@ -14,13 +14,17 @@
 
 package com.liferay.portal.service.persistence.test;
 
-import com.liferay.portal.exception.NoSuchUserException;
 import com.liferay.portal.kernel.dao.orm.ActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.exception.NoSuchUserException;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.service.persistence.UserPersistence;
+import com.liferay.portal.kernel.service.persistence.UserUtil;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.TransactionalTestRule;
@@ -31,11 +35,6 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.Time;
-import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.User;
-import com.liferay.portal.service.UserLocalServiceUtil;
-import com.liferay.portal.service.persistence.UserPersistence;
-import com.liferay.portal.service.persistence.UserUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PersistenceTestRule;
 
@@ -53,6 +52,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -691,14 +691,14 @@ public class UserPersistenceTest {
 		Assert.assertEquals(Long.valueOf(existingUser.getCompanyId()),
 			ReflectionTestUtil.<Long>invoke(existingUser,
 				"getOriginalCompanyId", new Class<?>[0]));
-		Assert.assertTrue(Validator.equals(existingUser.getScreenName(),
+		Assert.assertTrue(Objects.equals(existingUser.getScreenName(),
 				ReflectionTestUtil.invoke(existingUser,
 					"getOriginalScreenName", new Class<?>[0])));
 
 		Assert.assertEquals(Long.valueOf(existingUser.getCompanyId()),
 			ReflectionTestUtil.<Long>invoke(existingUser,
 				"getOriginalCompanyId", new Class<?>[0]));
-		Assert.assertTrue(Validator.equals(existingUser.getEmailAddress(),
+		Assert.assertTrue(Objects.equals(existingUser.getEmailAddress(),
 				ReflectionTestUtil.invoke(existingUser,
 					"getOriginalEmailAddress", new Class<?>[0])));
 
@@ -712,14 +712,14 @@ public class UserPersistenceTest {
 		Assert.assertEquals(Long.valueOf(existingUser.getCompanyId()),
 			ReflectionTestUtil.<Long>invoke(existingUser,
 				"getOriginalCompanyId", new Class<?>[0]));
-		Assert.assertTrue(Validator.equals(existingUser.getGoogleUserId(),
+		Assert.assertTrue(Objects.equals(existingUser.getGoogleUserId(),
 				ReflectionTestUtil.invoke(existingUser,
 					"getOriginalGoogleUserId", new Class<?>[0])));
 
 		Assert.assertEquals(Long.valueOf(existingUser.getCompanyId()),
 			ReflectionTestUtil.<Long>invoke(existingUser,
 				"getOriginalCompanyId", new Class<?>[0]));
-		Assert.assertTrue(Validator.equals(existingUser.getOpenId(),
+		Assert.assertTrue(Objects.equals(existingUser.getOpenId(),
 				ReflectionTestUtil.invoke(existingUser, "getOriginalOpenId",
 					new Class<?>[0])));
 	}

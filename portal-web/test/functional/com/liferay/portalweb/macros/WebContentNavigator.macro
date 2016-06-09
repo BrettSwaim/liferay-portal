@@ -37,7 +37,7 @@
 	</command>
 
 	<command name="gotoAddPGViaWCD">
-		<execute function="Click#makeVisibleClickAt" locator1="WCD#ADD_WEB_CONTENT" />
+		<execute function="Click#clickNoWaitForVisible" locator1="WCD#ADD_WEB_CONTENT" />
 
 		<if>
 			<not>
@@ -53,9 +53,11 @@
 
 		<var name="key_structureName" value="${structureName}" />
 
+		<execute function="AssertVisible" locator1="WCD#ADD_STRUCTURED_WEB_CONTENT" value1="${structureName}" />
+
 		<execute function="AssertClick" locator1="WCD#ADD_STRUCTURED_WEB_CONTENT" value1="${structureName}" />
 
-		<execute function="SelectFrame" locator1="IFrame#EDIT_ASSET" />
+		<execute function="SelectFrame" locator1="IFrame#MODAL_IFRAME" />
 
 		<execute function="AssertVisible" locator1="TextInput#TITLE" />
 	</command>
@@ -80,9 +82,23 @@
 	</command>
 
 	<command name="gotoEditPGViaWCD">
-		<execute function="Click" locator1="WCD#EDIT_WEB_CONTENT" />
+		<execute macro="Portlet#gotoPortletOptions">
+			<var name="portletName" value="Web Content Display" />
+			<var name="portletOption" value="Edit Web Content" />
+		</execute>
 
-		<execute function="SelectFrame" locator1="IFrame#EDIT_ASSET" />
+		<execute function="SelectFrame" locator1="IFrame#MODAL_IFRAME" />
+
+		<execute function="AssertVisible" locator1="TextInput#TITLE" />
+	</command>
+
+	<command name="gotoLocalizedEditPGViaWCD">
+		<execute macro="Portlet#gotoPortletOptions">
+			<var name="portletName" value="${localizedPortletName}" />
+			<var name="portletOption" value="${localizedPortletOption}" />
+		</execute>
+
+		<execute function="SelectFrame" locator1="IFrame#MODAL_IFRAME" />
 
 		<execute function="AssertVisible" locator1="TextInput#TITLE" />
 	</command>
@@ -142,24 +158,6 @@
 	<command name="gotoViewTemplate">
 		<var name="key_ddlTemplateName" value="${templateName}" />
 
-		<execute function="AssertClick" locator1="DDMSelectTemplate#TEMPLATE_TABLE_NAME" value1="${templateName}" />
-	</command>
-
-	<command name="showStructureDetails">
-		<if>
-			<condition function="IsElementNotPresent#isNotVisible" locator1="TextInput#DESCRIPTION" />
-			<then>
-				<execute function="Click" locator1="DDMEditStructure#DETAILS" />
-			</then>
-		</if>
-	</command>
-
-	<command name="showTemplateDetails">
-		<if>
-			<condition function="IsElementNotPresent#isNotVisible" locator1="TextArea#DESCRIPTION" />
-			<then>
-				<execute function="Click" locator1="DDMEditTemplate#DETAILS" />
-			</then>
-		</if>
+		<execute function="AssertClick" locator1="DDMSelectTemplate#TEMPLATE_TABLE_NAME_LINK" value1="${templateName}" />
 	</command>
 </definition>

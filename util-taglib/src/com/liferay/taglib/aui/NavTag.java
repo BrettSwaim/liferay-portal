@@ -17,6 +17,7 @@ package com.liferay.taglib.aui;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.JavaConstants;
@@ -26,7 +27,6 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.User;
 import com.liferay.taglib.aui.base.BaseNavTag;
 import com.liferay.taglib.util.TagResourceBundleUtil;
 
@@ -84,8 +84,7 @@ public class NavTag extends BaseNavTag implements BodyTag {
 
 			sb.append("\" id=\"");
 			sb.append(_getNamespacedId());
-			sb.append("NavbarBtn\" ");
-			sb.append("data-navId=\"");
+			sb.append("NavbarBtn\" data-navId=\"");
 			sb.append(_getNamespacedId());
 			sb.append("\" tabindex=\"0\">");
 
@@ -103,8 +102,7 @@ public class NavTag extends BaseNavTag implements BodyTag {
 
 					sb.append(LanguageUtil.get(resourceBundle, "my-account"));
 
-					sb.append("\" class=\"user-avatar-image\" ");
-					sb.append("src=\"");
+					sb.append("\" class=\"user-avatar-image\" src=\"");
 
 					User user = themeDisplay.getUser();
 
@@ -162,7 +160,7 @@ public class NavTag extends BaseNavTag implements BodyTag {
 			return "/html/taglib/aui/nav/" + getMarkupView() + "/page.jsp";
 		}
 
-		return "/html/taglib/aui/nav/lexicon/page.jsp";
+		return "/html/taglib/aui/nav/page.jsp";
 	}
 
 	@Override

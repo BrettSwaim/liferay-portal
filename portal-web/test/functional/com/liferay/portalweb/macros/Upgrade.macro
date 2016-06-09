@@ -1,4 +1,79 @@
 <definition>
+	<command name="searchForAssetsAfterUpgrade">
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="ProductMenu#gotoControlPanelConfiguration">
+			<var name="portlet" value="Server Administration" />
+		</execute>
+
+		<execute function="AssertClick" locator1="NavBar#RESOURCES" value1="Resources" />
+
+		<execute macro="Panel#expandPanel">
+			<var name="panelHeading" value="Clean Up Actions" />
+		</execute>
+
+		<execute function="AssertTextEquals#assertPartialText" locator1="ServerAdministrationResources#ACTIONS_TABLE_DESCRIPTION" value1="Reindex all search indexes.">
+			<var name="key_actionsDescription" value="Reindex all search indexes." />
+		</execute>
+
+		<execute function="AssertClick" locator1="ServerAdministrationResources#ACTIONS_TABLE_EXECUTE" value1="Execute">
+			<var name="key_actionsDescription" value="Reindex all search indexes." />
+		</execute>
+
+		<execute function="Pause" locator1="10000" />
+
+		<execute macro="Navigator#openURL" />
+
+		<execute macro="Search#searchPG">
+			<var name="searchTerm" value="Web Content" />
+		</execute>
+
+		<execute macro="Search#viewSearchResultPG">
+			<var name="searchAssetSummary" value="Web Content Content" />
+			<var name="searchAssetTitle" value="Web Content Title" />
+			<var name="searchAssetType" value="Web Content Article" />
+		</execute>
+
+		<execute macro="Search#searchPG">
+			<var name="searchTerm" value="Document1" />
+		</execute>
+
+		<execute macro="Search#viewSearchResultPG">
+			<var name="searchAssetTitle" value="Document1" />
+			<var name="searchAssetType" value="Document" />
+		</execute>
+
+		<execute macro="Search#searchPG">
+			<var name="searchTerm" value="Message Boards" />
+		</execute>
+
+		<execute macro="Search#viewSearchResultPG">
+			<var name="searchAssetSummary" value="Message Boards Body" />
+			<var name="searchAssetTitle" value="Message Boards Subject" />
+			<var name="searchAssetType" value="Message Boards Message" />
+		</execute>
+
+		<execute macro="Search#searchPG">
+			<var name="searchTerm" value="Wiki" />
+		</execute>
+
+		<execute macro="Search#viewSearchResultPG">
+			<var name="searchAssetSummary" value="Wiki Front Page Content" />
+			<var name="searchAssetTitle" value="FrontPage" />
+			<var name="searchAssetType" value="Wiki Page" />
+		</execute>
+
+		<execute macro="Search#searchPG">
+			<var name="searchTerm" value="Blogs" />
+		</execute>
+
+		<execute macro="Search#viewSearchResultPG">
+			<var name="searchAssetSummary" value="Blogs Entry Content" />
+			<var name="searchAssetTitle" value="Blogs Entry Title" />
+			<var name="searchAssetType" value="Blogs Entry" />
+		</execute>
+	</command>
+
 	<command name="viewUpgrade">
 		<execute macro="SignIn#signIn" />
 
@@ -16,23 +91,40 @@
 			<var name="pageName" value="Document" />
 		</execute>
 
-		<execute macro="DMDocument#viewPGDetails">
-			<var name="dmDocumentSize" value="22KB" />
+		<execute macro="DMPortlet#setDescriptiveView" />
+
+		<execute macro="DMDocument#viewPG">
 			<var name="dmDocumentTitle" value="Document1" />
-			<var name="dmDocumentUploader" value="Test Test" />
-			<var name="dmDocumentVersionNumber" value="1.0" />
-			<var name="workflow" value="Approved" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMediaDocument#DOCUMENT_INFO_UPLOADED_BY" value1="Test Test" />
+
+		<execute macro="DMDocument#expandInfo" />
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMediaDocument#DOCUMENT_DETAILS_VERSION" value1="1.0">
+			<var name="key_dmDocumentVersionNumber" value="1.0" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="DocumentsAndMediaDocument#DOCUMENT_INFO_WORKFLOW_STATUS" value1="Approved" />
+		<execute function="AssertTextEquals" locator1="DocumentsAndMediaDocument#DOCUMENT_DETAILS_DOWNLOAD" value1="Download (22KB)">
+			<var name="key_dmDocumentSize" value="22" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
 			<var name="pageName" value="Message Boards" />
 		</execute>
 
-		<execute macro="MessageboardsThread#viewPG">
+		<execute macro="MessageboardsThread#gotoPG">
+			<var name="lastPostUserName" value="Test Test" />
 			<var name="postCount" value="1" />
+			<var name="startedByUserName" value="Test Test" />
 			<var name="threadBody" value="Message Boards Body" />
 			<var name="threadSubject" value="Message Boards Subject" />
-			<var name="userName" value="Test Test" />
+		</execute>
+
+		<execute macro="MessageboardsThread#viewPG">
+			<var name="threadBody" value="Message Boards Body" />
+			<var name="threadSubject" value="Message Boards Subject" />
 		</execute>
 
 		<execute macro="Navigator#gotoPage">
@@ -53,9 +145,12 @@
 			<var name="entryTitle" value="Blogs Entry Title" />
 		</execute>
 
-		<execute macro="Navigator#gotoSitePage">
-			<var name="pageName" value="Site Page" />
+		<execute macro="Navigator#openSiteURL">
 			<var name="siteName" value="Site Name" />
+		</execute>
+
+		<execute function="AssertVisible" locator1="Home#PAGE_ACTIVE">
+			<var name="key_pageName" value="Site Page" />
 		</execute>
 
 		<execute macro="SignOut#signOut" />
@@ -68,5 +163,9 @@
 			<var name="userFirstName" value="Userfn" />
 			<var name="userLastName" value="Userln" />
 		</execute>
+
+		<execute macro="SignOut#signOut" />
+
+		<execute macro="SignIn#signIn" />
 	</command>
 </definition>

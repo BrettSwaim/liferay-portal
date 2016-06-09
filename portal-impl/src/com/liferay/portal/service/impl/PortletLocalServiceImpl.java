@@ -16,17 +16,32 @@ package com.liferay.portal.service.impl;
 
 import com.liferay.admin.kernel.util.PortalMyAccountApplicationType;
 import com.liferay.expando.kernel.model.CustomAttributesDisplay;
-import com.liferay.portal.exception.PortletIdException;
 import com.liferay.portal.kernel.application.type.ApplicationType;
 import com.liferay.portal.kernel.cluster.Clusterable;
 import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.configuration.ConfigurationFactoryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.PortletIdException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.image.SpriteProcessor;
 import com.liferay.portal.kernel.image.SpriteProcessorUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.CompanyConstants;
+import com.liferay.portal.kernel.model.EventDefinition;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletApp;
+import com.liferay.portal.kernel.model.PortletCategory;
+import com.liferay.portal.kernel.model.PortletConstants;
+import com.liferay.portal.kernel.model.PortletFilter;
+import com.liferay.portal.kernel.model.PortletInfo;
+import com.liferay.portal.kernel.model.PortletInstance;
+import com.liferay.portal.kernel.model.PortletPreferences;
+import com.liferay.portal.kernel.model.PortletURLListener;
+import com.liferay.portal.kernel.model.PublicRenderParameter;
+import com.liferay.portal.kernel.model.ResourceConstants;
+import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.RoleConstants;
 import com.liferay.portal.kernel.plugin.PluginPackage;
 import com.liferay.portal.kernel.portlet.FriendlyURLMapper;
 import com.liferay.portal.kernel.portlet.LiferayPortletConfig;
@@ -63,21 +78,6 @@ import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.QName;
 import com.liferay.portal.kernel.xml.UnsecureSAXReaderUtil;
-import com.liferay.portal.model.CompanyConstants;
-import com.liferay.portal.model.EventDefinition;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.PortletApp;
-import com.liferay.portal.model.PortletCategory;
-import com.liferay.portal.model.PortletConstants;
-import com.liferay.portal.model.PortletFilter;
-import com.liferay.portal.model.PortletInfo;
-import com.liferay.portal.model.PortletInstance;
-import com.liferay.portal.model.PortletPreferences;
-import com.liferay.portal.model.PortletURLListener;
-import com.liferay.portal.model.PublicRenderParameter;
-import com.liferay.portal.model.ResourceConstants;
-import com.liferay.portal.model.Role;
-import com.liferay.portal.model.RoleConstants;
 import com.liferay.portal.model.impl.EventDefinitionImpl;
 import com.liferay.portal.model.impl.PortletAppImpl;
 import com.liferay.portal.model.impl.PortletFilterImpl;
@@ -102,6 +102,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -149,6 +150,10 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 	@Override
 	public void checkPortlet(Portlet portlet) throws PortalException {
 		initPortletDefaultPermissions(portlet);
+
+		initPortletRootModelDefaultPermissions(portlet);
+
+		initPortletModelDefaultPermissions(portlet);
 
 		initPortletAddToPagePermissions(portlet);
 	}
@@ -215,15 +220,9 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 			companyId, rootPortletId, ResourceConstants.SCOPE_INDIVIDUAL,
 			PortletPermissionUtil.getPrimaryKey(plid, portletId));
 
-		int ownerType = PortletKeys.PREFS_OWNER_TYPE_LAYOUT;
-
-		if (PortletConstants.hasUserId(portletId)) {
-			ownerType = PortletKeys.PREFS_OWNER_TYPE_USER;
-		}
-
 		List<PortletPreferences> portletPreferencesList =
 			portletPreferencesLocalService.getPortletPreferences(
-				ownerType, plid, portletId);
+				plid, portletId);
 
 		Portlet portlet = getPortletById(companyId, portletId);
 
@@ -253,6 +252,32 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 		for (String portletId : portletIds) {
 			deletePortlet(companyId, portletId, plid);
 		}
+	}
+
+	@Override
+	@Skip
+	public void deployPortlet(Portlet portlet) throws Exception {
+		PortletApp portletApp = portlet.getPortletApp();
+
+		if (portletApp != null) {
+			_portletApps.put(portletApp.getServletContextName(), portletApp);
+		}
+
+		clearCache();
+
+		ServletContext servletContext = portletApp.getServletContext();
+
+		PortletBagFactory portletBagFactory = new PortletBagFactory();
+
+		portletBagFactory.setClassLoader(
+			ClassLoaderPool.getClassLoader(
+				servletContext.getServletContextName()));
+		portletBagFactory.setServletContext(servletContext);
+		portletBagFactory.setWARFile(true);
+
+		portletBagFactory.create(portlet, true);
+
+		_portletsMap.put(portlet.getRootPortletId(), portlet);
 	}
 
 	@Override
@@ -734,10 +759,10 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 					PortalMyAccountApplicationType.MyAccount.CLASS_NAME,
 					PortletProvider.Action.VIEW);
 
-				if (!Validator.equals(
+				if (!Objects.equals(
 						portletModel.getPortletId(),
 						PortletKeys.SERVER_ADMIN) &&
-					!Validator.equals(portletModel.getPortletId(), portletId) &&
+					!Objects.equals(portletModel.getPortletId(), portletId) &&
 					!portletModel.isInclude()) {
 
 					portletPoolsItr.remove();
@@ -830,9 +855,9 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 
 				portlet = entry.getValue();
 
-				_portletsMap.put(entry.getKey(), portlet);
-
 				portletBagFactory.create(portlet, true);
+
+				_portletsMap.put(entry.getKey(), portlet);
 			}
 
 			// Sprite images
@@ -964,11 +989,15 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 		String portletId = _portletIdsByStrutsPath.get(securityPath);
 
 		if (Validator.isNull(portletId)) {
-			for (String strutsPath : _portletIdsByStrutsPath.keySet()) {
+			for (Map.Entry<String, String> entry :
+					_portletIdsByStrutsPath.entrySet()) {
+
+				String strutsPath = entry.getKey();
+
 				if (securityPath.startsWith(
 						strutsPath.concat(StringPool.SLASH))) {
 
-					portletId = _portletIdsByStrutsPath.get(strutsPath);
+					portletId = entry.getValue();
 
 					break;
 				}
@@ -1124,48 +1153,109 @@ public class PortletLocalServiceImpl extends PortletLocalServiceBaseImpl {
 	protected void initPortletDefaultPermissions(Portlet portlet)
 		throws PortalException {
 
-		long companyId = portlet.getCompanyId();
-		String rootPortletId = portlet.getRootPortletId();
+		Role guestRole = roleLocalService.getRole(
+			portlet.getCompanyId(), RoleConstants.GUEST);
+		List<String> guestActions =
+			ResourceActionsUtil.getPortletResourceGuestDefaultActions(
+				portlet.getRootPortletId());
 
-		int count = resourcePermissionLocalService.getResourcePermissionsCount(
-			companyId, rootPortletId, ResourceConstants.SCOPE_INDIVIDUAL,
-			rootPortletId);
+		resourcePermissionLocalService.setResourcePermissions(
+			portlet.getCompanyId(), portlet.getRootPortletId(),
+			ResourceConstants.SCOPE_INDIVIDUAL, portlet.getRootPortletId(),
+			guestRole.getRoleId(), guestActions.toArray(new String[0]));
 
-		if (count > 0) {
+		Role ownerRole = roleLocalService.getRole(
+			portlet.getCompanyId(), RoleConstants.OWNER);
+		List<String> ownerActionIds =
+			ResourceActionsUtil.getPortletResourceActions(
+				portlet.getRootPortletId());
+
+		resourcePermissionLocalService.setOwnerResourcePermissions(
+			portlet.getCompanyId(), portlet.getRootPortletId(),
+			ResourceConstants.SCOPE_INDIVIDUAL, portlet.getRootPortletId(),
+			ownerRole.getRoleId(), 0, ownerActionIds.toArray(new String[0]));
+
+		Role siteMemberRole = roleLocalService.getRole(
+			portlet.getCompanyId(), RoleConstants.SITE_MEMBER);
+		List<String> groupActionIds =
+			ResourceActionsUtil.getPortletResourceGroupDefaultActions(
+				portlet.getRootPortletId());
+
+		resourcePermissionLocalService.setResourcePermissions(
+			portlet.getCompanyId(), portlet.getRootPortletId(),
+			ResourceConstants.SCOPE_INDIVIDUAL, portlet.getRootPortletId(),
+			siteMemberRole.getRoleId(), groupActionIds.toArray(new String[0]));
+	}
+
+	protected void initPortletModelDefaultPermissions(Portlet portlet)
+		throws PortalException {
+
+		List<String> modelResources = new ArrayList<>();
+
+		modelResources.add(
+			ResourceActionsUtil.getPortletRootModelResource(
+				portlet.getRootPortletId()));
+		modelResources.addAll(
+			ResourceActionsUtil.getPortletModelResources(
+				portlet.getRootPortletId()));
+
+		for (String modelResource : modelResources) {
+			if (Validator.isBlank(modelResource)) {
+				continue;
+			}
+
+			if (resourceBlockLocalService.isSupported(modelResource)) {
+				continue;
+			}
+
+			resourceLocalService.addResources(
+				portlet.getCompanyId(), 0, 0, modelResource, modelResource,
+				false, false, true);
+		}
+	}
+
+	protected void initPortletRootModelDefaultPermissions(Portlet portlet)
+		throws PortalException {
+
+		String rootModelResource =
+			ResourceActionsUtil.getPortletRootModelResource(
+				portlet.getRootPortletId());
+
+		if (Validator.isBlank(rootModelResource)) {
 			return;
 		}
 
 		Role guestRole = roleLocalService.getRole(
-			companyId, RoleConstants.GUEST);
-		List<String> guestActions =
-			ResourceActionsUtil.getPortletResourceGuestDefaultActions(
-				rootPortletId);
+			portlet.getCompanyId(), RoleConstants.GUEST);
+		List<String> guestActionIds =
+			ResourceActionsUtil.getModelResourceGuestDefaultActions(
+				rootModelResource);
 
 		resourcePermissionLocalService.setResourcePermissions(
-			companyId, rootPortletId, ResourceConstants.SCOPE_INDIVIDUAL,
-			rootPortletId, guestRole.getRoleId(),
-			guestActions.toArray(new String[0]));
+			portlet.getCompanyId(), rootModelResource,
+			ResourceConstants.SCOPE_INDIVIDUAL, rootModelResource,
+			guestRole.getRoleId(), guestActionIds.toArray(new String[0]));
 
 		Role ownerRole = roleLocalService.getRole(
-			companyId, RoleConstants.OWNER);
+			portlet.getCompanyId(), RoleConstants.OWNER);
 		List<String> ownerActionIds =
-			ResourceActionsUtil.getPortletResourceActions(rootPortletId);
+			ResourceActionsUtil.getModelResourceActions(rootModelResource);
 
 		resourcePermissionLocalService.setOwnerResourcePermissions(
-			companyId, rootPortletId, ResourceConstants.SCOPE_INDIVIDUAL,
-			rootPortletId, ownerRole.getRoleId(), 0,
-			ownerActionIds.toArray(new String[0]));
+			portlet.getCompanyId(), rootModelResource,
+			ResourceConstants.SCOPE_INDIVIDUAL, rootModelResource,
+			ownerRole.getRoleId(), 0, ownerActionIds.toArray(new String[0]));
 
 		Role siteMemberRole = roleLocalService.getRole(
-			companyId, RoleConstants.SITE_MEMBER);
+			portlet.getCompanyId(), RoleConstants.SITE_MEMBER);
 		List<String> groupActionIds =
-			ResourceActionsUtil.getPortletResourceGroupDefaultActions(
-				rootPortletId);
+			ResourceActionsUtil.getModelResourceGroupDefaultActions(
+				rootModelResource);
 
 		resourcePermissionLocalService.setResourcePermissions(
-			companyId, rootPortletId, ResourceConstants.SCOPE_INDIVIDUAL,
-			rootPortletId, siteMemberRole.getRoleId(),
-			groupActionIds.toArray(new String[0]));
+			portlet.getCompanyId(), rootModelResource,
+			ResourceConstants.SCOPE_INDIVIDUAL, rootModelResource,
+			siteMemberRole.getRoleId(), groupActionIds.toArray(new String[0]));
 	}
 
 	protected void readLiferayDisplay(

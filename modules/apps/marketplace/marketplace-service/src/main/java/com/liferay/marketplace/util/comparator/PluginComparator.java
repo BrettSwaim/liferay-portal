@@ -14,16 +14,18 @@
 
 package com.liferay.marketplace.util.comparator;
 
+import com.liferay.portal.kernel.model.LayoutTemplate;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.Theme;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
-import com.liferay.portal.model.LayoutTemplate;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.Theme;
 
 import java.io.Serializable;
+
+import java.text.Collator;
 
 import java.util.Comparator;
 import java.util.Locale;
@@ -47,10 +49,12 @@ public class PluginComparator implements Comparator, Serializable {
 
 	@Override
 	public int compare(Object plugin1, Object plugin2) {
+		Collator collator = Collator.getInstance(_locale);
+
 		String name1 = _getName(plugin1);
 		String name2 = _getName(plugin2);
 
-		return name1.compareTo(name2);
+		return collator.compare(name1, name2);
 	}
 
 	private String _getName(Object plugin) {

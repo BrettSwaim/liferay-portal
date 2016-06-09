@@ -2,14 +2,6 @@
 
 <ignore-errors>
 	<javascript>
-		<ignore-error description="LPS-41634">
-			<contains>NS_ERROR_NOT_INITIALIZED:</contains>
-			<matches></matches>
-		</ignore-error>
-		<ignore-error description="LPS-41634">
-			<contains>TypeError: d.config.doc.defaultView is null</contains>
-			<matches></matches>
-		</ignore-error>
 		<ignore-error description="LPS-42469">
 			<contains>Permission denied to access property 'type'</contains>
 			<matches></matches>
@@ -213,12 +205,32 @@
 			<contains></contains>
 			<matches>.*osgi.compendium:service=.*version=1.[0-9]+.*</matches>
 		</ignore-error>
-		<ignore-error description="LPS-57893, temporary workaround until André Oliveira fixes it">
-			<contains>com.liferay.portal.kernel.search.SearchException: Unable to delete</contains>
+		<ignore-error description="LPS-65878, temporary workaround until Tina Tian fixes it">
+			<contains>The addSearchEngineConfigurator method has thrown an exception</contains>
+			<matches></matches>
+		</ignore-error>
+		<ignore-error description="LPS-65961">
+			<contains>Unable to add taglib</contains>
+			<matches></matches>
+		</ignore-error>
+		<ignore-error description="LPS-66314, temporary workaround until Jürgen Kappler fixes it">
+			<contains>Unable to add folder menu item</contains>
 			<matches></matches>
 		</ignore-error>
 		<ignore-error description="LRQA-14442, temporary workaround until Kiyoshi Lee fixes it">
 			<contains>[org_eclipse_equinox_http_servlet.*Framework Event Dispatcher: Equinox Container:</contains>
+			<matches></matches>
+		</ignore-error>
+		<ignore-error description="LRQA-21866">
+			<contains></contains>
+			<matches>.*\(/o/frontend-js-metal-web-1.0.0/metal-promise/src/promise/Promise.js:.*\): @define variable  assignment must be global.*</matches>
+		</ignore-error>
+		<ignore-error description="LRQA-21866">
+			<contains></contains>
+			<matches>.*\{0\} error\(s\), \{1\} warning\(s\).*</matches>
+		</ignore-error>
+		<ignore-error description="LRQA-24859">
+			<contains>No binary licenses found</contains>
 			<matches></matches>
 		</ignore-error>
 		<ignore-error description="WCM-202">

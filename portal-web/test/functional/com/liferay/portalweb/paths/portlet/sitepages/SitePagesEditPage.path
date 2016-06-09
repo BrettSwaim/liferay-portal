@@ -45,18 +45,23 @@
 	<td></td>
 </tr>
 <tr>
-	<td>LAYOUT_RADIO</td>
-	<td>//input[@value='${key_columnName}']</td>
+	<td>LAYOUT_CARD</td>
+	<td>//div[contains(@class,'card')]//span[contains(.,'${key_columnName}')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>PAGE_TYPE_LABEL</td>
-	<td>//li[contains(@data-search,'${key_pageType}')]//label[contains(@for,'addLayoutSelectedPageTemplate')]</td>
+	<td>PAGE_TEMPLATE_INHERIT_CHANGES_TOGGLE</td>
+	<td>//div[@class='layout-type']//label[contains(.,'Inherit Changes')]/input[contains(@class,'toggle-switch')]</td>
 	<td></td>
 </tr>
 <tr>
-	<td>PAGE_TYPE_RADIO</td>
-	<td>//li[contains(@data-search,'${key_pageType}')]//input[contains(@id,'addLayoutSelectedPageTemplate')]</td>
+	<td>PAGE_TYPE_SELECT</td>
+	<td>//div[contains(@class,'input-select')]//select</td>
+	<td></td>
+</tr>
+<tr>
+	<td>PAGE_TYPE_SELECT_OPTION</td>
+	<td>//div[contains(@class,'input-select')]//select//option[contains(.,'${key_pageType}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -71,7 +76,7 @@
 </tr>
 <tr>
 	<td>PAGE_TYPE_TEMPLATE_AUTOMATICALLY_APPLY_CHANGES_LABEL</td>
-	<td>//li[contains(@data-search,'${key_pageType}')]//label[contains(@for,'addLayoutLayoutPrototypeLinkEnabled')]</td>
+	<td>//div[contains(@data-search,'${key_pageType}')]//label[contains(@for,'addLayoutLayoutPrototypeLinkEnabled')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -81,12 +86,12 @@
 </tr>
 <tr>
 	<td>PAGE_TYPE_TEMPLATE_AUTOMATICALLY_APPLY_CHANGES_CHECKBOX</td>
-	<td>//li[contains(@data-search,'${key_pageType}')]//input[contains(@name,'layoutPrototypeLinkEnabled')]</td>
+	<td>//div[contains(@data-search,'${key_pageType}')]//input[contains(@name,'layoutPrototypeLinkEnabled')]</td>
 	<td></td>
 </tr>
 <tr>
 	<td>PAGE_TYPE_TEMPLATE_AUTOMATICALLY_APPLY_CHANGES_CHECKBOX_GENERIC</td>
-	<td>//label[contains(@for,'layoutPrototypeLinkEnabled')]/input[contains(@id,'layoutPrototypeLinkEnabled')]</td>
+	<td>//label[contains(.,'Inherit Changes')]/input</td>
 	<td></td>
 </tr>
 <tr>
@@ -116,7 +121,7 @@
 </tr>
 <tr>
 	<td>PAGE_TYPE_EMBEDDED_DESCRIPTION_FIELD</td>
-	<td>//li[@data-search='Embedded']//div[contains(@class,'page-template-title')]</td>
+	<td>//div[@id='embedded']/p[contains(@class,'text')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -126,7 +131,7 @@
 </tr>
 <tr>
 	<td>PAGE_TYPE_LINK_TO_URL_DESCRIPTION_FIELD</td>
-	<td>//li[@data-search='Link to URL']//div[contains(@class,'page-template-title')]</td>
+	<td>//div[@id='url']/p[contains(@class,'text')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -168,12 +173,12 @@
 </tr>
 <tr>
 	<td>SEO_HTML_TITLE</td>
-	<td>//div[contains(.,'HTML Title')]/span/input</td>
+	<td>//div[contains(.,'HTML')]/span/input</td>
 	<td></td>
 </tr>
 <tr>
 	<td>SEO_HTML_TITLE_META_TAGS</td>
-	<td>//div[contains(.,'HTML Title')]/span//ul/li[@data-value='${key_defaultSiteLanguageKey}']</td>
+	<td>//div[contains(.,'HTML')]/span//ul/li[@data-value='${key_defaultSiteLanguageKey}']</td>
 	<td></td>
 </tr>
 <tr>
@@ -254,7 +259,7 @@
 </tr>
 <tr>
 	<td>CUSTOMIZATION_SETTINGS_SHOW_CUSTOMIZABLE_SECTIONS</td>
-	<td>//div[@class='customization-settings']/button[contains(@id,'manageCustomization')]</td>
+	<td>//input[contains(@id,'CUSTOMIZABLE_LAYOUT')]</td>
 	<td></td>
 </tr>
 <tr>

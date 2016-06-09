@@ -169,7 +169,7 @@ public class BuildChangeLogTask extends DefaultTask {
 		ticketIdPrefixes(ticketIdPrefixes);
 	}
 
-	public void setTicketIdPrefixes(String ... ticketIdPrefixes) {
+	public void setTicketIdPrefixes(String... ticketIdPrefixes) {
 		setTicketIdPrefixes(Arrays.asList(ticketIdPrefixes));
 	}
 
@@ -181,7 +181,7 @@ public class BuildChangeLogTask extends DefaultTask {
 		return this;
 	}
 
-	public BuildChangeLogTask ticketIdPrefixes(String ... ticketIdPrefixes) {
+	public BuildChangeLogTask ticketIdPrefixes(String... ticketIdPrefixes) {
 		return ticketIdPrefixes(Arrays.asList(ticketIdPrefixes));
 	}
 
@@ -203,7 +203,7 @@ public class BuildChangeLogTask extends DefaultTask {
 		else {
 			Calendar calendar = Calendar.getInstance();
 
-			calendar.add(Calendar.YEAR, -1);
+			calendar.add(Calendar.YEAR, -2);
 
 			rangeStart = GitUtil.getHashBefore(calendar.getTime(), repository);
 		}
@@ -212,8 +212,8 @@ public class BuildChangeLogTask extends DefaultTask {
 	}
 
 	protected Set<String> getTicketIds(
-		String rangeStart, String rangeEnd,
-		Repository repository) throws Exception {
+			String rangeStart, String rangeEnd, Repository repository)
+		throws Exception {
 
 		Set<String> ticketIds = new TreeSet<>(
 			new NaturalOrderStringComparator());

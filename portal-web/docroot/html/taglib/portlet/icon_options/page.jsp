@@ -20,8 +20,8 @@
 	cssClass="portlet-options"
 	direction="<%= direction %>"
 	extended="<%= false %>"
-	icon='<%= (markupView != null) && markupView.equals("lexicon") ? StringPool.BLANK : "../aui/ellipsis-vertical" %>'
-	markupView="<%= markupView %>"
+	icon="ellipsis-v"
+	markupView="lexicon"
 	message="options"
 	showArrow="<%= false %>"
 	showWhenSingleIcon="<%= true %>"
@@ -33,7 +33,7 @@
 		boolean include = portletConfigurationIcon.include(request, new PipingServletResponse(pageContext));
 
 		if (!include) {
-		%>
+	%>
 
 			<liferay-ui:icon
 				alt="<%= portletConfigurationIcon.getAlt() %>"
@@ -47,19 +47,19 @@
 				label="<%= portletConfigurationIcon.isLabel() %>"
 				lang="<%= portletConfigurationIcon.getLang() %>"
 				linkCssClass="<%= portletConfigurationIcon.getLinkCssClass() %>"
-				localizeMessage="<%= portletConfigurationIcon.isLocalizeMessage() %>"
-				message="<%= portletConfigurationIcon.getMessage() %>"
+				localizeMessage="<%= false %>"
+				message="<%= portletConfigurationIcon.getMessage(portletRequest) %>"
 				method="<%= portletConfigurationIcon.getMethod() %>"
-				onClick="<%= portletConfigurationIcon.getOnClick() %>"
+				onClick="<%= portletConfigurationIcon.getOnClick(portletRequest, portletResponse) %>"
 				src="<%= portletConfigurationIcon.getSrc() %>"
 				srcHover="<%= portletConfigurationIcon.getSrcHover() %>"
 				target="<%= portletConfigurationIcon.getTarget() %>"
 				toolTip="<%= portletConfigurationIcon.isToolTip() %>"
-				url="<%= portletConfigurationIcon.getURL() %>"
+				url="<%= portletConfigurationIcon.getURL(portletRequest, portletResponse) %>"
 				useDialog="<%= portletConfigurationIcon.isUseDialog() %>"
 			/>
 
-		<%
+	<%
 		}
 	}
 	%>

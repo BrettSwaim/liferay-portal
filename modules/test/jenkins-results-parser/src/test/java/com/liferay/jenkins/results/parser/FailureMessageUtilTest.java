@@ -43,6 +43,9 @@ public class FailureMessageUtilTest extends BaseJenkinsResultsParserTestCase {
 			"plugin-compile-1", "9,label_exp=!master", "233",
 			"test-portal-acceptance-pullrequest-batch(ee-6.2.x)", "test-1-20");
 		downloadSample(
+			"plugin-compile-2", "0,label_exp=!master", "1953",
+			"test-portal-acceptance-pullrequest-batch(master)", "test-4-1");
+		downloadSample(
 			"sourceformat-1", "1,label_exp=!master", "7031",
 			"test-portal-acceptance-pullrequest-batch(master)", "test-1-14");
 	}
@@ -88,7 +91,10 @@ public class FailureMessageUtilTest extends BaseJenkinsResultsParserTestCase {
 	protected String getMessage(String urlString) throws Exception {
 		Project project = getProject();
 
-		return FailureMessageUtil.getFailureMessage(project, urlString);
+		String failureMessage = FailureMessageUtil.getFailureMessage(
+			project, urlString);
+
+		return formatXML("<div>" + failureMessage + "</div>");
 	}
 
 	protected Project getProject() {

@@ -36,8 +36,9 @@
 					<%
 					int i = 0;
 
-					for (String fieldName : validatorTagsMap.keySet()) {
-						List<ValidatorTag> validatorTags = validatorTagsMap.get(fieldName);
+					for (Map.Entry<String, List<ValidatorTag>> entry : validatorTagsMap.entrySet()) {
+						String fieldName = entry.getKey();
+						List<ValidatorTag> validatorTags = entry.getValue();
 
 						for (ValidatorTag validatorTag : validatorTags) {
 					%>
@@ -47,7 +48,7 @@
 							{
 								body: <%= validatorTag.getBody() %>,
 								custom: <%= validatorTag.isCustom() %>,
-								errorMessage: '<%= UnicodeLanguageUtil.get(request, validatorTag.getErrorMessage()) %>',
+								errorMessage: '<%= UnicodeLanguageUtil.get(resourceBundle, validatorTag.getErrorMessage()) %>',
 								fieldName: '<%= namespace + HtmlUtil.escapeJS(fieldName) %>',
 								validatorName: '<%= validatorTag.getName() %>'
 							}
@@ -80,4 +81,6 @@
 	<c:if test="<%= Validator.isNotNull(onSubmit) %>">
 		A.all('#<%= namespace + name %> .input-container').removeAttribute('disabled');
 	</c:if>
+
+	Liferay.fire('<portlet:namespace />formReady');
 </aui:script>

@@ -13,6 +13,7 @@
  * details.
  */
 --%>
+
 <%@ include file="/html/taglib/init.jsp" %>
 
 <%
@@ -30,10 +31,14 @@ if (Validator.isNull(icon)) {
 }
 %>
 
-<div class="dropdown dropdown-menu-no-arrow <%= cssClass %>" id="<%= id %>" <%= AUIUtil.buildData(data) %>>
-	<a aria-expanded="false" class="dropdown-toggle icon-monospaced <%= triggerCssClass %>" data-onclick="toggle" href="#1" title="<%= message %>">
+<div class="dropdown dropdown-menu-no-arrow lfr-icon-menu <%= cssClass %>" <%= AUIUtil.buildData(data) %>>
+	<a aria-expanded="false" class="dropdown-toggle icon-monospaced <%= triggerCssClass %>" data-toggle="dropdown" href="javascript:;" id="<%= id %>" title="<%= message %>">
 		<aui:icon image="<%= icon %>" markupView="lexicon" />
 	</a>
+
+	<aui:script use="liferay-menu">
+		Liferay.Menu.register('<%= id %>');
+	</aui:script>
 
 	<c:choose>
 		<c:when test="<%= scroll %>">

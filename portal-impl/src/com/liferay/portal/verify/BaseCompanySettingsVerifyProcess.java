@@ -16,14 +16,15 @@ package com.liferay.portal.verify;
 
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.settings.CompanyServiceSettingsLocator;
 import com.liferay.portal.kernel.settings.ModifiableSettings;
 import com.liferay.portal.kernel.settings.Settings;
 import com.liferay.portal.kernel.settings.SettingsDescriptor;
 import com.liferay.portal.kernel.settings.SettingsException;
 import com.liferay.portal.kernel.settings.SettingsFactory;
-import com.liferay.portal.model.Company;
-import com.liferay.portal.service.CompanyLocalService;
+import com.liferay.portal.kernel.util.LoggingTimer;
 
 import java.io.IOException;
 
@@ -88,29 +89,32 @@ public abstract class BaseCompanySettingsVerifyProcess extends VerifyProcess {
 	}
 
 	protected void verifyProperties() throws Exception {
-		CompanyLocalService companyLocalService = getCompanyLocalService();
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			CompanyLocalService companyLocalService = getCompanyLocalService();
 
-		List<Company> companies = companyLocalService.getCompanies(false);
+			List<Company> companies = companyLocalService.getCompanies(false);
 
-		for (Company company : companies) {
-			Dictionary<String, String> dictionary = getPropertyValues(
-				company.getCompanyId());
+			for (Company company : companies) {
+				Dictionary<String, String> dictionary = getPropertyValues(
+					company.getCompanyId());
 
-			if (!dictionary.isEmpty()) {
-				storeSettings(
-					company.getCompanyId(), getSettingsId(), dictionary);
+				if (!dictionary.isEmpty()) {
+					storeSettings(
+						company.getCompanyId(), getSettingsId(), dictionary);
+				}
+
+				Set<String> keys = getLegacyPropertyKeys();
+
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"Removing preference keys " + keys + " for company " +
+							company.getCompanyId());
+				}
+
+				companyLocalService.removePreferences(
+					company.getCompanyId(),
+					keys.toArray(new String[keys.size()]));
 			}
-
-			Set<String> keys = getLegacyPropertyKeys();
-
-			if (_log.isInfoEnabled()) {
-				_log.info(
-					"Removing preference keys " + keys + " for company " +
-						company.getCompanyId());
-			}
-
-			companyLocalService.removePreferences(
-				company.getCompanyId(), keys.toArray(new String[keys.size()]));
 		}
 	}
 

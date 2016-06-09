@@ -24,6 +24,7 @@ import com.liferay.portal.kernel.deploy.hot.HotDeployException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.plugin.PluginPackage;
+import com.liferay.portal.kernel.service.ServiceComponentLocalServiceUtil;
 import com.liferay.portal.kernel.service.configuration.ServiceComponentConfiguration;
 import com.liferay.portal.kernel.service.configuration.servlet.ServletServiceContextComponentConfiguration;
 import com.liferay.portal.kernel.servlet.ServletContextPool;
@@ -31,7 +32,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.plugin.PluginPackageUtil;
-import com.liferay.portal.service.ServiceComponentLocalServiceUtil;
 import com.liferay.registry.Registry;
 import com.liferay.registry.RegistryUtil;
 import com.liferay.registry.ServiceRegistrar;
@@ -109,8 +109,8 @@ public class PluginPackageHotDeployListener extends BaseHotDeployListener {
 			return;
 		}
 
-		if (servletContext.getResource(
-				"/WEB-INF/liferay-theme-loader.xml") != null) {
+		if (servletContext.getResource("/WEB-INF/liferay-theme-loader.xml") !=
+				null) {
 
 			PluginPackageUtil.registerInstalledPluginPackage(pluginPackage);
 
@@ -128,8 +128,6 @@ public class PluginPackageHotDeployListener extends BaseHotDeployListener {
 		initLogger(classLoader);
 		initPortletProps(classLoader);
 		initServiceComponent(servletContext, classLoader);
-
-		registerClpMessageListeners(servletContext, classLoader);
 
 		reconfigureCaches(servletContext, classLoader);
 
@@ -167,8 +165,6 @@ public class PluginPackageHotDeployListener extends BaseHotDeployListener {
 		destroyServiceComponent(
 			new ServletServiceContextComponentConfiguration(servletContext),
 			hotDeployEvent.getContextClassLoader());
-
-		unregisterClpMessageListeners(servletContext);
 
 		ServiceRegistrar<PortalCacheConfiguratorSettings> serviceRegistrar =
 			(ServiceRegistrar<PortalCacheConfiguratorSettings>)

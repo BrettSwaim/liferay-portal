@@ -44,7 +44,7 @@ for (int i = 0; i < resultRowSplitterEntries.size(); i++) {
 		</div>
 	</c:if>
 
-	<ul class="list-unstyled row" data-qa-id="rows<%= i %>">
+	<ul class="display-style-icon list-unstyled row" data-qa-id="rows<%= i %>">
 
 		<%
 		for (int j = 0; j < curResultRows.size(); j++) {
@@ -102,9 +102,9 @@ for (int i = 0; i < resultRowSplitterEntries.size(); i++) {
 					request.setAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW_ENTRY, entry);
 				%>
 
-						<%
-						entry.print(pageContext.getOut(), request, response);
-						%>
+					<%
+					entry.print(pageContext.getOut(), request, response);
+					%>
 
 				<%
 				}

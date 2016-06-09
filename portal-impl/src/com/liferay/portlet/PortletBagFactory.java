@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.configuration.Configuration;
 import com.liferay.portal.kernel.configuration.ConfigurationFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.notifications.UserNotificationDefinition;
 import com.liferay.portal.kernel.notifications.UserNotificationDeliveryType;
 import com.liferay.portal.kernel.notifications.UserNotificationHandler;
@@ -37,13 +38,13 @@ import com.liferay.portal.kernel.portlet.PortletBagPool;
 import com.liferay.portal.kernel.portlet.PortletInstanceFactoryUtil;
 import com.liferay.portal.kernel.portlet.PortletLayoutListener;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
-import com.liferay.portal.kernel.portlet.ResourceBundleTracker;
 import com.liferay.portal.kernel.scheduler.SchedulerEntry;
 import com.liferay.portal.kernel.scheduler.messaging.SchedulerEventMessageListener;
 import com.liferay.portal.kernel.scheduler.messaging.SchedulerEventMessageListenerWrapper;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.OpenSearch;
 import com.liferay.portal.kernel.security.permission.PermissionPropagator;
+import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
 import com.liferay.portal.kernel.servlet.URLEncoder;
 import com.liferay.portal.kernel.template.TemplateHandler;
 import com.liferay.portal.kernel.trash.TrashHandler;
@@ -63,9 +64,7 @@ import com.liferay.portal.kernel.xml.Document;
 import com.liferay.portal.kernel.xml.Element;
 import com.liferay.portal.kernel.xml.UnsecureSAXReaderUtil;
 import com.liferay.portal.kernel.xmlrpc.Method;
-import com.liferay.portal.model.Portlet;
 import com.liferay.portal.notifications.UserNotificationHandlerImpl;
-import com.liferay.portal.service.PortletLocalServiceUtil;
 import com.liferay.portal.util.JavaFieldsParser;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.registry.Filter;
@@ -194,12 +193,9 @@ public class PortletBagFactory {
 		List<PreferencesValidator> preferencesValidatorInstances =
 			newPreferencesValidatorInstances(portlet, filter, properties);
 
-		ResourceBundleTracker resourceBundleTracker = new ResourceBundleTracker(
-			portlet.getPortletId());
-
 		PortletBag portletBag = new PortletBagImpl(
 			portlet.getPortletId(), _servletContext, portletInstance,
-			resourceBundleTracker, configurationActionInstances,
+			portlet.getResourceBundle(), configurationActionInstances,
 			indexerInstances, openSearchInstances,
 			schedulerEventMessageListeners, friendlyURLMapperTracker,
 			urlEncoderInstances, portletDataHandlerInstances,
@@ -240,6 +236,9 @@ public class PortletBagFactory {
 		_warFile = warFile;
 	}
 
+	/**
+	 * @see FriendlyURLMapperTrackerImpl#getContent(ClassLoader, String)
+	 */
 	protected String getContent(String fileName) throws Exception {
 		String queryString = HttpUtil.getQueryString(fileName);
 
@@ -625,8 +624,8 @@ public class PortletBagFactory {
 			Portlet portlet, Filter filter, Map<String, Object> properties)
 		throws Exception {
 
-		ServiceTrackerList<PreferencesValidator>
-			preferencesValidatorInstances = ServiceTrackerCollections.openList(
+		ServiceTrackerList<PreferencesValidator> preferencesValidatorInstances =
+			ServiceTrackerCollections.openList(
 				PreferencesValidator.class, filter, properties);
 
 		if (Validator.isNotNull(portlet.getPreferencesValidator())) {

@@ -18,17 +18,17 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Portlet;
+import com.liferay.portal.kernel.model.PortletConstants;
+import com.liferay.portal.kernel.model.PortletPreferences;
+import com.liferay.portal.kernel.model.PortletPreferencesIds;
 import com.liferay.portal.kernel.portlet.PortletPreferencesFactoryUtil;
+import com.liferay.portal.kernel.service.ExceptionRetryAcceptor;
 import com.liferay.portal.kernel.spring.aop.Property;
 import com.liferay.portal.kernel.spring.aop.Retry;
 import com.liferay.portal.kernel.spring.aop.Skip;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.model.PortletConstants;
-import com.liferay.portal.model.PortletPreferences;
-import com.liferay.portal.model.PortletPreferencesIds;
-import com.liferay.portal.service.ExceptionRetryAcceptor;
 import com.liferay.portal.service.base.PortletPreferencesLocalServiceBaseImpl;
 import com.liferay.portlet.PortletPreferencesImpl;
 
@@ -279,8 +279,7 @@ public class PortletPreferencesLocalServiceImpl
 		properties = {
 			@Property(
 				name = ExceptionRetryAcceptor.EXCEPTION_NAME,
-				value =
-					"org.springframework.dao.DataIntegrityViolationException"
+				value = "org.springframework.dao.DataIntegrityViolationException"
 			)
 		}
 	)
@@ -298,8 +297,7 @@ public class PortletPreferencesLocalServiceImpl
 		properties = {
 			@Property(
 				name = ExceptionRetryAcceptor.EXCEPTION_NAME,
-				value =
-					"org.springframework.dao.DataIntegrityViolationException"
+				value = "org.springframework.dao.DataIntegrityViolationException"
 			)
 		}
 	)
@@ -318,8 +316,7 @@ public class PortletPreferencesLocalServiceImpl
 		properties = {
 			@Property(
 				name = ExceptionRetryAcceptor.EXCEPTION_NAME,
-				value =
-					"org.springframework.dao.DataIntegrityViolationException"
+				value = "org.springframework.dao.DataIntegrityViolationException"
 			)
 		}
 	)
@@ -340,8 +337,7 @@ public class PortletPreferencesLocalServiceImpl
 		properties = {
 			@Property(
 				name = ExceptionRetryAcceptor.EXCEPTION_NAME,
-				value =
-					"org.springframework.dao.DataIntegrityViolationException"
+				value = "org.springframework.dao.DataIntegrityViolationException"
 			)
 		}
 	)

@@ -21,11 +21,11 @@ import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
+import com.liferay.portal.tools.ImportsFormatter;
 import com.liferay.portal.tools.ToolsUtil;
 
 import java.io.File;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,10 +40,29 @@ public class FTLSourceProcessor extends BaseSourceProcessor {
 		return _INCLUDES;
 	}
 
+	protected void checkIfStatement(
+		String line, String fileName, int lineCount) {
+
+		if ((!line.startsWith("<#elseif ") && !line.startsWith("<#if ")) ||
+			!line.endsWith(">") || line.contains("?")) {
+
+			return;
+		}
+
+		int pos = line.indexOf(StringPool.SPACE);
+
+		String ifClause =
+			"if (" + line.substring(pos + 1, line.length() - 1) + ") {";
+
+		checkIfClauseParentheses(ifClause, fileName, lineCount);
+	}
+
 	@Override
 	protected String doFormat(
 			File file, String fileName, String absolutePath, String content)
 		throws Exception {
+
+		content = StringUtil.replace(content, " >\n", ">\n");
 
 		content = sortLiferayVariables(content);
 
@@ -83,7 +102,7 @@ public class FTLSourceProcessor extends BaseSourceProcessor {
 
 			String strippedMatch = stripQuotes(match, CharPool.QUOTE);
 
-			if (StringUtil.count(strippedMatch, StringPool.EQUAL) <= 1) {
+			if (StringUtil.count(strippedMatch, CharPool.EQUAL) <= 1) {
 				continue;
 			}
 
@@ -124,7 +143,11 @@ public class FTLSourceProcessor extends BaseSourceProcessor {
 			}
 		}
 
-		return formatFTL(content);
+		ImportsFormatter importsFormatter = new FTLImportsFormatter();
+
+		content = importsFormatter.format(content, null, null);
+
+		return formatFTL(fileName, content);
 	}
 
 	@Override
@@ -137,15 +160,21 @@ public class FTLSourceProcessor extends BaseSourceProcessor {
 		return getFileNames(excludes, getIncludes());
 	}
 
-	protected String formatFTL(String content) throws Exception {
+	protected String formatFTL(String fileName, String content)
+		throws Exception {
+
 		StringBundler sb = new StringBundler();
 
 		try (UnsyncBufferedReader unsyncBufferedReader =
 				new UnsyncBufferedReader(new UnsyncStringReader(content))) {
 
+			int lineCount = 0;
+
 			String line = null;
 
 			while ((line = unsyncBufferedReader.readLine()) != null) {
+				lineCount++;
+
 				line = trimLine(line, false);
 
 				String trimmedLine = StringUtil.trimLeading(line);
@@ -156,6 +185,8 @@ public class FTLSourceProcessor extends BaseSourceProcessor {
 					line = formatIncorrectSyntax(line, "=[", "= [", false);
 					line = formatIncorrectSyntax(line, "+[", "+ [", false);
 				}
+
+				checkIfStatement(trimmedLine, fileName, lineCount);
 
 				sb.append(line);
 				sb.append("\n");
@@ -204,13 +235,13 @@ public class FTLSourceProcessor extends BaseSourceProcessor {
 
 	private static final String[] _INCLUDES = new String[] {"**/*.ftl"};
 
-	private Pattern _liferayVariablePattern = Pattern.compile(
+	private final Pattern _liferayVariablePattern = Pattern.compile(
 		"^\t*<#assign liferay_.*>\n", Pattern.MULTILINE);
-	private Pattern _liferayVariablesPattern = Pattern.compile(
+	private final Pattern _liferayVariablesPattern = Pattern.compile(
 		"(^\t*<#assign liferay_.*>\n)+", Pattern.MULTILINE);
-	private Pattern _multiParameterTagPattern = Pattern.compile(
+	private final Pattern _multiParameterTagPattern = Pattern.compile(
 		"\n(\t*)<@.+=.+=.+/>");
-	private Pattern _singleParameterTagPattern = Pattern.compile(
+	private final Pattern _singleParameterTagPattern = Pattern.compile(
 		"(<@[\\w\\.]+ \\w+)( )?=([^=]+?)/>");
 
 }

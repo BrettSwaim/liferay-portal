@@ -321,10 +321,16 @@ public class AggregateFilter extends IgnoreModuleRequestFilter {
 		cacheKeyGenerator.append(StringPool.UNDERLINE);
 		cacheKeyGenerator.append(request.getRequestURI());
 
-		String queryString = request.getQueryString();
+		String requestURL = String.valueOf(request.getRequestURL());
 
-		if (queryString != null) {
-			cacheKeyGenerator.append(sterilizeQueryString(queryString));
+		if (requestURL != null) {
+			requestURL = HttpUtil.removeParameter(requestURL, "zx");
+
+			String queryString = HttpUtil.getQueryString(requestURL);
+
+			if (queryString != null) {
+				cacheKeyGenerator.append(sterilizeQueryString(queryString));
+			}
 		}
 
 		return String.valueOf(cacheKeyGenerator.finish());
@@ -509,14 +515,28 @@ public class AggregateFilter extends IgnoreModuleRequestFilter {
 			URL resourceURL, String resourcePath)
 		throws IOException {
 
+		ServletContext cssServletContext = null;
+		String resourcePathRoot = null;
+
+		String requestURI = request.getRequestURI();
+
+		if (PortalWebResourcesUtil.hasContextPath(requestURI)) {
+			cssServletContext = PortalWebResourcesUtil.getPathServletContext(
+				requestURI);
+			resourcePathRoot = "/";
+		}
+
+		if (cssServletContext == null) {
+			cssServletContext = _servletContext;
+			resourcePathRoot = ServletPaths.getParentPath(resourcePath);
+		}
+
 		URLConnection urlConnection = resourceURL.openConnection();
 
 		String content = StringUtil.read(urlConnection.getInputStream());
 
 		content = aggregateCss(
-			new ServletPaths(
-				_servletContext, ServletPaths.getParentPath(resourcePath)),
-			content);
+			new ServletPaths(cssServletContext, resourcePathRoot), content);
 
 		return getCssContent(request, response, resourcePath, content);
 	}
@@ -569,8 +589,8 @@ public class AggregateFilter extends IgnoreModuleRequestFilter {
 
 	protected String sterilizeQueryString(String queryString) {
 		return StringUtil.replace(
-			queryString, new String[] {StringPool.SLASH, StringPool.BACK_SLASH},
-			new String[] {StringPool.UNDERLINE, StringPool.UNDERLINE});
+			queryString, new char[] {CharPool.SLASH, CharPool.BACK_SLASH},
+			new char[] {CharPool.UNDERLINE, CharPool.UNDERLINE});
 	}
 
 	private static final String _BASE_URL = "@base_url@";

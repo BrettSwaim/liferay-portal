@@ -14,22 +14,22 @@
 
 package com.liferay.portlet.trash.service.impl;
 
-import com.liferay.portal.TrashPermissionException;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.dao.search.SearchPaginationUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.TrashPermissionException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.kernel.trash.TrashActionKeys;
 import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.trash.TrashHandlerRegistryUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.trash.model.impl.TrashEntryImpl;
 import com.liferay.portlet.trash.service.base.TrashEntryServiceBaseImpl;
@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * The trash entry remote service is responsible for returning trash entries.
  * For more information on trash entries services and TrashEntry, see {@link
- * com.liferay.portlet.trash.service.impl.TrashEntryLocalServiceImpl}.
+ * TrashEntryLocalServiceImpl}.
  *
  * @author Julio Camarero
  * @author Zsolt Berentey
@@ -205,7 +205,11 @@ public class TrashEntryServiceImpl extends TrashEntryServiceBaseImpl {
 
 		int entriesCount = trashEntryPersistence.countByGroupId(groupId);
 
-		boolean approximate = entriesCount > PropsValues.TRASH_SEARCH_LIMIT;
+		boolean approximate = false;
+
+		if (entriesCount > PropsValues.TRASH_SEARCH_LIMIT) {
+			approximate = true;
+		}
 
 		trashEntriesList.setApproximate(approximate);
 

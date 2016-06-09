@@ -16,11 +16,13 @@ package com.liferay.portal.upgrade.v7_0_0;
 
 import java.io.IOException;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
  * @author Brian Wing Shun Chan
  */
+@SuppressWarnings("deprecation")
 public class UpgradeCompanyId
 	extends com.liferay.portal.upgrade.util.UpgradeCompanyId {
 
@@ -95,7 +97,8 @@ public class UpgradeCompanyId
 		}
 
 		@Override
-		public void update() throws IOException, SQLException {
+		public void update(Connection connection)
+			throws IOException, SQLException {
 
 			// DLFileEntry
 
@@ -103,7 +106,7 @@ public class UpgradeCompanyId
 				"select companyId from DLFileEntry where DLSyncEvent.type_ = " +
 					"'file' and DLFileEntry.fileEntryId = DLSyncEvent.typePK";
 
-			runSQL(getUpdateSQL(selectSQL));
+			runSQL(connection, getUpdateSQL(selectSQL));
 
 			// DLFolder
 
@@ -111,7 +114,7 @@ public class UpgradeCompanyId
 				"select companyId from DLFolder where DLSyncEvent.type_ = " +
 					"'folder' and DLFolder.folderId = DLSyncEvent.typePK";
 
-			runSQL(getUpdateSQL(selectSQL));
+			runSQL(connection, getUpdateSQL(selectSQL));
 		}
 
 	}
@@ -123,7 +126,8 @@ public class UpgradeCompanyId
 		}
 
 		@Override
-		public void update() throws IOException, SQLException {
+		public void update(Connection connection)
+			throws IOException, SQLException {
 
 			// Company
 
@@ -131,7 +135,7 @@ public class UpgradeCompanyId
 				"select companyId from Company where Company.companyId = " +
 					"PortletPreferences.ownerId";
 
-			runSQL(getUpdateSQL(selectSQL));
+			runSQL(connection, getUpdateSQL(selectSQL));
 
 			// Group
 
@@ -139,7 +143,7 @@ public class UpgradeCompanyId
 				"select companyId from Group_ where Group_.groupId = " +
 					"PortletPreferences.ownerId";
 
-			runSQL(getUpdateSQL(selectSQL));
+			runSQL(connection, getUpdateSQL(selectSQL));
 
 			// Layout
 
@@ -147,7 +151,7 @@ public class UpgradeCompanyId
 				"select companyId from Layout where Layout.plid = " +
 					"PortletPreferences.ownerId";
 
-			runSQL(getUpdateSQL(selectSQL));
+			runSQL(connection, getUpdateSQL(selectSQL));
 
 			// Organization
 
@@ -155,7 +159,7 @@ public class UpgradeCompanyId
 				"select companyId from Organization_ where " +
 					"Organization_.organizationId = PortletPreferences.ownerId";
 
-			runSQL(getUpdateSQL(selectSQL));
+			runSQL(connection, getUpdateSQL(selectSQL));
 
 			// User_
 
@@ -163,7 +167,7 @@ public class UpgradeCompanyId
 				"select companyId from User_ where User_.userId = " +
 					"PortletPreferences.ownerId";
 
-			runSQL(getUpdateSQL(selectSQL));
+			runSQL(connection, getUpdateSQL(selectSQL));
 		}
 
 	}

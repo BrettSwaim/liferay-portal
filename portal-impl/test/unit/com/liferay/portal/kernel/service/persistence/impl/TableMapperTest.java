@@ -14,28 +14,29 @@
 
 package com.liferay.portal.kernel.service.persistence.impl;
 
-import com.liferay.portal.exception.NoSuchModelException;
 import com.liferay.portal.kernel.cache.MultiVMPool;
 import com.liferay.portal.kernel.cache.MultiVMPoolUtil;
 import com.liferay.portal.kernel.cache.PortalCache;
 import com.liferay.portal.kernel.dao.jdbc.MappingSqlQuery;
 import com.liferay.portal.kernel.dao.jdbc.MappingSqlQueryFactory;
 import com.liferay.portal.kernel.dao.jdbc.MappingSqlQueryFactoryUtil;
+import com.liferay.portal.kernel.dao.jdbc.ParamSetter;
 import com.liferay.portal.kernel.dao.jdbc.RowMapper;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactory;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdateFactoryUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.NoSuchModelException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.BaseModelListener;
+import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.CodeCoverageAssertor;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyUtil;
-import com.liferay.portal.model.BaseModel;
-import com.liferay.portal.model.BaseModelListener;
-import com.liferay.portal.model.ModelListener;
 import com.liferay.portal.tools.ToolDependencies;
 import com.liferay.portal.util.PropsImpl;
 import com.liferay.registry.Registry;
@@ -45,8 +46,6 @@ import java.io.Serializable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-
-import java.sql.Types;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -255,6 +254,68 @@ public class TableMapperTest {
 		leftModelListener.assertOnAfterAddAssociation(false, null, null, null);
 
 		rightModelListener.assertOnAfterAddAssociation(false, null, null, null);
+	}
+
+	@Test
+	public void testAddTableMappings() {
+		long companyId = 0;
+		long leftPrimaryKey1 = 1;
+		long leftPrimaryKey2 = 2;
+		long rightPrimaryKey1 = 3;
+		long rightPrimaryKey2 = 4;
+
+		Assert.assertArrayEquals(
+			new long[] {rightPrimaryKey1},
+			_tableMapperImpl.addTableMappings(
+				companyId, leftPrimaryKey1, new long[] {rightPrimaryKey1}));
+		Assert.assertArrayEquals(
+			new long[0],
+			_tableMapperImpl.addTableMappings(
+				companyId, leftPrimaryKey1, new long[] {rightPrimaryKey1}));
+		Assert.assertArrayEquals(
+			new long[] {rightPrimaryKey2},
+			_tableMapperImpl.addTableMappings(
+				companyId, leftPrimaryKey1,
+				new long[] {rightPrimaryKey1, rightPrimaryKey2}));
+		Assert.assertEquals(
+			2,
+			_tableMapperImpl.deleteLeftPrimaryKeyTableMappings(
+				leftPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[] {rightPrimaryKey1, rightPrimaryKey2},
+			_tableMapperImpl.addTableMappings(
+				companyId, leftPrimaryKey1,
+				new long[] {rightPrimaryKey1, rightPrimaryKey2}));
+		Assert.assertEquals(
+			2,
+			_tableMapperImpl.deleteLeftPrimaryKeyTableMappings(
+				leftPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[] {leftPrimaryKey1},
+			_tableMapperImpl.addTableMappings(
+				companyId, new long[] {leftPrimaryKey1}, rightPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[0],
+			_tableMapperImpl.addTableMappings(
+				companyId, new long[] {leftPrimaryKey1}, rightPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[] {leftPrimaryKey2},
+			_tableMapperImpl.addTableMappings(
+				companyId, new long[] {leftPrimaryKey1, leftPrimaryKey2},
+				rightPrimaryKey1));
+		Assert.assertEquals(
+			2,
+			_tableMapperImpl.deleteRightPrimaryKeyTableMappings(
+				rightPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[] {leftPrimaryKey1, leftPrimaryKey2},
+			_tableMapperImpl.addTableMappings(
+				companyId, new long[] {leftPrimaryKey1, leftPrimaryKey2},
+				rightPrimaryKey1));
+		Assert.assertEquals(
+			2,
+			_tableMapperImpl.deleteRightPrimaryKeyTableMappings(
+				rightPrimaryKey1));
 	}
 
 	@Test
@@ -816,6 +877,100 @@ public class TableMapperTest {
 	}
 
 	@Test
+	public void testDeleteTableMappings() {
+		long companyId = 0;
+		long leftPrimaryKey1 = 1;
+		long leftPrimaryKey2 = 2;
+		long rightPrimaryKey1 = 3;
+		long rightPrimaryKey2 = 4;
+
+		Assert.assertArrayEquals(
+			new long[0],
+			_tableMapperImpl.deleteTableMappings(
+				leftPrimaryKey1, new long[] {rightPrimaryKey1}));
+		Assert.assertTrue(
+			_tableMapperImpl.addTableMapping(
+				companyId, leftPrimaryKey1, rightPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[] {rightPrimaryKey1},
+			_tableMapperImpl.deleteTableMappings(
+				leftPrimaryKey1,
+				new long[] {rightPrimaryKey1, rightPrimaryKey2}));
+		Assert.assertTrue(
+			_tableMapperImpl.addTableMapping(
+				companyId, leftPrimaryKey1, rightPrimaryKey1));
+		Assert.assertTrue(
+			_tableMapperImpl.addTableMapping(
+				companyId, leftPrimaryKey1, rightPrimaryKey2));
+		Assert.assertArrayEquals(
+			new long[] {rightPrimaryKey1, rightPrimaryKey2},
+			_tableMapperImpl.deleteTableMappings(
+				leftPrimaryKey1,
+				new long[] {rightPrimaryKey1, rightPrimaryKey2}));
+		Assert.assertArrayEquals(
+			new long[0],
+			_tableMapperImpl.deleteTableMappings(
+				new long[] {leftPrimaryKey1}, rightPrimaryKey1));
+		Assert.assertTrue(
+			_tableMapperImpl.addTableMapping(
+				companyId, leftPrimaryKey1, rightPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[] {leftPrimaryKey1},
+			_tableMapperImpl.deleteTableMappings(
+				new long[] {leftPrimaryKey1, leftPrimaryKey2},
+				rightPrimaryKey1));
+		Assert.assertTrue(
+			_tableMapperImpl.addTableMapping(
+				companyId, leftPrimaryKey1, rightPrimaryKey1));
+		Assert.assertTrue(
+			_tableMapperImpl.addTableMapping(
+				companyId, leftPrimaryKey2, rightPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[] {leftPrimaryKey1, leftPrimaryKey2},
+			_tableMapperImpl.deleteTableMappings(
+				new long[] {leftPrimaryKey1, leftPrimaryKey2},
+				rightPrimaryKey1));
+
+		PortalCache<Long, long[]> leftToRightPortalCache =
+			_tableMapperImpl.leftToRightPortalCache;
+
+		leftToRightPortalCache.put(
+			leftPrimaryKey1, new long[] {rightPrimaryKey1});
+
+		Assert.assertArrayEquals(
+			new long[0],
+			_tableMapperImpl.deleteTableMappings(
+				leftPrimaryKey1, new long[] {rightPrimaryKey1}));
+		Assert.assertTrue(
+			_tableMapperImpl.addTableMapping(
+				companyId, leftPrimaryKey1, rightPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[] {rightPrimaryKey1},
+			_tableMapperImpl.deleteTableMappings(
+				leftPrimaryKey1,
+				new long[] {rightPrimaryKey1, rightPrimaryKey2}));
+
+		PortalCache<Long, long[]> rightToLeftPortalCache =
+			_tableMapperImpl.rightToLeftPortalCache;
+
+		rightToLeftPortalCache.put(
+			rightPrimaryKey1, new long[] {leftPrimaryKey1});
+
+		Assert.assertArrayEquals(
+			new long[0],
+			_tableMapperImpl.deleteTableMappings(
+				new long[] {leftPrimaryKey1}, rightPrimaryKey1));
+		Assert.assertTrue(
+			_tableMapperImpl.addTableMapping(
+				companyId, leftPrimaryKey1, rightPrimaryKey1));
+		Assert.assertArrayEquals(
+			new long[] {leftPrimaryKey1},
+			_tableMapperImpl.deleteTableMappings(
+				new long[] {leftPrimaryKey1, leftPrimaryKey2},
+				rightPrimaryKey1));
+	}
+
+	@Test
 	public void testDestroy() {
 		testDestroy(_tableMapperImpl);
 	}
@@ -1242,6 +1397,16 @@ public class TableMapperTest {
 
 		recordInvocationHandler.assertCall("addTableMapping", 0L, 2L, 1L);
 
+		reverseTableMapper.addTableMappings(0, 1, new long[] {2});
+
+		recordInvocationHandler.assertCall(
+			"addTableMappings", 0L, new long[] {2}, 1L);
+
+		reverseTableMapper.addTableMappings(0, new long[] {1}, 2L);
+
+		recordInvocationHandler.assertCall(
+			"addTableMappings", 0L, 2L, new long[] {1});
+
 		reverseTableMapper.containsTableMapping(1, 2);
 
 		recordInvocationHandler.assertCall("containsTableMapping", 2L, 1L);
@@ -1259,6 +1424,16 @@ public class TableMapperTest {
 		reverseTableMapper.deleteTableMapping(1, 2);
 
 		recordInvocationHandler.assertCall("deleteTableMapping", 2L, 1L);
+
+		reverseTableMapper.deleteTableMappings(1, new long[] {2});
+
+		recordInvocationHandler.assertCall(
+			"deleteTableMappings", new long[] {2}, 1L);
+
+		reverseTableMapper.deleteTableMappings(new long[] {1}, 2);
+
+		recordInvocationHandler.assertCall(
+			"deleteTableMappings", 2L, new long[] {1});
 
 		reverseTableMapper.getRightBaseModels(1, 2, 3, null);
 
@@ -1343,25 +1518,23 @@ public class TableMapperTest {
 	@Test
 	public void testTableMapperFactoryCache() {
 		Set<String> cacheMappingTableNames =
-			TableMapperFactory.cacheMappingTableNames;
+			ReflectionTestUtil.getAndSetFieldValue(
+				TableMapperFactory.class, "_cachelessMappingTableNames",
+				new HashSet<String>() {
 
-		ReflectionTestUtil.setFieldValue(
-			TableMapperFactory.class, "cacheMappingTableNames",
-			new HashSet<String>() {
+					@Override
+					public boolean contains(Object o) {
+						return true;
+					}
 
-				@Override
-				public boolean contains(Object o) {
-					return true;
-				}
-
-			});
+				});
 
 		try {
 			testTableMapperFactory();
 		}
 		finally {
 			ReflectionTestUtil.setFieldValue(
-				TableMapperFactory.class, "cacheMappingTableNames",
+				TableMapperFactory.class, "_cachelessMappingTableNames",
 				cacheMappingTableNames);
 		}
 	}
@@ -1600,7 +1773,7 @@ public class TableMapperTest {
 	private class MockAddMappingSqlUpdate implements SqlUpdate {
 
 		public MockAddMappingSqlUpdate(
-			DataSource dataSource, String sql, int[] types) {
+			DataSource dataSource, String sql, ParamSetter... paramSetters) {
 
 			Assert.assertSame(_dataSource, dataSource);
 			Assert.assertEquals(
@@ -1609,7 +1782,10 @@ public class TableMapperTest {
 						"VALUES (?, ?, ?)",
 				sql);
 			Assert.assertArrayEquals(
-				new int[] {Types.BIGINT, Types.BIGINT, Types.BIGINT}, types);
+				new ParamSetter[] {
+					ParamSetter.BIGINT, ParamSetter.BIGINT, ParamSetter.BIGINT
+				},
+				paramSetters);
 		}
 
 		@Override
@@ -1701,14 +1877,15 @@ public class TableMapperTest {
 		implements SqlUpdate {
 
 		public MockDeleteLeftPrimaryKeyTableMappingsSqlUpdate(
-			DataSource dataSource, String sql, int[] types) {
+			DataSource dataSource, String sql, ParamSetter... paramSetters) {
 
 			Assert.assertSame(_dataSource, dataSource);
 			Assert.assertEquals(
 				"DELETE FROM " + _TABLE_NAME + " WHERE " + _LEFT_COLUMN_NAME +
 					" = ?",
 				sql);
-			Assert.assertArrayEquals(new int[] {Types.BIGINT}, types);
+			Assert.assertArrayEquals(
+				new ParamSetter[] {ParamSetter.BIGINT}, paramSetters);
 		}
 
 		public void setDatabaseError(boolean databaseError) {
@@ -1742,7 +1919,7 @@ public class TableMapperTest {
 	private class MockDeleteMappingSqlUpdate implements SqlUpdate {
 
 		public MockDeleteMappingSqlUpdate(
-			DataSource dataSource, String sql, int[] types) {
+			DataSource dataSource, String sql, ParamSetter... paramSetters) {
 
 			Assert.assertSame(_dataSource, dataSource);
 			Assert.assertEquals(
@@ -1750,7 +1927,8 @@ public class TableMapperTest {
 					" = ? AND " + _RIGHT_COLUMN_NAME + " = ?",
 				sql);
 			Assert.assertArrayEquals(
-				new int[] {Types.BIGINT, Types.BIGINT}, types);
+				new ParamSetter[] {ParamSetter.BIGINT, ParamSetter.BIGINT},
+				paramSetters);
 		}
 
 		public void setDatabaseError(boolean databaseError) {
@@ -1796,14 +1974,15 @@ public class TableMapperTest {
 		implements SqlUpdate {
 
 		public MockDeleteRightPrimaryKeyTableMappingsSqlUpdate(
-			DataSource dataSource, String sql, int[] types) {
+			DataSource dataSource, String sql, ParamSetter... paramSetters) {
 
 			Assert.assertSame(_dataSource, dataSource);
 			Assert.assertEquals(
 				"DELETE FROM " + _TABLE_NAME + " WHERE " + _RIGHT_COLUMN_NAME +
 					" = ?",
 				sql);
-			Assert.assertArrayEquals(new int[] {Types.BIGINT}, types);
+			Assert.assertArrayEquals(
+				new ParamSetter[] {ParamSetter.BIGINT}, paramSetters);
 		}
 
 		public void setDatabaseError(boolean databaseError) {
@@ -1847,15 +2026,16 @@ public class TableMapperTest {
 		implements MappingSqlQuery<Long> {
 
 		public MockGetLeftPrimaryKeysSqlQuery(
-			DataSource dataSource, String sql, int[] types,
-			RowMapper<Long> rowMapper) {
+			DataSource dataSource, String sql, RowMapper<Long> rowMapper,
+			ParamSetter... paramSetters) {
 
 			Assert.assertSame(_dataSource, dataSource);
 			Assert.assertEquals(
-				"SELECT " + _LEFT_COLUMN_NAME + " FROM " +
-					_TABLE_NAME + " WHERE " + _RIGHT_COLUMN_NAME + " = ?",
+				"SELECT " + _LEFT_COLUMN_NAME + " FROM " + _TABLE_NAME +
+					" WHERE " + _RIGHT_COLUMN_NAME + " = ?",
 				sql);
-			Assert.assertArrayEquals(new int[] {Types.BIGINT}, types);
+			Assert.assertArrayEquals(
+				new ParamSetter[] {ParamSetter.BIGINT}, paramSetters);
 			Assert.assertSame(RowMapper.PRIMARY_KEY, rowMapper);
 		}
 
@@ -1895,15 +2075,16 @@ public class TableMapperTest {
 		implements MappingSqlQuery<Long> {
 
 		public MockGetRightPrimaryKeysSqlQuery(
-			DataSource dataSource, String sql, int[] types,
-			RowMapper<Long> rowMapper) {
+			DataSource dataSource, String sql, RowMapper<Long> rowMapper,
+			ParamSetter... paramSetters) {
 
 			Assert.assertSame(_dataSource, dataSource);
 			Assert.assertEquals(
-				"SELECT " + _RIGHT_COLUMN_NAME + " FROM " +
-					_TABLE_NAME + " WHERE " + _LEFT_COLUMN_NAME + " = ?",
+				"SELECT " + _RIGHT_COLUMN_NAME + " FROM " + _TABLE_NAME +
+					" WHERE " + _LEFT_COLUMN_NAME + " = ?",
 				sql);
-			Assert.assertArrayEquals(new int[] {Types.BIGINT}, types);
+			Assert.assertArrayEquals(
+				new ParamSetter[] {ParamSetter.BIGINT}, paramSetters);
 			Assert.assertSame(RowMapper.PRIMARY_KEY, rowMapper);
 		}
 
@@ -1946,21 +2127,21 @@ public class TableMapperTest {
 
 		@Override
 		public <T> MappingSqlQuery<T> getMappingSqlQuery(
-			DataSource dataSource, String sql, int[] types,
-			RowMapper<T> rowMapper) {
+			DataSource dataSource, String sql, RowMapper<T> rowMapper,
+			ParamSetter... paramSetters) {
 
 			int count = _counter++;
 
 			if (count == 0) {
 				return (MappingSqlQuery<T>)
 					new MockGetLeftPrimaryKeysSqlQuery(
-						dataSource, sql, types, RowMapper.PRIMARY_KEY);
+						dataSource, sql, RowMapper.PRIMARY_KEY, paramSetters);
 			}
 
 			if (count == 1) {
 				return (MappingSqlQuery<T>)
 					new MockGetRightPrimaryKeysSqlQuery(
-						dataSource, sql, types, RowMapper.PRIMARY_KEY);
+						dataSource, sql, RowMapper.PRIMARY_KEY, paramSetters);
 			}
 
 			return null;
@@ -1974,26 +2155,28 @@ public class TableMapperTest {
 
 		@Override
 		public SqlUpdate getSqlUpdate(
-			DataSource dataSource, String sql, int[] types) {
+			DataSource dataSource, String sql, ParamSetter... paramSetters) {
 
 			int count = _count++;
 
 			if (count == 0) {
-				return new MockAddMappingSqlUpdate(dataSource, sql, types);
+				return new MockAddMappingSqlUpdate(
+					dataSource, sql, paramSetters);
 			}
 
 			if (count == 1) {
 				return new MockDeleteLeftPrimaryKeyTableMappingsSqlUpdate(
-					dataSource, sql, types);
+					dataSource, sql, paramSetters);
 			}
 
 			if (count == 2) {
 				return new MockDeleteRightPrimaryKeyTableMappingsSqlUpdate(
-					dataSource, sql, types);
+					dataSource, sql, paramSetters);
 			}
 
 			if (count == 3) {
-				return new MockDeleteMappingSqlUpdate(dataSource, sql, types);
+				return new MockDeleteMappingSqlUpdate(
+					dataSource, sql, paramSetters);
 			}
 
 			return null;

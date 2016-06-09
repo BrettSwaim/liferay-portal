@@ -24,8 +24,12 @@ import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.language.LanguageWrapper;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.CompanyConstants;
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.GroupConstants;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.pacl.DoPrivileged;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.CharPool;
@@ -38,6 +42,7 @@ import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.ResourceBundleLoader;
 import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
@@ -46,10 +51,6 @@ import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.model.CompanyConstants;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.GroupConstants;
-import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.util.PrefsPropsUtil;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.registry.Registry;
@@ -62,6 +63,7 @@ import java.io.Serializable;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -119,32 +121,34 @@ public class LanguageImpl implements Language, Serializable {
 					MultiVMPool multiVMPool = registry.getService(
 						MultiVMPool.class);
 
-					_portalCache =
+					_companyLocalesPortalCache =
 						(PortalCache<Long, Serializable>)
 							multiVMPool.getPortalCache(
-								LanguageImpl.class.getName());
+								_COMPANY_LOCALES_PORTAL_CACHE_NAME);
 
 					PortalCacheMapSynchronizeUtil.synchronize(
-						_portalCache, _companyLocalesBags,
-						new Synchronizer<Long, Serializable>() {
+						_companyLocalesPortalCache, _companyLocalesBags,
+						_removeSynchronizer);
 
-							@Override
-							public void onSynchronize(
-								Map<? extends Long, ? extends Serializable> map,
-								Long key, Serializable value, int timeToLive) {
+					_groupLocalesPortalCache =
+						(PortalCache<Long, Serializable>)
+							multiVMPool.getPortalCache(
+								_GROUP_LOCALES_PORTAL_CACHE_NAME);
 
-								_companyLocalesBags.remove(key);
-							}
+					PortalCacheMapSynchronizeUtil.synchronize(
+						_groupLocalesPortalCache,
+						_groupLanguageCodeLocalesMapMap, _removeSynchronizer);
 
-						});
+					PortalCacheMapSynchronizeUtil.synchronize(
+						_groupLocalesPortalCache, _groupLanguageIdLocalesMap,
+						_removeSynchronizer);
 				}
 
 				@Override
 				public void destroy() {
 				}
 
-			}
-		);
+			});
 
 		serviceDependencyManager.registerDependencies(MultiVMPool.class);
 	}
@@ -1134,6 +1138,11 @@ public class LanguageImpl implements Language, Serializable {
 	}
 
 	@Override
+	public ResourceBundleLoader getPortalResourceBundleLoader() {
+		return LanguageResources.RESOURCE_BUNDLE_LOADER;
+	}
+
+	@Override
 	public Set<Locale> getSupportedLocales() {
 		CompanyLocalesBag companyLocalesBag = _getCompanyLocalesBag();
 
@@ -1617,8 +1626,14 @@ public class LanguageImpl implements Language, Serializable {
 		Cookie languageIdCookie = new Cookie(
 			CookieKeys.GUEST_LANGUAGE_ID, languageId);
 
-		languageIdCookie.setPath(StringPool.SLASH);
+		String domain = CookieKeys.getDomain(request);
+
+		if (Validator.isNotNull(domain)) {
+			languageIdCookie.setDomain(domain);
+		}
+
 		languageIdCookie.setMaxAge(CookieKeys.MAX_AGE);
+		languageIdCookie.setPath(StringPool.SLASH);
 
 		CookieKeys.addCookie(request, response, languageIdCookie);
 	}
@@ -1667,7 +1682,7 @@ public class LanguageImpl implements Language, Serializable {
 		return companyLocalesBag;
 	}
 
-	private ObjectValuePair<Map<String, Locale>, Map<String, Locale>>
+	private ObjectValuePair<HashMap<String, Locale>, HashMap<String, Locale>>
 		_createGroupLocales(long groupId) {
 
 		String[] languageIds = PropsValues.LOCALES_ENABLED;
@@ -1684,8 +1699,8 @@ public class LanguageImpl implements Language, Serializable {
 		catch (Exception e) {
 		}
 
-		Map<String, Locale> groupLanguageCodeLocalesMap = new HashMap<>();
-		Map<String, Locale> groupLanguageIdLocalesMap = new HashMap<>();
+		HashMap<String, Locale> groupLanguageCodeLocalesMap = new HashMap<>();
+		HashMap<String, Locale> groupLanguageIdLocalesMap = new HashMap<>();
 
 		for (String languageId : languageIds) {
 			Locale locale = LocaleUtil.fromLanguageId(languageId, false);
@@ -1715,7 +1730,7 @@ public class LanguageImpl implements Language, Serializable {
 
 	private String _escapePattern(String pattern) {
 		return StringUtil.replace(
-			pattern, StringPool.APOSTROPHE, StringPool.DOUBLE_APOSTROPHE);
+			pattern, CharPool.APOSTROPHE, StringPool.DOUBLE_APOSTROPHE);
 	}
 
 	private String _get(ResourceBundle resourceBundle, String key) {
@@ -1753,7 +1768,7 @@ public class LanguageImpl implements Language, Serializable {
 			_groupLanguageCodeLocalesMapMap.get(groupId);
 
 		if (groupLanguageCodeLocalesMap == null) {
-			ObjectValuePair<Map<String, Locale>, Map<String, Locale>>
+			ObjectValuePair<HashMap<String, Locale>, HashMap<String, Locale>>
 				objectValuePair = _createGroupLocales(groupId);
 
 			groupLanguageCodeLocalesMap = objectValuePair.getKey();
@@ -1767,7 +1782,7 @@ public class LanguageImpl implements Language, Serializable {
 			_groupLanguageIdLocalesMap.get(groupId);
 
 		if (groupLanguageIdLocalesMap == null) {
-			ObjectValuePair<Map<String, Locale>, Map<String, Locale>>
+			ObjectValuePair<HashMap<String, Locale>, HashMap<String, Locale>>
 				objectValuePair = _createGroupLocales(groupId);
 
 			groupLanguageIdLocalesMap = objectValuePair.getValue();
@@ -1797,26 +1812,45 @@ public class LanguageImpl implements Language, Serializable {
 	}
 
 	private void _resetAvailableGroupLocales(long groupId) {
-		_groupLanguageCodeLocalesMapMap.remove(groupId);
-		_groupLanguageIdLocalesMap.remove(groupId);
+		_groupLocalesPortalCache.remove(groupId);
 	}
 
 	private void _resetAvailableLocales(long companyId) {
-		_portalCache.remove(companyId);
+		_companyLocalesPortalCache.remove(companyId);
 	}
+
+	private static final String _COMPANY_LOCALES_PORTAL_CACHE_NAME =
+		LanguageImpl.class + "._companyLocalesPortalCache";
+
+	private static final String _GROUP_LOCALES_PORTAL_CACHE_NAME =
+		LanguageImpl.class + "._groupLocalesPortalCache";
 
 	private static final Log _log = LogFactoryUtil.getLog(LanguageImpl.class);
 
 	private static final Map<Long, CompanyLocalesBag> _companyLocalesBags =
 		new ConcurrentHashMap<>();
+	private static PortalCache<Long, Serializable> _companyLocalesPortalCache;
+	private static PortalCache<Long, Serializable> _groupLocalesPortalCache;
 	private static final Pattern _pattern = Pattern.compile(
 		"Liferay\\.Language\\.get\\([\"']([^)]+)[\"']\\)");
-	private static PortalCache<Long, Serializable> _portalCache;
 
-	private final Map<Long, Map<String, Locale>>
+	private static final Synchronizer<Long, Serializable> _removeSynchronizer =
+		new Synchronizer<Long, Serializable>() {
+
+			@Override
+			public void onSynchronize(
+				Map<? extends Long, ? extends Serializable> map, Long key,
+				Serializable value, int timeToLive) {
+
+				map.remove(key);
+			}
+
+		};
+
+	private final Map<Long, HashMap<String, Locale>>
 		_groupLanguageCodeLocalesMapMap = new ConcurrentHashMap<>();
-	private final Map<Long, Map<String, Locale>> _groupLanguageIdLocalesMap =
-		new ConcurrentHashMap<>();
+	private final Map<Long, HashMap<String, Locale>>
+		_groupLanguageIdLocalesMap = new ConcurrentHashMap<>();
 
 	private static class CompanyLocalesBag implements Serializable {
 
@@ -1829,7 +1863,7 @@ public class LanguageImpl implements Language, Serializable {
 		}
 
 		public Set<Locale> getAvailableLocales() {
-			return new HashSet<>(_languageIdLocalesMap.values());
+			return _availableLocales;
 		}
 
 		public Locale getByLanguageCode(String languageCode) {
@@ -1884,12 +1918,19 @@ public class LanguageImpl implements Language, Serializable {
 					LocaleUtil.fromLanguageId(languageId, false));
 			}
 
-			_supportedLocalesSet = new HashSet<>(
+			_availableLocales = Collections.unmodifiableSet(
+				new HashSet<>(_languageIdLocalesMap.values()));
+
+			Set<Locale> supportedLocalesSet = new HashSet<>(
 				_languageIdLocalesMap.values());
 
-			_supportedLocalesSet.removeAll(_localesBetaSet);
+			supportedLocalesSet.removeAll(_localesBetaSet);
+
+			_supportedLocalesSet = Collections.unmodifiableSet(
+				supportedLocalesSet);
 		}
 
+		private final Set<Locale> _availableLocales;
 		private final Set<String> _duplicateLanguageCodes = new HashSet<>();
 		private final Map<String, Locale> _languageCodeLocalesMap =
 			new HashMap<>();

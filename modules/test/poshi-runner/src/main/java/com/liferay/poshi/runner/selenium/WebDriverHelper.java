@@ -212,8 +212,7 @@ public class WebDriverHelper {
 		sb.append(eventType);
 		sb.append("');event.initEvent('");
 		sb.append(event);
-		sb.append("', true, false);");
-		sb.append("element.dispatchEvent(event);");
+		sb.append("', true, false);element.dispatchEvent(event);");
 
 		javascriptExecutor.executeScript(sb.toString(), webElement);
 	}
@@ -318,6 +317,36 @@ public class WebDriverHelper {
 
 	public static String getDefaultWindowHandle() {
 		return _defaultWindowHandle;
+	}
+
+	public static String getEditorName(WebDriver webDriver, String locator) {
+		String titleAttribute = getAttribute(webDriver, locator + "@title");
+
+		if (titleAttribute.contains("Rich Text Editor,")) {
+			int x = titleAttribute.indexOf(",");
+			int y = titleAttribute.indexOf(",", x + 1);
+
+			if (y == -1) {
+				y = titleAttribute.length();
+			}
+
+			return titleAttribute.substring(x + 2, y);
+		}
+
+		String idAttribute = getAttribute(webDriver, locator + "@id");
+
+		if (idAttribute.contains("cke__")) {
+			int x = idAttribute.indexOf("cke__");
+			int y = idAttribute.indexOf("cke__", x + 1);
+
+			if (y == -1) {
+				y = idAttribute.length();
+			}
+
+			return idAttribute.substring(x + 4, y);
+		}
+
+		return idAttribute;
 	}
 
 	public static int getElementHeight(WebDriver webDriver, String locator) {
@@ -447,7 +476,7 @@ public class WebDriverHelper {
 						return _webDriver.getCurrentUrl();
 					}
 
-					private Callable<String> init(WebDriver webDriver)
+					private Callable<String> _init(WebDriver webDriver)
 						throws Exception {
 
 						_webDriver = webDriver;
@@ -457,7 +486,7 @@ public class WebDriverHelper {
 
 					private WebDriver _webDriver;
 
-				}.init(webDriver));
+				}._init(webDriver));
 
 			Thread thread = new Thread(futureTask);
 
@@ -746,6 +775,20 @@ public class WebDriverHelper {
 		FileUtil.write(fileName, htmlSource.replace("<\\html>", sb.toString()));
 	}
 
+	public static void scrollBy(WebDriver webDriver, String coordString) {
+		WebElement webElement = getWebElement(webDriver, "//html");
+
+		WrapsDriver wrapsDriver = (WrapsDriver)webElement;
+
+		WebDriver wrappedWebDriver = wrapsDriver.getWrappedDriver();
+
+		JavascriptExecutor javascriptExecutor =
+			(JavascriptExecutor)wrappedWebDriver;
+
+		javascriptExecutor.executeScript(
+			"window.scrollBy(" + coordString + ");");
+	}
+
 	public static void select(
 		WebDriver webDriver, String selectLocator, String optionLocator) {
 
@@ -942,6 +985,26 @@ public class WebDriverHelper {
 		javascriptExecutor.executeScript(sb.toString());
 	}
 
+	public static void typeEditor(
+		WebDriver webDriver, String locator, String value) {
+
+		WrapsDriver wrapsDriver = (WrapsDriver)getWebElement(
+			webDriver, locator);
+
+		JavascriptExecutor javascriptExecutor =
+			(JavascriptExecutor)wrapsDriver.getWrappedDriver();
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("CKEDITOR.instances[\"");
+		sb.append(getEditorName(webDriver, locator));
+		sb.append("\"].setData(\"");
+		sb.append(HtmlUtil.escapeJS(value.replace("\\", "\\\\")));
+		sb.append("\");");
+
+		javascriptExecutor.executeScript(sb.toString());
+	}
+
 	public static void uncheck(WebDriver webdDriver, String locator) {
 		WebElement webElement = getWebElement(webdDriver, locator);
 
@@ -1013,18 +1076,47 @@ public class WebDriverHelper {
 		}
 	}
 
-	protected static void scrollWebElementIntoView(
+	protected static boolean isObscured(
 		WebDriver webDriver, WebElement webElement) {
 
 		WrapsDriver wrapsDriver = (WrapsDriver)webElement;
 
-		WebDriver wrappedWebDriver = wrapsDriver.getWrappedDriver();
-
 		JavascriptExecutor javascriptExecutor =
-			(JavascriptExecutor)wrappedWebDriver;
+			(JavascriptExecutor)wrapsDriver.getWrappedDriver();
 
-		javascriptExecutor.executeScript(
-			"arguments[0].scrollIntoView();", webElement);
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("var element = arguments[0];");
+		sb.append("console.log(element);");
+		sb.append("var rect = element.getBoundingClientRect();");
+		sb.append("elementX = (rect.right + rect.left) / 2;");
+		sb.append("elementY = (rect.top + rect.bottom) / 2;");
+		sb.append("var newElement = ");
+		sb.append("document.elementFromPoint(elementX, elementY);");
+		sb.append("if (element == newElement) {");
+		sb.append("return false;}");
+		sb.append("return true;");
+
+		Boolean isObscured = (Boolean)javascriptExecutor.executeScript(
+			sb.toString(), webElement);
+
+		return isObscured.booleanValue();
+	}
+
+	protected static void scrollWebElementIntoView(
+		WebDriver webDriver, WebElement webElement) {
+
+		if (!webElement.isDisplayed() || isObscured(webDriver, webElement)) {
+			WrapsDriver wrapsDriver = (WrapsDriver)webElement;
+
+			WebDriver wrappedWebDriver = wrapsDriver.getWrappedDriver();
+
+			JavascriptExecutor javascriptExecutor =
+				(JavascriptExecutor)wrappedWebDriver;
+
+			javascriptExecutor.executeScript(
+				"arguments[0].scrollIntoView(false);", webElement);
+		}
 	}
 
 	protected static void selectByRegexpText(

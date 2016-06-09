@@ -37,8 +37,8 @@
 				<echo message="Configuring Breadcrumb without saving to check bug." />
 			</then>
 			<else>
-				<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
-				<execute macro="Alert#viewSetupUpdatedSuccessMessage" />
+				<execute macro="Button#clickSave" />
+				<execute macro="Alert#viewSuccessMessage" />
 			</else>
 		</if>
 
@@ -56,9 +56,7 @@
 	<command name="saveDisplayPreview">
 		<execute function="SelectFrame" locator1="BasePortletConfiguration#CONFIGURATION_IFRAME" />
 
-		<execute function="AssertClick" locator1="Button#SAVE" value1="Save" />
-
-		<execute macro="Alert#viewSetupUpdatedSuccessMessage" />
+		<execute macro="PortletEntry#save" />
 
 		<execute function="SelectFrame" value1="relative=top" />
 	</command>
@@ -108,7 +106,7 @@
 
 					<var method="StringUtil#upperCase('${breadcrumbName}')" name="breadcrumbNameUppercase" />
 
-					<execute function="AssertTextEquals" locator1="BreadcrumbConfiguration#BREADCRUMB_PREVIEW_PAGE" value1="${breadcrumbNameUppercase}" />
+					<execute function="AssertTextEquals#assertPartialText" locator1="BreadcrumbConfiguration#BREADCRUMB_PREVIEW_PAGE" value1="${breadcrumbNameUppercase}" />
 				</for>
 			</then>
 		</if>
@@ -136,7 +134,7 @@
 
 					<var method="StringUtil#upperCase('${breadcrumbName}')" name="breadcrumbNameUppercase" />
 
-					<execute function="AssertTextEquals" locator1="Breadcrumb#BREADCRUMB_${pathLocator}" value1="${breadcrumbNameUppercase}" />
+					<execute function="AssertTextEquals#assertPartialText" locator1="Breadcrumb#BREADCRUMB_${pathLocator}" value1="${breadcrumbNameUppercase}" />
 				</for>
 			</then>
 		</if>

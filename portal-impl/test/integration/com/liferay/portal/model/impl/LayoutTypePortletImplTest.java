@@ -14,8 +14,14 @@
 
 package com.liferay.portal.model.impl;
 
+import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutTypePortlet;
+import com.liferay.portal.kernel.model.Portlet;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
+import com.liferay.portal.kernel.service.PortletLocalServiceUtil;
+import com.liferay.portal.kernel.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
@@ -23,12 +29,6 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.PortletKeys;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.StringBundler;
-import com.liferay.portal.model.Group;
-import com.liferay.portal.model.Layout;
-import com.liferay.portal.model.LayoutTypePortlet;
-import com.liferay.portal.model.Portlet;
-import com.liferay.portal.service.PortletLocalServiceUtil;
-import com.liferay.portal.service.PortletPreferencesLocalServiceUtil;
 import com.liferay.portal.service.util.test.PortletPreferencesTestUtil;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.util.PropsUtil;
@@ -71,6 +71,12 @@ public class LayoutTypePortletImplTest {
 
 			Portlet noncacheablePortlet =
 				PortletLocalServiceUtil.getPortletById(PortletKeys.LOGIN);
+
+			PortletPreferencesLocalServiceUtil.addPortletPreferences(
+				TestPropsValues.getCompanyId(),
+				PortletKeys.PREFS_OWNER_ID_DEFAULT,
+				PortletKeys.PREFS_OWNER_TYPE_LAYOUT, _layout.getPlid(),
+				noncacheablePortlet.getPortletId(), noncacheablePortlet, null);
 
 			PortletPreferencesLocalServiceUtil.addPortletPreferences(
 				TestPropsValues.getCompanyId(), _layout.getGroupId(),
@@ -128,11 +134,6 @@ public class LayoutTypePortletImplTest {
 			_setUp();
 		}
 
-		@After
-		public void tearDown() {
-			_tearDown();
-		}
-
 		@Test
 		public void
 				shouldReturnFalseIfANonlayoutCacheableRootPortletIsInstalled()
@@ -172,6 +173,11 @@ public class LayoutTypePortletImplTest {
 			Assert.assertTrue(_layoutTypePortlet.isCacheable());
 		}
 
+		@After
+		public void tearDown() {
+			_tearDown();
+		}
+
 	}
 
 	public static class
@@ -185,11 +191,6 @@ public class LayoutTypePortletImplTest {
 		@Before
 		public void setUp() throws Exception {
 			_setUp();
-		}
-
-		@After
-		public void tearDown() {
-			_tearDown();
 		}
 
 		@Test
@@ -222,6 +223,11 @@ public class LayoutTypePortletImplTest {
 				PropsKeys.LAYOUT_STATIC_PORTLETS_ALL, cacheablePortletId);
 
 			Assert.assertTrue(_layoutTypePortlet.isCacheable());
+		}
+
+		@After
+		public void tearDown() {
+			_tearDown();
 		}
 
 	}
