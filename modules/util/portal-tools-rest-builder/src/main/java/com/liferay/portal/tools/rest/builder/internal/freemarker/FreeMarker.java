@@ -14,6 +14,9 @@
 
 package com.liferay.portal.tools.rest.builder.internal.freemarker;
 
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.tools.rest.builder.internal.util.FileUtil;
 
@@ -28,6 +31,8 @@ import java.io.StringWriter;
 
 import java.util.Map;
 
+import org.apache.commons.lang.time.StopWatch;
+
 /**
  * @author Peter Shin
  */
@@ -37,12 +42,12 @@ public class FreeMarker {
 		_configuration.setNumberFormat("computer");
 
 		DefaultObjectWrapperBuilder defaultObjectWrapperBuilder =
-			new DefaultObjectWrapperBuilder(Configuration.getVersion());
+				new DefaultObjectWrapperBuilder(Configuration.getVersion());
 
 		_configuration.setObjectWrapper(defaultObjectWrapperBuilder.build());
 
 		ClassTemplateLoader classTemplateLoader = new ClassTemplateLoader(
-			FreeMarker.class, "/");
+				FreeMarker.class, "/");
 
 		_configuration.setTemplateLoader(classTemplateLoader);
 
@@ -51,13 +56,23 @@ public class FreeMarker {
 
 	public String processTemplate(
 			File copyrightFile, String name, Map<String, Object> context)
-		throws Exception {
+			throws Exception {
 
 		Template template = _configuration.getTemplate(name);
 
 		StringWriter stringWriter = new StringWriter();
 
+		StopWatch stopWatch = new StopWatch();
+
+		stopWatch.start();
+
 		template.process(context, stringWriter);
+
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+					StringBundler.concat(
+							"freemarker processing for template {", name, "} takes ", stopWatch.getTime(), " ms"));
+		}
 
 		StringBuffer stringBuffer = stringWriter.getBuffer();
 
@@ -71,6 +86,9 @@ public class FreeMarker {
 	}
 
 	private static final Configuration _configuration = new Configuration(
-		Configuration.getVersion());
+			Configuration.getVersion());
+
+	private static final Log _log = LogFactoryUtil.getLog(
+			FreeMarker.class);
 
 }
