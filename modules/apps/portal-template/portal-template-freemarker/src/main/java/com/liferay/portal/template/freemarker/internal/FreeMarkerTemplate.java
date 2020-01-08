@@ -14,6 +14,9 @@
 
 package com.liferay.portal.template.freemarker.internal;
 
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.template.StringTemplateResource;
 import com.liferay.portal.kernel.template.TemplateConstants;
 import com.liferay.portal.kernel.template.TemplateException;
@@ -45,6 +48,8 @@ import java.io.Writer;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang.time.StopWatch;
 
 /**
  * @author Mika Koivisto
@@ -134,8 +139,20 @@ public class FreeMarkerTemplate extends BaseTemplate {
 
 			template.setObjectWrapper(_objectWrapper);
 
+			StopWatch stopWatch = new StopWatch();
+
+			stopWatch.start();
+
 			template.process(
 				new CachableDefaultMapAdapter(context, _objectWrapper), writer);
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(
+					StringBundler.concat(
+						"FreeMarker processing for template {",
+						templateResource.getTemplateId(), "} takes ",
+						stopWatch.getTime(), " ms"));
+			}
 		}
 		finally {
 			TemplateResourceThreadLocal.setTemplateResource(
@@ -146,6 +163,9 @@ public class FreeMarkerTemplate extends BaseTemplate {
 	private static final TemplateModel _NULL_TEMPLATE_MODEL =
 		new TemplateModel() {
 		};
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		FreeMarkerTemplate.class);
 
 	private final Configuration _configuration;
 	private final ObjectWrapper _objectWrapper;
